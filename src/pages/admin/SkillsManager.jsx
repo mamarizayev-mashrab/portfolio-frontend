@@ -6,11 +6,10 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import api from '../../api/axios';
-import { useToast } from '../../components/common/Toast';
+import { toast } from 'react-hot-toast';
 import { ButtonSpinner } from '../../components/common/Loading';
 
 const SkillsManager = () => {
-    const { toast } = useToast();
     const [skills, setSkills] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);

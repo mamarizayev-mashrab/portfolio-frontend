@@ -5,21 +5,20 @@
 
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import api from '../../api/axios';
-import { useToast } from '../../components/common/Toast';
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
 import { ButtonSpinner } from '../../components/common/Loading';
 
 const MessagesViewer = () => {
-    const { toast } = useToast();
     const [messages, setMessages] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
     const [selectedMessage, setSelectedMessage] = useState(null);
 
     useEffect(() => { fetchMessages(); }, []);
 
     const fetchMessages = async () => {
         try {
-            const response = await api.get('/messages');
+            const response = await axios.get('/messages');
             setMessages(response.data.data || []);
         } catch (error) {
             toast.error('Failed to load messages');

@@ -5,18 +5,21 @@
 
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import api from '../../api/axios';
-import { useToast } from '../../components/common/Toast';
+import axios from 'axios'; // Changed from '../../api/axios' to 'axios'
+import { toast } from 'react-hot-toast'; // Replaced useToast with react-hot-toast
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext'; // Added useLanguage import
 import { ButtonSpinner } from '../../components/common/Loading';
 
 const SettingsPage = () => {
-    const { toast } = useToast();
+    // const { toast } = useToast(); // Removed custom hook usage
     const { changePassword } = useAuth();
+    const { updateDynamicTranslations } = useLanguage(); // Added useLanguage hook usage
     const [settings, setSettings] = useState(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [activeTab, setActiveTab] = useState('password');
+    const [activeTab, setActiveTab] = useState('profile'); // Changed initial activeTab to 'profile'
+    const [isLoading, setIsLoading] = useState(false); // Added isLoading state
 
     // Password change state
     const [passwordData, setPasswordData] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
@@ -109,8 +112,8 @@ const SettingsPage = () => {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`px-4 py-3 font-medium transition-colors ${activeTab === tab.id
-                                    ? 'text-primary-400 border-b-2 border-primary-400 -mb-px'
-                                    : 'text-dark-400 hover:text-dark-200'
+                                ? 'text-primary-400 border-b-2 border-primary-400 -mb-px'
+                                : 'text-dark-400 hover:text-dark-200'
                                 }`}
                         >
                             {tab.label}

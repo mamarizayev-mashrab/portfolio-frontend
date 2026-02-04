@@ -6,11 +6,10 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import api from '../../api/axios';
-import { useToast } from '../../components/common/Toast';
+import toast from 'react-hot-toast';
 import { ButtonSpinner } from '../../components/common/Loading';
 
 const ExperienceManager = () => {
-    const { toast } = useToast();
     const [experiences, setExperiences] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -151,7 +150,7 @@ const ExperienceManager = () => {
                                         </td>
                                         <td className="p-4">
                                             <span className={`px-2 py-1 text-xs rounded ${exp.type === 'work' ? 'bg-primary-500/20 text-primary-400' :
-                                                    exp.type === 'education' ? 'bg-accent-500/20 text-accent-400' : 'bg-green-500/20 text-green-400'
+                                                exp.type === 'education' ? 'bg-accent-500/20 text-accent-400' : 'bg-green-500/20 text-green-400'
                                                 }`}>{exp.type}</span>
                                         </td>
                                         <td className="p-4 text-right">
