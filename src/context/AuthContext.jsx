@@ -62,7 +62,8 @@ export const AuthProvider = ({ children }) => {
 
             return { success: true };
         } catch (err) {
-            const message = err.response?.data?.message || 'Login failed';
+            console.error('Login error:', err);
+            const message = err.response?.data?.message || err.message || 'Login failed. Please check your connection.';
             setError(message);
             return { success: false, message };
         }
@@ -92,7 +93,8 @@ export const AuthProvider = ({ children }) => {
 
             return { success: true, message: response.data.message };
         } catch (err) {
-            const message = err.response?.data?.message || 'Password change failed';
+            console.error('Change password error:', err);
+            const message = err.response?.data?.message || err.message || 'Password change failed';
             setError(message);
             return { success: false, message };
         }
