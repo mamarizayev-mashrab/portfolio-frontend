@@ -40,7 +40,7 @@ const Hero = () => {
             <div className="v-container relative z-10 pt-20">
                 <div className="max-w-4xl">
                     <div className="inline-flex items-center px-3 py-1 rounded-full bg-[var(--accents-1)] border border-[var(--accents-2)] text-[10px] font-mono font-bold tracking-widest text-[var(--accents-5)] uppercase mb-8 animate-fade-in">
-                        System status: Active_Deployment_v5
+                        {t('hero.systemStatus', 'System status: Active_Deployment_v5')}
                     </div>
 
                     <h1 className="text-6xl md:text-8xl font-bold tracking-tighter text-[var(--foreground)] mb-8 leading-[0.9]">
@@ -49,7 +49,7 @@ const Hero = () => {
 
                     <div className="h-12 md:h-16 flex items-center mb-10">
                         <span className="text-xl md:text-2xl font-mono text-[var(--accents-5)]">
-                            {t('hero.title')} <span className="text-[var(--foreground)] bg-[var(--accents-1)] px-2 border border-[var(--accents-2)]">{displayText}<span className="animate-pulse">|</span></span>
+                            {t('hero.title')}: <span className="text-[var(--foreground)] bg-[var(--accents-1)] px-2 border border-[var(--accents-2)]">{displayText}<span className="animate-pulse">|</span></span>
                         </span>
                     </div>
 
@@ -62,13 +62,13 @@ const Hero = () => {
                             onClick={() => scrollTo('#projects')}
                             className="v-btn-primary h-12 px-8 text-base shadow-lg"
                         >
-                            {t('hero.cta.projects')}
+                            {t('hero.cta.projects', 'View Projects')}
                         </button>
                         <button
                             onClick={() => scrollTo('#contact')}
                             className="v-btn-ghost h-12 px-8 text-base border border-[var(--accents-2)] overflow-hidden relative group"
                         >
-                            <span className="relative z-10">{t('hero.cta.contact')}</span>
+                            <span className="relative z-10">{t('hero.cta.contact', 'Contact Me')}</span>
                             <div className="absolute inset-0 bg-[var(--accents-1)] translate-y-full group-hover:translate-y-0 transition-transform duration-200" />
                         </button>
                     </div>
