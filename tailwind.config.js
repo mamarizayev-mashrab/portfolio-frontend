@@ -8,66 +8,64 @@ export default {
     theme: {
         extend: {
             colors: {
-                // Vercel-style true black and white
-                background: '#0a0a0a',
-                foreground: '#ededed',
-                // Neon Accents
-                primary: {
-                    DEFAULT: '#a855f7', // Neon Purple
-                    hover: '#9333ea',
+                // Vercel Brand Palette (Geist)
+                background: {
+                    light: '#ffffff',
+                    dark: '#000000',
                 },
-                accent: {
-                    DEFAULT: '#06b6d4', // Cyan
-                    hover: '#0891b2',
-                    red: '#ef4444', // Soft Red
+                foreground: {
+                    light: '#000000',
+                    dark: '#ffffff',
                 },
-                // Vercel Grays
-                dark: {
-                    100: '#fafafa',
-                    200: '#eaeaea',
-                    300: '#999999',
-                    400: '#888888',
-                    500: '#666666',
-                    600: '#444444',
-                    700: '#333333',
-                    800: '#111111',
-                    900: '#000000',
-                }
+                accents: {
+                    1: '#111111',
+                    2: '#333333',
+                    3: '#444444',
+                    4: '#666666',
+                    5: '#888888',
+                    6: '#999999',
+                    7: '#eaeaea',
+                    8: '#fafafa',
+                },
+                success: {
+                    light: '#0070f3',
+                    dark: '#0070f3',
+                },
+                error: {
+                    light: '#ee0000',
+                    dark: '#ff0000',
+                },
+                warning: {
+                    light: '#f5a623',
+                    dark: '#f5a623',
+                },
+                primary: '#0070f3',
             },
             fontFamily: {
-                // Vercel uses Geist or Inter for sans, and monospace for tech feel
-                mono: ['JetBrains Mono', 'Fira Code', 'Monaco', 'Consolas', 'monospace'],
-                sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif', 'Outfit'],
+                sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', '"Fira Sans"', '"Droid Sans"', '"Helvetica Neue"', 'sans-serif'],
+                mono: ['Menlo', 'Monaco', 'Lucida Console', 'Liberation Mono', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Courier New', 'monospace'],
+            },
+            fontSize: {
+                xs: ['0.75rem', { lineHeight: '1rem' }],
+                sm: ['0.875rem', { lineHeight: '1.25rem' }],
+                base: ['1rem', { lineHeight: '1.5rem' }],
+                lg: ['1.125rem', { lineHeight: '1.75rem' }],
+                xl: ['1.25rem', { lineHeight: '1.75rem' }],
+                '2xl': ['1.5rem', { lineHeight: '2rem' }],
+                '3xl': ['1.875rem', { lineHeight: '2.25rem' }],
+                '4xl': ['2.25rem', { lineHeight: '2.5rem' }],
+                '5xl': ['3rem', { lineHeight: '1' }],
+                '6xl': ['3.75rem', { lineHeight: '1' }],
+                '7xl': ['4.5rem', { lineHeight: '1' }],
+            },
+            letterSpacing: {
+                tighter: '-0.05em',
+                tight: '-0.02em',
             },
             boxShadow: {
-                // Vercel's subtle shadow + Manga's sharp offset shadow
-                'vercel': '0 0 0 1px rgba(255, 255, 255, 0.1), 0 8px 30px rgba(0, 0, 0, 0.5)',
-                'manga': '6px 6px 0px 0px rgba(255, 255, 255, 0.05)',
-                'manga-hover': '0 0 0 1px rgba(168, 85, 247, 0.4), 8px 8px 0px 0px rgba(168, 85, 247, 0.1)',
-                'glow-purple': '0 0 20px rgba(168, 85, 247, 0.3)',
-                'glow-cyan': '0 0 20px rgba(6, 182, 212, 0.3)',
-            },
-            animation: {
-                'float': 'float 6s ease-in-out infinite',
-                'reveal': 'reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-                'border-draw': 'border-draw 0.5s ease-out forwards',
-            },
-            keyframes: {
-                float: {
-                    '0%, 100%': { transform: 'translateY(0)' },
-                    '50%': { transform: 'translateY(-10px)' },
-                },
-                reveal: {
-                    '0%': { opacity: '0', transform: 'translateY(20px)' },
-                    '100%': { opacity: '1', transform: 'translateY(0)' },
-                },
-                'border-draw': {
-                    '0%': { width: '0%', height: '0%' },
-                    '100%': { width: '100%', height: '100%' },
-                }
-            },
-            backgroundImage: {
-                'vercel-grid': 'linear-gradient(to right, #333 1px, transparent 1px), linear-gradient(to bottom, #333 1px, transparent 1px)',
+                magical: '0px 0px 30px 10px rgba(0,0,0,0.03)',
+                'vercel-input': '0 0 0 1px #333',
+                'vercel-hover': '0 0 0 1px #fff',
             }
         },
     },

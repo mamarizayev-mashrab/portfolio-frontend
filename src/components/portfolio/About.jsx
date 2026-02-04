@@ -4,59 +4,41 @@ const About = () => {
     const { t } = useLanguage();
 
     return (
-        <section id="about" className="py-24 bg-background relative overflow-hidden">
+        <section id="about" className="py-24 bg-[var(--background)]">
             <div className="v-container">
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-1 border border-dark-700 bg-dark-700 manga-panel">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-start">
 
-                    {/* Panel 1: Headline */}
-                    <div className="md:col-span-12 bg-background p-12 flex flex-col justify-center">
-                        <span className="v-text-mono text-primary mb-4">// {t('about.title')}</span>
-                        <h2 className="text-4xl md:text-5xl font-bold tracking-tighter text-white mb-6">
-                            Crafting Experiences at the Intersection of <span className="text-primary italic">Logic</span> and <span className="text-accent italic">Art</span>.
-                        </h2>
+                    <div className="md:col-span-4 space-y-4">
+                        <span className="text-xs font-mono font-bold text-primary uppercase tracking-widest">// expertise_profile</span>
+                        <h2 className="text-4xl font-bold tracking-tighter text-[var(--foreground)]">Mission Statement</h2>
                     </div>
 
-                    {/* Panel 2: Content (Manga storytelling layout) */}
-                    <div className="md:col-span-7 bg-background p-12 border-t md:border-t-0 md:border-r border-dark-700 hover:bg-dark-900 transition-colors group">
-                        <p className="text-dark-300 text-lg leading-relaxed mb-8">
-                            {t('about.content')}
-                        </p>
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-4 text-xs font-mono text-dark-500">
-                                <span className="w-12 h-px bg-dark-700" />
-                                <span>SYSTEM_COORDINATES: O7, UZ</span>
-                            </div>
-                            <div className="flex items-center gap-4 text-xs font-mono text-dark-500">
-                                <span className="w-12 h-px bg-dark-700" />
-                                <span>STATUS: ACTIVE_DEVELOPER</span>
-                            </div>
-                        </div>
-                    </div>
+                    <div className="md:col-span-8">
+                        <div className="space-y-8">
+                            <p className="text-2xl md:text-3xl text-[var(--foreground)] leading-tight tracking-tight font-medium">
+                                Developing systems that bridge the gap between <span className="text-[var(--accents-5)] underline decoration-1 underline-offset-4">technical precision</span> and <span className="text-[var(--accents-5)] underline decoration-1 underline-offset-4">human intuition</span>.
+                            </p>
 
-                    {/* Panel 3: Stats/Tech Callout */}
-                    <div className="md:col-span-5 bg-background p-12">
-                        <div className="relative h-full flex items-end justify-start">
-                            <div className="space-y-6 relative z-10 w-full">
-                                <div className="p-6 border border-primary/20 bg-primary/5 space-y-2">
-                                    <span className="text-3xl font-bold text-white tracking-tighter">100%</span>
-                                    <p className="text-xs font-mono text-dark-400 uppercase">Commitment to Quality</p>
+                            <p className="text-lg text-[var(--accents-5)] leading-relaxed max-w-2xl">
+                                {t('about.content')}
+                            </p>
+
+                            <div className="v-divider" />
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                                <div className="space-y-2">
+                                    <span className="text-[10px] font-mono font-bold text-[var(--accents-3)] uppercase tracking-widest">Philosophy</span>
+                                    <p className="text-sm text-[var(--accents-6)]">Minimalism as a functional requirement, not just an aesthetic choice.</p>
                                 </div>
-                                <div className="p-6 border border-accent/20 bg-accent/5 space-y-2">
-                                    <span className="text-3xl font-bold text-white tracking-tighter">24/7</span>
-                                    <p className="text-xs font-mono text-dark-400 uppercase">Continuous Evolution</p>
+                                <div className="space-y-2">
+                                    <span className="text-[10px] font-mono font-bold text-[var(--accents-3)] uppercase tracking-widest">Output</span>
+                                    <p className="text-sm text-[var(--accents-6)]">Engineered for performance, designed for meaningful interaction.</p>
                                 </div>
                             </div>
-                            {/* Decorative Background Text */}
-                            <span className="absolute top-0 right-0 text-9xl font-bold text-dark-800 pointer-events-none select-none">
-                                BIO
-                            </span>
                         </div>
                     </div>
                 </div>
             </div>
-
-            {/* Visual Manga Line Divider */}
-            <div className="absolute top-0 right-0 w-px h-full bg-dark-800/50" />
         </section>
     );
 };

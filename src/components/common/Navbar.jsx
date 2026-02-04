@@ -1,7 +1,3 @@
-/**
- * Navbar Component - iOS Style
- */
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
@@ -16,7 +12,7 @@ const Navbar = () => {
 
     useEffect(() => {
         const handleScroll = () => {
-            setIsScrolled(window.scrollY > 20);
+            setIsScrolled(window.scrollY > 0);
         };
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
@@ -30,138 +26,125 @@ const Navbar = () => {
         { name: t('nav.contact'), href: '#contact' },
     ];
 
-    const handleScrollTo = (e, href) => {
-        e.preventDefault();
+    const scrollTo = (href) => {
         const element = document.querySelector(href);
         if (element) {
             const offset = 80;
-            const elementPosition = element.getBoundingClientRect().top;
-            const offsetPosition = elementPosition + window.pageYOffset - offset;
-            window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+            const bodyRect = document.body.getBoundingClientRect().top;
+            const elementRect = element.getBoundingClientRect().top;
+            const elementPosition = elementRect - bodyRect;
+            const offsetPosition = elementPosition - offset;
+
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
         }
         setIsMobileMenuOpen(false);
     };
 
-    // iOS Style Flag SVGs (Apple Style)
-    const FlagIcon = ({ lang }) => {
-        const flags = {
-            uz: (
-                <svg viewBox="0 0 24 24" className="w-5 h-5 rounded-sm overflow-hidden">
-                    <rect width="24" height="8" fill="#0099B5" />
-                    <rect y="8" width="24" height="1" fill="#D21034" />
-                    <rect y="9" width="24" height="6" fill="#FFFFFF" />
-                    <rect y="15" width="24" height="1" fill="#D21034" />
-                    <rect y="16" width="24" height="8" fill="#1EB53A" />
-                    <circle cx="5" cy="12" r="2.5" fill="#FFFFFF" fillOpacity="0.1" />
-                </svg>
-            ),
-            en: (
-                <svg viewBox="0 0 24 24" className="w-5 h-5 rounded-sm overflow-hidden">
-                    <rect width="24" height="24" fill="#00247D" />
-                    <path d="M0 0l24 24M24 0L0 24" stroke="#fff" strokeWidth="3" />
-                    <path d="M0 0l24 24M24 0L0 24" stroke="#CF142B" strokeWidth="2" />
-                    <path d="M12 0v24M0 12h24" stroke="#fff" strokeWidth="5" />
-                    <path d="M12 0v24M0 12h24" stroke="#CF142B" strokeWidth="3" />
-                </svg>
-            ),
-            ru: (
-                <svg viewBox="0 0 24 24" className="w-5 h-5 rounded-sm overflow-hidden text-border">
-                    <rect width="24" height="8" fill="#FFFFFF" />
-                    <rect y="8" width="24" height="8" fill="#0039A6" />
-                    <rect y="16" width="24" height="8" fill="#D52B1E" />
-                </svg>
-            )
-        };
-        return flags[lang] || null;
-    };
-
     return (
-        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled ? 'glass-blur h-16' : 'bg-transparent h-20'}`}>
-            <div className="v-container h-full flex items-center justify-between">
-                {/* iOS Style Logo */}
-                <Link to="/" className="flex items-center gap-2 group">
-                    <div className="w-9 h-9 bg-white text-black rounded-[10px] flex items-center justify-center shadow-vercel group-hover:scale-105 transition-transform duration-300">
-                        <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
-                            <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" />
-                        </svg>
-                    </div>
-                    <span className="text-sm font-bold tracking-tighter text-white font-mono hidden sm:block uppercase">Mamarizayev.ios</span>
+        <nav
+            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-200 border-b ${isScrolled
+                    ? 'bg-[var(--background)] shadow-sm border-[var(--accents-2)]'
+                    : 'bg-transparent border-transparent'
+                }`}
+        >
+            <div className="v-container flex items-center justify-between h-16">
+                {/* Logo */}
+                <Link to="/" className="flex items-center gap-3">
+                    <svg width="24" height="24" viewBox="0 0 76 65" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[var(--foreground)] fill-current">
+                        <path d="M37.5274 0L75.0548 65H0L37.5274 0Z" />
+                    </svg>
+                    <span className="font-bold tracking-tighter text-lg hidden sm:block">Portfolio</span>
                 </Link>
 
-                {/* Desktop Menu */}
-                <div className="hidden md:flex items-center gap-10">
-                    <div className="flex gap-8">
-                        {navLinks.map((link) => (
-                            <a
-                                key={link.name}
-                                href={link.href}
-                                onClick={(e) => handleScrollTo(e, link.href)}
-                                className="text-[12px] font-mono font-bold tracking-widest text-dark-400 hover:text-white transition-colors duration-300"
+                {/* Desktop Nav */}
+                <div className="hidden md:flex items-center gap-6">
+                    {navLinks.map((link) => (
+                        <button
+                            key={link.href}
+                            onClick={() => scrollTo(link.href)}
+                            className="text-sm text-[var(--accents-5)] hover:text-[var(--foreground)] transition-colors"
+                        >
+                            {link.name}
+                        </button>
+                    ))}
+
+                    <div className="h-4 w-px bg-[var(--accents-2)]" />
+
+                    {/* Theme Toggle */}
+                    <button
+                        onClick={toggleTheme}
+                        className="p-1 rounded-md text-[var(--accents-5)] hover:text-[var(--foreground)] transition-colors"
+                        aria-label="Toggle theme"
+                    >
+                        {theme === 'dark' ? (
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" /></svg>
+                        ) : (
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
+                        )}
+                    </button>
+
+                    {/* Language Switcher */}
+                    <div className="flex bg-[var(--accents-1)] rounded-md p-0.5 border border-[var(--accents-2)]">
+                        {['uz', 'en', 'ru'].map((l) => (
+                            <button
+                                key={l}
+                                onClick={() => setLanguage(l)}
+                                className={`px-2 py-0.5 text-[10px] font-bold rounded uppercase transition-all ${language === l
+                                        ? 'bg-[var(--foreground)] text-[var(--background)]'
+                                        : 'text-[var(--accents-4)] hover:text-[var(--foreground)]'
+                                    }`}
                             >
-                                {link.name}
-                            </a>
+                                {l}
+                            </button>
                         ))}
                     </div>
 
-                    {/* Language Switch / iOS Style Segments */}
-                    <div className="flex items-center bg-dark-800 rounded-[10px] p-1 border border-dark-700">
-                        {['UZ', 'EN', 'RU'].map((lang) => (
+                    <Link to="/admin/login" className="v-btn-primary h-8 px-3 text-xs">
+                        Admin
+                    </Link>
+                </div>
+
+                {/* Mobile Menu Toggle */}
+                <button
+                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    className="md:hidden p-2 text-[var(--accents-5)]"
+                >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        {isMobileMenuOpen ? (
+                            <>
+                                <line x1="18" y1="6" x2="6" y2="18" />
+                                <line x1="6" y1="6" x2="18" y2="18" />
+                            </>
+                        ) : (
+                            <>
+                                <line x1="3" y1="12" x2="21" y2="12" />
+                                <line x1="3" y1="6" x2="21" y2="6" />
+                                <line x1="3" y1="18" x2="21" y2="18" />
+                            </>
+                        )}
+                    </svg>
+                </button>
+            </div>
+
+            {/* Mobile Menu */}
+            {isMobileMenuOpen && (
+                <div className="md:hidden bg-[var(--background)] border-b border-[var(--accents-2)] py-4 px-6">
+                    <div className="flex flex-col gap-4">
+                        {navLinks.map((link) => (
                             <button
-                                key={lang}
-                                onClick={() => setLanguage(lang.toLowerCase())}
-                                className={`flex items-center gap-2 px-3 py-1.5 rounded-[8px] transition-all duration-300 ${language === lang.toLowerCase()
-                                        ? 'bg-dark-600 text-white shadow-sm'
-                                        : 'text-dark-500 hover:text-dark-300'
-                                    }`}
+                                key={link.href}
+                                onClick={() => scrollTo(link.href)}
+                                className="text-left py-2 text-sm text-[var(--accents-5)] hover:text-[var(--foreground)]"
                             >
-                                <FlagIcon lang={lang.toLowerCase()} />
-                                <span className="text-[10px] font-bold font-mono">{lang}</span>
+                                {link.name}
                             </button>
                         ))}
                     </div>
                 </div>
-
-                {/* Theme Toggle (Apple Style Switch simulation) */}
-                <button
-                    onClick={toggleTheme}
-                    className="p-2 rounded-full hover:bg-dark-800 transition-colors"
-                >
-                    <svg viewBox="0 0 24 24" className="w-5 h-5 stroke-[2] stroke-white fill-none">
-                        <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                </button>
-
-                {/* Mobile Toggle */}
-                <button
-                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                    className="md:hidden w-8 h-8 flex flex-col justify-center items-center gap-1.5"
-                >
-                    <div className={`h-0.5 w-6 bg-white rounded-full transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-1' : ''}`} />
-                    <div className={`h-0.5 w-6 bg-white rounded-full transition-all duration-300 ${isMobileMenuOpen ? '-rotate-45 -translate-y-1' : ''}`} />
-                </button>
-            </div>
-
-            {/* iOS Style Full-Screen Menu Overlay */}
-            <div className={`fixed inset-0 bg-background/95 backdrop-blur-2xl z-40 transition-all duration-500 ease-in-out ${isMobileMenuOpen ? 'opacity-100 pointer-events-auto scale-100' : 'opacity-0 pointer-events-none scale-110'}`}>
-                <div className="v-container h-full flex flex-col justify-center gap-10">
-                    {navLinks.map((link) => (
-                        <a
-                            key={link.name}
-                            href={link.href}
-                            onClick={(e) => handleScrollTo(e, link.href)}
-                            className="text-5xl font-bold tracking-tightest hover:text-primary transition-colors text-white"
-                        >
-                            {link.name}
-                        </a>
-                    ))}
-                    <div className="h-px bg-dark-800 w-full" />
-                    <div className="flex gap-4">
-                        {['UZ', 'EN', 'RU'].map((l) => (
-                            <button key={l} onClick={() => setLanguage(l.toLowerCase())} className="text-xl font-mono text-dark-400">[{l}]</button>
-                        ))}
-                    </div>
-                </div>
-            </div>
+            )}
         </nav>
     );
 };
