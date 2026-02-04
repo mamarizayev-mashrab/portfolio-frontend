@@ -1,4 +1,4 @@
-import { Routes, Route, Outlet } from 'react-router-dom';
+import { Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
 import { Toaster } from 'react-hot-toast';
 import ErrorBoundary from './components/common/ErrorBoundary';
@@ -80,7 +80,8 @@ function App() {
                             </ProtectedRoute>
                         }
                     >
-                        <Route index element={<Dashboard />} />
+                        <Route index element={<Navigate to="dashboard" replace />} />
+                        <Route path="dashboard" element={<Dashboard />} />
                         <Route path="projects" element={<ProjectsManager />} />
                         <Route path="skills" element={<SkillsManager />} />
                         <Route path="experience" element={<ExperienceManager />} />
