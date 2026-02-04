@@ -18,12 +18,15 @@ const MessagesViewer = () => {
 
     const fetchMessages = async () => {
         try {
-            const response = await axios.get('/messages');
+            const token = localStorage.getItem('token');
+            const response = await axios.get('/messages', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             setMessages(response.data.data || []);
         } catch (error) {
             toast.error('Failed to load messages');
         } finally {
-            setLoading(false);
+            setIsLoading(false);
         }
     };
 

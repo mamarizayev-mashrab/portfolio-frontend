@@ -17,11 +17,16 @@ const Dashboard = () => {
         const fetchStats = async () => {
             try {
                 const API_URL = import.meta.env.VITE_API_URL;
+                const token = localStorage.getItem('token');
+                const config = {
+                    headers: { Authorization: `Bearer ${token}` }
+                };
+
                 const [projects, skills, experiences, messages] = await Promise.all([
                     axios.get(`${API_URL}/projects`),
                     axios.get(`${API_URL}/skills`),
                     axios.get(`${API_URL}/experiences`),
-                    axios.get(`${API_URL}/messages`)
+                    axios.get(`${API_URL}/messages`, config)
                 ]);
 
                 setStats({
@@ -32,13 +37,16 @@ const Dashboard = () => {
                 });
             } catch (error) {
                 console.error('Error fetching dashboard stats:', error);
+                if (error.response?.status === 401) {
+                    logout();
+                }
             } finally {
                 setIsLoading(false);
             }
         };
 
         fetchStats();
-    }, []);
+    }, [logout]);
 
     const navItems = [
         { name: 'Projects', path: '/admin/projects', icon: '⌘' },
