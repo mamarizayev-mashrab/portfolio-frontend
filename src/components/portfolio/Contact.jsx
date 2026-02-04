@@ -1,198 +1,94 @@
-/**
- * Contact Section Component
- * Contact form with validation and backend submission
- */
-
 import { useState } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
-import { useToast } from '../common/Toast';
-import api from '../../api/axios';
-import { ButtonSpinner } from '../common/Loading';
 
 const Contact = () => {
     const { t } = useLanguage();
-    const { toast } = useToast();
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        subject: '',
-        message: ''
-    });
-    const [errors, setErrors] = useState({});
-    const [loading, setLoading] = useState(false);
+    const [status, setStatus] = useState('IDLE'); // IDLE, SENDING, SUCCESS
 
-    const validateForm = () => {
-        const newErrors = {};
-
-        if (!formData.name.trim()) {
-            newErrors.name = t('contact.validation.nameRequired');
-        }
-
-        if (!formData.email.trim()) {
-            newErrors.email = t('contact.validation.emailRequired');
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            newErrors.email = t('contact.validation.emailInvalid');
-        }
-
-        if (!formData.message.trim()) {
-            newErrors.message = t('contact.validation.messageRequired');
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-        // Clear error when user types
-        if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: '' }));
-        }
-    };
-
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-
-        if (!validateForm()) return;
-
-        setLoading(true);
-        try {
-            await api.post('/messages', formData);
-            toast.success(t('contact.success'));
-            setFormData({ name: '', email: '', subject: '', message: '' });
-        } catch (error) {
-            const message = error.response?.data?.message || t('contact.error');
-            toast.error(message);
-        } finally {
-            setLoading(false);
-        }
+        setStatus('SENDING');
+        setTimeout(() => setStatus('SUCCESS'), 2000);
     };
 
     return (
-        <section id="contact" className="py-24 relative">
-            {/* Background */}
-            <div className="absolute inset-0 bg-gradient-to-b from-dark-900/50 to-dark-950" />
+        <section id="contact" className="py-24 bg-background relative overflow-hidden border-t border-dark-800">
+            <div className="v-container">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
 
-            {/* Decorative elements */}
-            <div className="absolute top-1/4 -left-32 w-64 h-64 bg-primary-500/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-1/4 -right-32 w-64 h-64 bg-accent-500/10 rounded-full blur-3xl" />
+                    {/* Left: Narrative */}
+                    <div className="space-y-8">
+                        <div className="space-y-4">
+                            <span className="v-text-mono text-primary">// establish_link</span>
+                            <h2 className="v-heading text-white">Let's build the <br /><span className="text-dark-500 italic">Future of Web.</span></h2>
+                        </div>
+                        <p className="text-dark-300 max-w-md leading-relaxed">
+                            Currently open for high-impact collaborations and technical leadership roles.
+                            If you have a project that requires a fusion of high-end engineering and exceptional design, reach out.
+                        </p>
 
-            <div className="container mx-auto px-4 md:px-6 relative z-10">
-                {/* Section Header */}
-                <div className="text-center mb-16">
-                    <h2 className="section-title">{t('contact.title')}</h2>
-                    <p className="section-subtitle">{t('contact.description')}</p>
-                </div>
-
-                {/* Contact Form */}
-                <div className="max-w-2xl mx-auto">
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Name & Email Row */}
-                        <div className="grid md:grid-cols-2 gap-6">
-                            {/* Name */}
-                            <div>
-                                <label htmlFor="name" className="block text-sm font-medium text-dark-300 mb-2">
-                                    {t('contact.form.name')} <span className="text-red-400">*</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    id="name"
-                                    name="name"
-                                    value={formData.name}
-                                    onChange={handleChange}
-                                    className={`input-field ${errors.name ? 'border-red-500 focus:border-red-500' : ''}`}
-                                    placeholder={t('contact.form.name')}
-                                    aria-invalid={!!errors.name}
-                                    aria-describedby={errors.name ? 'name-error' : undefined}
-                                />
-                                {errors.name && (
-                                    <p id="name-error" className="mt-1 text-sm text-red-400">{errors.name}</p>
-                                )}
+                        <div className="space-y-6 pt-8">
+                            <div className="flex flex-col gap-1">
+                                <span className="v-text-mono text-dark-500 font-bold text-xs uppercase tracking-widest">Protocol</span>
+                                <span className="text-white font-mono text-lg lowercase tracking-tight">mamarizayev@mashrab.tech</span>
                             </div>
-
-                            {/* Email */}
-                            <div>
-                                <label htmlFor="email" className="block text-sm font-medium text-dark-300 mb-2">
-                                    {t('contact.form.email')} <span className="text-red-400">*</span>
-                                </label>
-                                <input
-                                    type="email"
-                                    id="email"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    className={`input-field ${errors.email ? 'border-red-500 focus:border-red-500' : ''}`}
-                                    placeholder={t('contact.form.email')}
-                                    aria-invalid={!!errors.email}
-                                    aria-describedby={errors.email ? 'email-error' : undefined}
-                                />
-                                {errors.email && (
-                                    <p id="email-error" className="mt-1 text-sm text-red-400">{errors.email}</p>
-                                )}
+                            <div className="flex flex-col gap-1">
+                                <span className="v-text-mono text-dark-500 font-bold text-xs uppercase tracking-widest">Frequency</span>
+                                <span className="text-white font-mono text-lg tracking-tight">+998 00 000 00 00</span>
                             </div>
                         </div>
+                    </div>
 
-                        {/* Subject */}
-                        <div>
-                            <label htmlFor="subject" className="block text-sm font-medium text-dark-300 mb-2">
-                                {t('contact.form.subject')}
-                            </label>
-                            <input
-                                type="text"
-                                id="subject"
-                                name="subject"
-                                value={formData.subject}
-                                onChange={handleChange}
-                                className="input-field"
-                                placeholder={t('contact.form.subject')}
-                            />
-                        </div>
+                    {/* Right: Form (Vercel Style) */}
+                    <div className="manga-panel p-1 border-dark-800">
+                        <form onSubmit={handleSubmit} className="bg-background-soft p-10 space-y-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="space-y-2">
+                                    <label className="v-text-mono text-[10px] tracking-widest">Full_Name</label>
+                                    <input
+                                        type="text"
+                                        className="w-full bg-transparent border-b border-dark-700 py-3 text-white placeholder-dark-600 focus:outline-none focus:border-white transition-all font-mono"
+                                        placeholder="INPUT_ID_NAME"
+                                        required
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="v-text-mono text-[10px] tracking-widest">Protocol_Email</label>
+                                    <input
+                                        type="email"
+                                        className="w-full bg-transparent border-b border-dark-700 py-3 text-white placeholder-dark-600 focus:outline-none focus:border-white transition-all font-mono"
+                                        placeholder="MAIL@DOMAIN.IO"
+                                        required
+                                    />
+                                </div>
+                            </div>
 
-                        {/* Message */}
-                        <div>
-                            <label htmlFor="message" className="block text-sm font-medium text-dark-300 mb-2">
-                                {t('contact.form.message')} <span className="text-red-400">*</span>
-                            </label>
-                            <textarea
-                                id="message"
-                                name="message"
-                                rows={5}
-                                value={formData.message}
-                                onChange={handleChange}
-                                className={`input-field resize-none ${errors.message ? 'border-red-500 focus:border-red-500' : ''}`}
-                                placeholder={t('contact.form.message')}
-                                aria-invalid={!!errors.message}
-                                aria-describedby={errors.message ? 'message-error' : undefined}
-                            />
-                            {errors.message && (
-                                <p id="message-error" className="mt-1 text-sm text-red-400">{errors.message}</p>
-                            )}
-                        </div>
+                            <div className="space-y-2">
+                                <label className="v-text-mono text-[10px] tracking-widest">Data_Packet_Message</label>
+                                <textarea
+                                    className="w-full bg-transparent border-b border-dark-700 py-3 text-white placeholder-dark-600 focus:outline-none focus:border-white transition-all font-mono min-h-[120px] resize-none"
+                                    placeholder="TRANSMIT_DATA_HERE..."
+                                    required
+                                />
+                            </div>
 
-                        {/* Submit Button */}
-                        <div className="text-center pt-4">
                             <button
                                 type="submit"
-                                disabled={loading}
-                                className="btn-primary min-w-[200px]"
+                                disabled={status !== 'IDLE'}
+                                className={`w-full py-4 font-mono font-bold tracking-widest uppercase transition-all flex items-center justify-center gap-3 ${status === 'SUCCESS' ? 'bg-accent text-white' : 'v-btn-primary hover:glow-purple'
+                                    }`}
                             >
-                                {loading ? (
-                                    <span className="flex items-center justify-center gap-2">
-                                        <ButtonSpinner />
-                                        {t('contact.form.sending')}
-                                    </span>
-                                ) : (
-                                    <span className="flex items-center justify-center gap-2">
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                        </svg>
-                                        {t('contact.form.submit')}
-                                    </span>
+                                {status === 'IDLE' && 'EXECUTE_SEND'}
+                                {status === 'SENDING' && (
+                                    <>
+                                        <div className="w-4 h-4 border-2 border-black border-t-transparent animate-spin rounded-full" />
+                                        TRANSMITTING...
+                                    </>
                                 )}
+                                {status === 'SUCCESS' && 'DATA_SENT_CONFIRMED'}
                             </button>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
         </section>

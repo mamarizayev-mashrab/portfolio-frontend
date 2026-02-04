@@ -1,116 +1,62 @@
-/**
- * About Section Component
- * Personal story and stats with manga-style layout
- */
-
-import { useEffect, useState } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
-import api from '../../api/axios';
 
 const About = () => {
-    const { t, getLocalizedField } = useLanguage();
-    const [settings, setSettings] = useState(null);
-
-    useEffect(() => {
-        const fetchSettings = async () => {
-            try {
-                const response = await api.get('/settings');
-                setSettings(response.data.data);
-            } catch (error) {
-                console.error('Error fetching settings:', error);
-            }
-        };
-        fetchSettings();
-    }, []);
-
-    const stats = [
-        { value: '3+', label: t('about.stats.experience') },
-        { value: '20+', label: t('about.stats.projects') },
-        { value: '15+', label: t('about.stats.clients') }
-    ];
+    const { t } = useLanguage();
 
     return (
-        <section id="about" className="py-24 relative">
-            {/* Background */}
-            <div className="absolute inset-0 bg-gradient-to-b from-dark-950 via-dark-900/50 to-dark-950" />
+        <section id="about" className="py-24 bg-background relative overflow-hidden">
+            <div className="v-container">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-1 border border-dark-700 bg-dark-700 manga-panel">
 
-            <div className="container mx-auto px-4 md:px-6 relative z-10">
-                {/* Section Header */}
-                <div className="text-center mb-16">
-                    <h2 className="section-title">{t('about.title')}</h2>
-                    <p className="section-subtitle">{t('about.subtitle')}</p>
-                </div>
+                    {/* Panel 1: Headline */}
+                    <div className="md:col-span-12 bg-background p-12 flex flex-col justify-center">
+                        <span className="v-text-mono text-primary mb-4">// {t('about.title')}</span>
+                        <h2 className="text-4xl md:text-5xl font-bold tracking-tighter text-white mb-6">
+                            Crafting Experiences at the Intersection of <span className="text-primary italic">Logic</span> and <span className="text-accent italic">Art</span>.
+                        </h2>
+                    </div>
 
-                {/* Content Grid */}
-                <div className="grid lg:grid-cols-2 gap-12 items-center">
-                    {/* Image/Visual Side - Manga Panel Style */}
-                    <div className="relative">
-                        <div className="manga-panel bg-gradient-to-br from-primary-500/10 to-accent-500/10 rounded-xl p-8 aspect-square max-w-md mx-auto">
-                            {/* Profile image placeholder with glow */}
-                            <div className="relative w-full h-full rounded-lg overflow-hidden glow-purple">
-                                {settings?.about?.image ? (
-                                    <img
-                                        src={settings.about.image}
-                                        alt="Profile"
-                                        className="w-full h-full object-cover"
-                                    />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-500/20 to-accent-500/20">
-                                        <span className="text-8xl font-bold text-gradient font-mono">&lt;/&gt;</span>
-                                    </div>
-                                )}
+                    {/* Panel 2: Content (Manga storytelling layout) */}
+                    <div className="md:col-span-7 bg-background p-12 border-t md:border-t-0 md:border-r border-dark-700 hover:bg-dark-900 transition-colors group">
+                        <p className="text-dark-300 text-lg leading-relaxed mb-8">
+                            {t('about.content')}
+                        </p>
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-4 text-xs font-mono text-dark-500">
+                                <span className="w-12 h-px bg-dark-700" />
+                                <span>SYSTEM_COORDINATES: O7, UZ</span>
                             </div>
-
-                            {/* Floating badges */}
-                            <div className="absolute -top-4 -right-4 px-4 py-2 rounded-lg glass-dark border border-primary-500/30 animate-float">
-                                <span className="text-primary-400 font-mono text-sm">React.js</span>
-                            </div>
-                            <div className="absolute -bottom-4 -left-4 px-4 py-2 rounded-lg glass-dark border border-accent-500/30 animate-float delay-200">
-                                <span className="text-accent-400 font-mono text-sm">Node.js</span>
+                            <div className="flex items-center gap-4 text-xs font-mono text-dark-500">
+                                <span className="w-12 h-px bg-dark-700" />
+                                <span>STATUS: ACTIVE_DEVELOPER</span>
                             </div>
                         </div>
                     </div>
 
-                    {/* Text Content Side */}
-                    <div className="space-y-6">
-                        {/* Story text */}
-                        <div className="space-y-4">
-                            <p className="text-dark-300 text-lg leading-relaxed">
-                                {settings?.about?.content
-                                    ? getLocalizedField(settings.about, 'content')
-                                    : t('about.content')}
-                            </p>
-                        </div>
-
-                        {/* Stats Grid */}
-                        <div className="grid grid-cols-3 gap-6 pt-8">
-                            {stats.map((stat, index) => (
-                                <div
-                                    key={index}
-                                    className="text-center p-4 rounded-xl glass-dark border border-dark-700 hover:border-primary-500/30 transition-colors"
-                                >
-                                    <div className="text-3xl md:text-4xl font-bold text-gradient mb-2">
-                                        {stat.value}
-                                    </div>
-                                    <div className="text-dark-400 text-sm">{stat.label}</div>
+                    {/* Panel 3: Stats/Tech Callout */}
+                    <div className="md:col-span-5 bg-background p-12">
+                        <div className="relative h-full flex items-end justify-start">
+                            <div className="space-y-6 relative z-10 w-full">
+                                <div className="p-6 border border-primary/20 bg-primary/5 space-y-2">
+                                    <span className="text-3xl font-bold text-white tracking-tighter">100%</span>
+                                    <p className="text-xs font-mono text-dark-400 uppercase">Commitment to Quality</p>
                                 </div>
-                            ))}
-                        </div>
-
-                        {/* Tech stack hint */}
-                        <div className="flex flex-wrap gap-3 pt-4">
-                            {['JavaScript', 'TypeScript', 'Python', 'React', 'Node.js', 'MongoDB'].map((tech) => (
-                                <span
-                                    key={tech}
-                                    className="px-3 py-1 text-sm rounded-full bg-dark-800 text-dark-300 border border-dark-700 hover:border-primary-500/30 transition-colors"
-                                >
-                                    {tech}
-                                </span>
-                            ))}
+                                <div className="p-6 border border-accent/20 bg-accent/5 space-y-2">
+                                    <span className="text-3xl font-bold text-white tracking-tighter">24/7</span>
+                                    <p className="text-xs font-mono text-dark-400 uppercase">Continuous Evolution</p>
+                                </div>
+                            </div>
+                            {/* Decorative Background Text */}
+                            <span className="absolute top-0 right-0 text-9xl font-bold text-dark-800 pointer-events-none select-none">
+                                BIO
+                            </span>
                         </div>
                     </div>
                 </div>
             </div>
+
+            {/* Visual Manga Line Divider */}
+            <div className="absolute top-0 right-0 w-px h-full bg-dark-800/50" />
         </section>
     );
 };
