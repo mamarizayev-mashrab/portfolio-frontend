@@ -1,0 +1,114 @@
+{
+    "nav": {
+        "home": "Bosh sahifa",
+        "about": "Men haqimda",
+        "skills": "Ko'nikmalar",
+        "projects": "Loyihalar",
+        "experience": "Tajriba",
+        "contact": "Bog'lanish"
+    },
+    "hero": {
+        "greeting": "Salom, men",
+        "name": "Mashrab",
+        "title": "Full-Stack Developer",
+        "subtitle": "Zamonaviy veb-ilovalar yarataman",
+        "cta": {
+            "projects": "Loyihalarni ko'rish",
+            "contact": "Bog'lanish"
+        },
+        "typingTexts": [
+            "Frontend Developer",
+            "Backend Developer",
+            "UI/UX Designer",
+            "Problem Solver"
+        ]
+    },
+    "about": {
+        "title": "Men haqimda",
+        "subtitle": "Hikoyam",
+        "content": "Men professional full-stack dasturchiman. Zamonaviy texnologiyalar yordamida chiroyli va funksional veb-ilovalar yarataman. Kodlash - bu mening ijodim, har bir loyiha yangi imkoniyat.",
+        "stats": {
+            "experience": "Yillik tajriba",
+            "projects": "Yakunlangan loyihalar",
+            "clients": "Mamnun mijozlar"
+        }
+    },
+    "skills": {
+        "title": "Ko'nikmalar",
+        "subtitle": "Texnologiyalar",
+        "categories": {
+            "frontend": "Frontend",
+            "backend": "Backend",
+            "database": "Ma'lumotlar bazasi",
+            "devops": "DevOps",
+            "tools": "Vositalar",
+            "other": "Boshqa"
+        }
+    },
+    "projects": {
+        "title": "Loyihalar",
+        "subtitle": "So'nggi ishlar",
+        "viewLive": "Jonli ko'rish",
+        "viewCode": "Kodni ko'rish",
+        "technologies": "Texnologiyalar",
+        "featured": "Tanlangan"
+    },
+    "experience": {
+        "title": "Tajriba",
+        "subtitle": "Ish tarixi",
+        "present": "Hozir",
+        "types": {
+            "work": "Ish",
+            "education": "Ta'lim",
+            "freelance": "Frilanser"
+        }
+    },
+    "contact": {
+        "title": "Bog'lanish",
+        "subtitle": "Aloqaga chiqing",
+        "description": "Loyiha haqida gaplashmoqchimisiz? Xabar yuboring!",
+        "form": {
+            "name": "Ismingiz",
+            "email": "Email manzilingiz",
+            "subject": "Mavzu",
+            "message": "Xabaringiz",
+            "submit": "Yuborish",
+            "sending": "Yuborilmoqda..."
+        },
+        "success": "Xabar muvaffaqiyatli yuborildi! Tez orada javob beraman.",
+        "error": "Xatolik yuz berdi. Iltimos, qaytadan urinib ko'ring.",
+        "validation": {
+            "nameRequired": "Ism kiritish shart",
+            "emailRequired": "Email kiritish shart",
+            "emailInvalid": "Email formati noto'g'ri",
+            "messageRequired": "Xabar kiritish shart"
+        }
+    },
+    "footer": {
+        "copyright": "© 2024. Barcha huquqlar himoyalangan.",
+        "madeWith": "❤️ bilan yaratildi"
+    },
+    "common": {
+        "loading": "Yuklanmoqda...",
+        "error": "Xatolik",
+        "retry": "Qaytadan urinish",
+        "close": "Yopish",
+        "save": "Saqlash",
+        "cancel": "Bekor qilish",
+        "delete": "O'chirish",
+        "edit": "Tahrirlash",
+        "add": "Qo'shish",
+        "search": "Qidirish",
+        "noResults": "Natija topilmadi"
+    },
+    "theme": {
+        "dark": "Qorong'i",
+        "light": "Yorug'"
+    },
+    "notFound": {
+        "title": "404",
+        "subtitle": "Sahifa topilmadi",
+        "description": "Siz qidirayotgan sahifa mavjud emas yoki ko'chirilgan.",
+        "backHome": "Bosh sahifaga qaytish"
+    }
+}

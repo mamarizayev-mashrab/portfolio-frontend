@@ -1,0 +1,114 @@
+{
+    "nav": {
+        "home": "Home",
+        "about": "About",
+        "skills": "Skills",
+        "projects": "Projects",
+        "experience": "Experience",
+        "contact": "Contact"
+    },
+    "hero": {
+        "greeting": "Hi, I'm",
+        "name": "Mashrab",
+        "title": "Full-Stack Developer",
+        "subtitle": "I build modern web applications",
+        "cta": {
+            "projects": "View Projects",
+            "contact": "Get in Touch"
+        },
+        "typingTexts": [
+            "Frontend Developer",
+            "Backend Developer",
+            "UI/UX Designer",
+            "Problem Solver"
+        ]
+    },
+    "about": {
+        "title": "About Me",
+        "subtitle": "My Story",
+        "content": "I'm a professional full-stack developer. I create beautiful and functional web applications using modern technologies. Coding is my art, and every project is a new opportunity.",
+        "stats": {
+            "experience": "Years Experience",
+            "projects": "Projects Completed",
+            "clients": "Happy Clients"
+        }
+    },
+    "skills": {
+        "title": "Skills",
+        "subtitle": "Technologies",
+        "categories": {
+            "frontend": "Frontend",
+            "backend": "Backend",
+            "database": "Database",
+            "devops": "DevOps",
+            "tools": "Tools",
+            "other": "Other"
+        }
+    },
+    "projects": {
+        "title": "Projects",
+        "subtitle": "Recent Work",
+        "viewLive": "View Live",
+        "viewCode": "View Code",
+        "technologies": "Technologies",
+        "featured": "Featured"
+    },
+    "experience": {
+        "title": "Experience",
+        "subtitle": "Work History",
+        "present": "Present",
+        "types": {
+            "work": "Work",
+            "education": "Education",
+            "freelance": "Freelance"
+        }
+    },
+    "contact": {
+        "title": "Contact",
+        "subtitle": "Get in Touch",
+        "description": "Want to discuss a project? Send me a message!",
+        "form": {
+            "name": "Your Name",
+            "email": "Your Email",
+            "subject": "Subject",
+            "message": "Your Message",
+            "submit": "Send Message",
+            "sending": "Sending..."
+        },
+        "success": "Message sent successfully! I'll get back to you soon.",
+        "error": "Something went wrong. Please try again.",
+        "validation": {
+            "nameRequired": "Name is required",
+            "emailRequired": "Email is required",
+            "emailInvalid": "Invalid email format",
+            "messageRequired": "Message is required"
+        }
+    },
+    "footer": {
+        "copyright": "© 2024. All rights reserved.",
+        "madeWith": "Made with ❤️"
+    },
+    "common": {
+        "loading": "Loading...",
+        "error": "Error",
+        "retry": "Retry",
+        "close": "Close",
+        "save": "Save",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "edit": "Edit",
+        "add": "Add",
+        "search": "Search",
+        "noResults": "No results found"
+    },
+    "theme": {
+        "dark": "Dark",
+        "light": "Light"
+    },
+    "notFound": {
+        "title": "404",
+        "subtitle": "Page Not Found",
+        "description": "The page you're looking for doesn't exist or has been moved.",
+        "backHome": "Back to Home"
+    }
+}
