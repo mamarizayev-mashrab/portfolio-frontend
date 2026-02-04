@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import axios from 'axios';
+import api from '../../api/axios';
 import { toast } from 'react-hot-toast';
 import { ButtonSpinner } from '../../components/common/Loading';
 
@@ -18,10 +18,7 @@ const MessagesViewer = () => {
 
     const fetchMessages = async () => {
         try {
-            const token = localStorage.getItem('token');
-            const response = await axios.get('/messages', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await api.get('/messages');
             setMessages(response.data.data || []);
         } catch (error) {
             toast.error('Failed to load messages');

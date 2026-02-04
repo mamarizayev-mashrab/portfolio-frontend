@@ -1,6 +1,7 @@
+```javascript
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
 
 const Dashboard = () => {
@@ -16,17 +17,11 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const API_URL = import.meta.env.VITE_API_URL;
-                const token = localStorage.getItem('token');
-                const config = {
-                    headers: { Authorization: `Bearer ${token}` }
-                };
-
                 const [projects, skills, experiences, messages] = await Promise.all([
-                    axios.get(`${API_URL}/projects`),
-                    axios.get(`${API_URL}/skills`),
-                    axios.get(`${API_URL}/experiences`),
-                    axios.get(`${API_URL}/messages`, config)
+                    api.get('/projects'),
+                    api.get('/skills'),
+                    api.get('/experiences'),
+                    api.get('/messages')
                 ]);
 
                 setStats({

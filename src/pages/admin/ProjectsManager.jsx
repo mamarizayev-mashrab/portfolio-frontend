@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../api/axios';
 import { toast } from 'react-hot-toast';
 
 const ProjectsManager = () => {
@@ -29,8 +29,7 @@ const ProjectsManager = () => {
 
     const fetchProjects = async () => {
         try {
-            const API_URL = import.meta.env.VITE_API_URL;
-            const response = await axios.get(`${API_URL}/projects`);
+            const response = await api.get('/projects');
             setProjects(response.data.data || []);
         } catch (error) {
             toast.error('Failed to load projects');
@@ -100,16 +99,13 @@ const ProjectsManager = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSaving(true);
-        const API_URL = import.meta.env.VITE_API_URL;
-        const token = localStorage.getItem('token');
-        const headers = { Authorization: `Bearer ${token}` };
 
         try {
             if (editingProject) {
-                await axios.put(`${API_URL}/projects/${editingProject._id}`, formData, { headers });
+                await api.put(`/projects/${editingProject._id}`, formData);
                 toast.success('Project updated');
             } else {
-                await axios.post(`${API_URL}/projects`, formData, { headers });
+                await api.post('/projects', formData);
                 toast.success('Project created');
             }
             handleCloseModal();
@@ -123,12 +119,9 @@ const ProjectsManager = () => {
 
     const handleDelete = async (id) => {
         if (!window.confirm('Confirm deletion?')) return;
-        const API_URL = import.meta.env.VITE_API_URL;
-        const token = localStorage.getItem('token');
-        const headers = { Authorization: `Bearer ${token}` };
 
         try {
-            await axios.delete(`${API_URL}/projects/${id}`, { headers });
+            await api.delete(`/projects/${id}`);
             toast.success('Project deleted');
             fetchProjects();
         } catch (error) {
