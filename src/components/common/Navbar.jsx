@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTheme } from '../../context/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
 
 const Navbar = () => {
     const { t, language, setLanguage } = useLanguage();
     const { theme, toggleTheme } = useTheme();
+    const { isAuthenticated } = useAuth();
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const location = useLocation();
@@ -46,8 +48,8 @@ const Navbar = () => {
     return (
         <nav
             className={`fixed top-0 left-0 right-0 z-50 transition-all duration-200 border-b ${isScrolled
-                    ? 'bg-[var(--background)] shadow-sm border-[var(--accents-2)]'
-                    : 'bg-transparent border-transparent'
+                ? 'bg-[var(--background)] shadow-sm border-[var(--accents-2)]'
+                : 'bg-transparent border-transparent'
                 }`}
         >
             <div className="v-container flex items-center justify-between h-16">
@@ -93,8 +95,8 @@ const Navbar = () => {
                                 key={l}
                                 onClick={() => setLanguage(l)}
                                 className={`px-2 py-0.5 text-[10px] font-bold rounded uppercase transition-all ${language === l
-                                        ? 'bg-[var(--foreground)] text-[var(--background)]'
-                                        : 'text-[var(--accents-4)] hover:text-[var(--foreground)]'
+                                    ? 'bg-[var(--foreground)] text-[var(--background)]'
+                                    : 'text-[var(--accents-4)] hover:text-[var(--foreground)]'
                                     }`}
                             >
                                 {l}
@@ -102,8 +104,11 @@ const Navbar = () => {
                         ))}
                     </div>
 
-                    <Link to="/admin/login" className="v-btn-primary h-8 px-3 text-xs">
-                        Admin
+                    <Link
+                        to={isAuthenticated ? "/admin/dashboard" : "/admin/login"}
+                        className="v-btn-primary h-8 px-3 text-xs"
+                    >
+                        {isAuthenticated ? "Dashboard" : "Admin"}
                     </Link>
                 </div>
 
@@ -142,6 +147,12 @@ const Navbar = () => {
                                 {link.name}
                             </button>
                         ))}
+                        <Link
+                            to={isAuthenticated ? "/admin/dashboard" : "/admin/login"}
+                            className="v-btn-primary h-10 w-full flex items-center justify-center"
+                        >
+                            {isAuthenticated ? "Dashboard" : "Admin Login"}
+                        </Link>
                     </div>
                 </div>
             )}

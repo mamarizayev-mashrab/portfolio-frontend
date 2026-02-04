@@ -11,7 +11,7 @@ const Sidebar = () => {
     };
 
     const navItems = [
-        { to: '/admin', label: 'Dashboard', icon: '⌘', end: true },
+        { to: '/admin/dashboard', label: 'Dashboard', icon: '⌘', end: true },
         { to: '/admin/projects', label: 'Projects', icon: '📁' },
         { to: '/admin/skills', label: 'Skills', icon: '✦' },
         { to: '/admin/experience', label: 'Experience', icon: '⧉' },
