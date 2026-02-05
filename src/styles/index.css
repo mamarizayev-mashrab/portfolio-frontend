@@ -37,10 +37,15 @@
   }
 
   body {
-    @apply bg-[var(--background)] text-[var(--foreground)] font-sans antialiased selection:bg-primary/20 selection:text-primary;
+    @apply bg-[var(--background)] text-[var(--foreground)] font-sans antialiased;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     scroll-behavior: smooth;
+  }
+
+  ::selection {
+    background-color: var(--primary);
+    color: var(--background);
   }
 
   /* Core Vercel Spacing & Typography */
