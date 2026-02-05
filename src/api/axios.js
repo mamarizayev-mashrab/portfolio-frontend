@@ -5,9 +5,28 @@
 
 import axios from 'axios';
 
+// Determine API URL with fallback
+const getApiUrl = () => {
+    const envUrl = import.meta.env.VITE_API_URL;
+
+    // Validate the URL - must start with http:// or https://
+    if (envUrl && (envUrl.startsWith('http://') || envUrl.startsWith('https://'))) {
+        return envUrl;
+    }
+
+    // Fallback: use production URL if env is invalid/missing
+    // In development, use localhost
+    if (import.meta.env.DEV) {
+        return 'http://localhost:5000/api';
+    }
+
+    // Production fallback
+    return 'https://portfolio-backend.onrender.com/api';
+};
+
 // Create axios instance
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+    baseURL: getApiUrl(),
     timeout: 10000,
     headers: {
         'Content-Type': 'application/json'
