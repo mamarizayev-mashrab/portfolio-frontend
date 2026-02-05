@@ -78,6 +78,7 @@ const SettingsPage = () => {
 
     const tabs = [
         { id: 'password', label: 'Password' },
+        { id: 'contact', label: 'Contact Info' },
         { id: 'social', label: 'Social Links' },
         { id: 'theme', label: 'Theme' }
     ];
@@ -106,8 +107,8 @@ const SettingsPage = () => {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`px-4 py-3 text-sm font-bold transition-colors ${activeTab === tab.id
-                                    ? 'text-[var(--foreground)] border-b-2 border-[var(--foreground)] -mb-px'
-                                    : 'text-[var(--accents-4)] hover:text-[var(--foreground)]'
+                                ? 'text-[var(--foreground)] border-b-2 border-[var(--foreground)] -mb-px'
+                                : 'text-[var(--accents-4)] hover:text-[var(--foreground)]'
                                 }`}
                         >
                             {tab.label}
@@ -175,6 +176,51 @@ const SettingsPage = () => {
                                     />
                                 </div>
                             ))}
+                            <button onClick={handleSaveSettings} disabled={saving} className="v-btn-primary h-10 px-6">
+                                {saving ? 'Saving...' : 'Save Changes'}
+                            </button>
+                        </div>
+                    )}
+
+                    {/* Contact Info Tab */}
+                    {activeTab === 'contact' && settings && (
+                        <div className="max-w-md space-y-6">
+                            <h3 className="text-xl font-bold tracking-tight">Contact Information</h3>
+                            <div className="space-y-2">
+                                <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">Email Address</label>
+                                <input
+                                    type="email"
+                                    value={settings.contact?.email || ''}
+                                    onChange={(e) => updateSetting('contact.email', e.target.value)}
+                                    className="v-input"
+                                    placeholder="your@email.com"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">Phone Number</label>
+                                <input
+                                    type="text"
+                                    value={settings.contact?.phone || ''}
+                                    onChange={(e) => updateSetting('contact.phone', e.target.value)}
+                                    className="v-input"
+                                    placeholder="+998 90 123 45 67"
+                                />
+                            </div>
+                            <div className="space-y-4 pt-4 border-t border-[var(--accents-2)]">
+                                <span className="text-sm font-bold">Location</span>
+                                {['uz', 'en', 'ru'].map(lang => (
+                                    <div key={lang} className="space-y-2">
+                                        <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">Location ({lang.toUpperCase()})</label>
+                                        <input
+                                            type="text"
+                                            value={settings.contact?.location?.[lang] || ''}
+                                            onChange={(e) => updateSetting(`contact.location.${lang}`, e.target.value)}
+                                            className="v-input"
+                                            placeholder={`Tashkent, Uzbekistan`}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
                             <button onClick={handleSaveSettings} disabled={saving} className="v-btn-primary h-10 px-6">
                                 {saving ? 'Saving...' : 'Save Changes'}
                             </button>

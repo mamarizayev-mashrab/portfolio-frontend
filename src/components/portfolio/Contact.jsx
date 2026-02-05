@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import api from '../../api/axios';
 
@@ -11,6 +11,28 @@ const Contact = () => {
         message: ''
     });
     const [errors, setErrors] = useState({});
+    const [contactInfo, setContactInfo] = useState({
+        email: 'mashrabmamarizayev@gmail.com',
+        location: 'Jizzax, Uzbekistan'
+    });
+
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const response = await api.get('/settings');
+                if (response.data.data && response.data.data.contact) {
+                    const { contact } = response.data.data;
+                    setContactInfo(prev => ({
+                        email: contact.email || prev.email,
+                        location: contact.location?.[t.language] || contact.location?.en || prev.location
+                    }));
+                }
+            } catch (error) {
+                console.error('Failed to fetch contact settings');
+            }
+        };
+        fetchSettings();
+    }, [t.language]);
 
     const validateForm = () => {
         const newErrors = {};
@@ -143,11 +165,11 @@ const Contact = () => {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-8 border-t border-[var(--accents-2)]">
                             <div className="flex flex-col gap-1">
                                 <span className="text-[9px] font-mono font-bold text-[var(--accents-3)] uppercase tracking-tighter">Primary.Mail</span>
-                                <span className="text-sm font-medium">mamarizayev@mashrab.uz</span>
+                                <span className="text-sm font-medium">{contactInfo.email}</span>
                             </div>
                             <div className="flex flex-col gap-1">
                                 <span className="text-[9px] font-mono font-bold text-[var(--accents-3)] uppercase tracking-tighter">Base.Location</span>
-                                <span className="text-sm font-medium">Tashkent, Uzbekistan</span>
+                                <span className="text-sm font-medium">{contactInfo.location}</span>
                             </div>
                         </div>
                     </div>
