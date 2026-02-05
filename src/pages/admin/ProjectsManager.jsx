@@ -198,22 +198,31 @@ const ProjectsManager = () => {
                                 ))}
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-mono font-bold text-[var(--accents-4)] uppercase">Image RL</label>
-                                    <input className="v-input" value={formData.image} onChange={(e) => handleChange('image', e.target.value)} />
+                                    <label className="text-[10px] font-mono font-bold text-[var(--accents-4)] uppercase">Image URL</label>
+                                    <input className="v-input" value={formData.image} onChange={(e) => handleChange('image', e.target.value)} placeholder="https://..." />
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-mono font-bold text-[var(--accents-4)] uppercase">Technologies (Press Enter to add)</label>
-                                    <input className="v-input" value={techInput} onChange={(e) => setTechInput(e.target.value)} onKeyDown={handleAddTech} placeholder="React, Node..." />
-                                    <div className="flex flex-wrap gap-2 pt-2">
-                                        {formData.technologies.map(t => (
-                                            <span key={t} className="px-2 py-0.5 bg-[var(--accents-1)] border border-[var(--accents-2)] rounded text-[10px] flex items-center gap-2">
-                                                {t}
-                                                <button type="button" onClick={() => handleRemoveTech(t)} className="text-error-light">×</button>
-                                            </span>
-                                        ))}
-                                    </div>
+                                    <label className="text-[10px] font-mono font-bold text-[var(--accents-4)] uppercase">Live URL</label>
+                                    <input className="v-input" value={formData.liveUrl} onChange={(e) => handleChange('liveUrl', e.target.value)} placeholder="https://..." />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-mono font-bold text-[var(--accents-4)] uppercase">GitHub URL</label>
+                                    <input className="v-input" value={formData.githubUrl} onChange={(e) => handleChange('githubUrl', e.target.value)} placeholder="https://github.com/..." />
+                                </div>
+                            </div>
+
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-mono font-bold text-[var(--accents-4)] uppercase">Technologies (Press Enter to add)</label>
+                                <input className="v-input" value={techInput} onChange={(e) => setTechInput(e.target.value)} onKeyDown={handleAddTech} placeholder="React, Node.js, MongoDB..." />
+                                <div className="flex flex-wrap gap-2 pt-2">
+                                    {formData.technologies.map(t => (
+                                        <span key={t} className="px-2 py-0.5 bg-[var(--accents-1)] border border-[var(--accents-2)] rounded text-[10px] flex items-center gap-2">
+                                            {t}
+                                            <button type="button" onClick={() => handleRemoveTech(t)} className="text-error-light">×</button>
+                                        </span>
+                                    ))}
                                 </div>
                             </div>
 
