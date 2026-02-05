@@ -1,9 +1,10 @@
 /**
  * Theme Context
- * Manages light/dark mode with localStorage persistence
+ * Manages light/dark mode and primary color with localStorage persistence
  */
 
 import { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios';
 
 const ThemeContext = createContext();
 
@@ -41,6 +42,43 @@ export const ThemeProvider = ({ children }) => {
         localStorage.setItem('portfolio-theme', theme);
     }, [theme]);
 
+    // Initial load for primary color
+    useEffect(() => {
+        const initTheme = async () => {
+            // 1. Try local storage first (instant)
+            const savedColor = localStorage.getItem('portfolio-primary-color');
+            if (savedColor) {
+                document.documentElement.style.setProperty('--primary', savedColor);
+                document.documentElement.style.setProperty('--selection', savedColor);
+            }
+
+            // 2. Fetch from backend to sync (in case changed on another device)
+            try {
+                const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+                const response = await axios.get(`${API_URL}/settings`);
+                if (response.data.data?.theme?.primaryColor) {
+                    const backendColor = response.data.data.theme.primaryColor;
+                    if (backendColor !== savedColor) {
+                        document.documentElement.style.setProperty('--primary', backendColor);
+                        document.documentElement.style.setProperty('--selection', backendColor);
+                        localStorage.setItem('portfolio-primary-color', backendColor);
+                    }
+                }
+                if (response.data.data?.theme?.defaultMode) {
+                    // We could enforce backend theme here, but user local preference is usually better
+                    // setTheme(response.data.data.theme.defaultMode);
+                }
+            } catch (error) {
+                // Defines default if nothing else
+                if (!savedColor) {
+                    document.documentElement.style.setProperty('--primary', '#a855f7');
+                }
+            }
+        };
+
+        initTheme();
+    }, []);
+
     // Toggle between light and dark
     const toggleTheme = () => {
         setTheme(prev => prev === 'dark' ? 'light' : 'dark');
@@ -53,13 +91,20 @@ export const ThemeProvider = ({ children }) => {
         }
     };
 
+    const setPrimaryColor = (color) => {
+        document.documentElement.style.setProperty('--primary', color);
+        document.documentElement.style.setProperty('--selection', color);
+        localStorage.setItem('portfolio-primary-color', color);
+    };
+
     const isDark = theme === 'dark';
 
     const value = {
         theme,
         isDark,
         toggleTheme,
-        setTheme: setThemeMode
+        setTheme: setThemeMode,
+        setPrimaryColor
     };
 
     return (

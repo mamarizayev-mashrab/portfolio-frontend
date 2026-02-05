@@ -39,7 +39,7 @@ export default {
                     light: '#f5a623',
                     dark: '#f5a623',
                 },
-                primary: '#0070f3',
+                primary: 'var(--primary)',
             },
             fontFamily: {
                 sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', '"Fira Sans"', '"Droid Sans"', '"Helvetica Neue"', 'sans-serif'],

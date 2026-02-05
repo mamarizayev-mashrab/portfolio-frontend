@@ -7,7 +7,7 @@ import { useTheme } from '../../context/ThemeContext';
 
 const SettingsPage = () => {
     const { changePassword } = useAuth();
-    const { theme, setTheme } = useTheme();
+    const { theme, setTheme, setPrimaryColor } = useTheme();
     const [settings, setSettings] = useState(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -268,13 +268,21 @@ const SettingsPage = () => {
                                     <input
                                         type="color"
                                         value={settings.theme?.primaryColor || '#a855f7'}
-                                        onChange={(e) => updateSetting('theme.primaryColor', e.target.value)}
+                                        onChange={(e) => {
+                                            const color = e.target.value;
+                                            updateSetting('theme.primaryColor', color);
+                                            setPrimaryColor(color);
+                                        }}
                                         className="w-12 h-10 rounded cursor-pointer border border-[var(--accents-2)]"
                                     />
                                     <input
                                         type="text"
                                         value={settings.theme?.primaryColor || '#a855f7'}
-                                        onChange={(e) => updateSetting('theme.primaryColor', e.target.value)}
+                                        onChange={(e) => {
+                                            const color = e.target.value;
+                                            updateSetting('theme.primaryColor', color);
+                                            setPrimaryColor(color);
+                                        }}
                                         className="v-input flex-1"
                                     />
                                 </div>
