@@ -1,174 +1,80 @@
-# Full-Stack Portfolio System
+# Portfolio Frontend
 
-A production-ready, full-stack portfolio system with React frontend, Node.js/Express backend, MongoDB database, JWT authentication, admin panel, and multi-language support (Uzbek, English, Russian).
+Ushbu repozitoriy Portfolio loyihasining foydalanuvchi interfeysi (Frontend) qismi bo'lib, React, Vite va Tailwind CSS yordamida yaratilgan. Loyiha zamonaviy dizayn (Glassmorphism), animatsiyalar va to'liq javobgar (responsive) interfeysga ega.
 
-## 🚀 Features
+## 🚀 Xususiyatlar
 
-### Public Portfolio
-- **Hero** - Animated typing effect with CTA buttons
-- **About** - Storytelling section with manga-style layout
-- **Skills** - Category-filtered skills with proficiency bars
-- **Projects** - Dynamic grid with hover effects
-- **Experience** - Interactive timeline
-- **Contact** - Form with validation and email notifications
+### 🌟 Asosiy Sahifa (Portfolio)
+*   **Hero Section:** Yozuv mashinkasi (Typing) effekti va zamonaviy CTA tugmalari.
+*   **Haqimda (About):** Interaktiv "Manga" uslubidagi hikoya bo'limi.
+*   **Ko'nikmalar (Skills):** Categoriyalar bo'yicha filtrlanadigan va vizual progress barlari bilan ko'rsatiladigan mahoratlar.
+*   **Loyihalar (Projects):** Grid ko'rinishidagi loyihalar ro'yxati, hover effektlari va batafsil ma'lumotlar.
+*   **Tajriba (Experience):** Interaktiv vaqt shkalasi (Timeline).
+*   **Aloqa (Contact):** Validatsiya qilingan va backendga yuboriladigan aloqa formasi.
 
-### Admin Panel
-- **Dashboard** - Statistics overview
-- **Projects CRUD** - Full management with i18n support
-- **Skills CRUD** - Category and proficiency management
-- **Experience CRUD** - Timeline entry management
-- **Messages** - View and manage contact submissions
-- **Settings** - Password change, social links, theme
+### ⚙️ Admin Panel
+*   **Dashboard:** Umumiy statistika va ko'rsatkichlar.
+*   **Boshqaruv (CRUD):** Loyihalar, Ko'nikmalar va Tajribalarni qo'shish, o'zgartirish va o'chirish imkoniyati.
+*   **Sozlamalar:** Saytning asosiy rangini (Primary Color), Ijtimoiy tarmoq havolalarini va Kontakt ma'lumotlarini o'zgartirish.
+*   **Mavzu (Theme):** Tungi (Dark) va Kunduzgi (Light) rejimlarni boshqarish.
+*   **Ko'p tillilik (i18n):** O'zbek, Ingliz va Rus tillarini qo'llab-quvvatlash.
 
-### Technical Features
-- 🌍 **i18n** - 3 languages (UZ, EN, RU)
-- 🌓 **Dark/Light Mode** - Persistent theme toggle
-- 🔐 **JWT Authentication** - Secure admin access
-- 🛡️ **Rate Limiting** - API protection
-- 📧 **Email Notifications** - Contact form alerts
-- 📱 **Responsive Design** - Mobile-first approach
+## 🛠️ Texnologiyalar
 
----
+*   **Core:** React.js, Vite
+*   **Styling:** Tailwind CSS, Vanilla CSS (Variables)
+*   **State Management:** React Context API
+*   **Routing:** React Router DOM
+*   **HTTP Client:** Axios
+*   **Icons:** Lucide React, Simple Icons
+*   **Notifications:** React Hot Toast
+*   **Multilingual:** i18next
 
-## 📁 Project Structure
+## 📦 O'rnatish va Ishga Tushirish
 
-```
-temporal-ionosphere/
-├── backend/           # Node.js/Express API
-│   ├── config/        # Database configuration
-│   ├── controllers/   # Route handlers
-│   ├── middleware/    # Auth, validation, rate limiting
-│   ├── models/        # Mongoose schemas
-│   ├── routes/        # API endpoints
-│   ├── utils/         # Email, seed scripts
-│   └── server.js      # Entry point
-│
-└── frontend/          # React + Vite
-    ├── src/
-    │   ├── api/       # Axios configuration
-    │   ├── components/# UI components
-    │   ├── context/   # React Context providers
-    │   ├── i18n/      # Translation files
-    │   ├── pages/     # Page components
-    │   ├── styles/    # Global CSS
-    │   └── utils/     # Helpers
-    └── index.html
-```
+1.  **Repozitoriyni klonlash:**
+    ```bash
+    git clone https://github.com/mamarizayev-mashrab/portfolio-frontend.git
+    cd frontend
+    ```
 
----
+2.  **Kutubxonalarni o'rnatish:**
+    ```bash
+    npm install
+    ```
 
-## 🛠️ Quick Start
+3.  **Muhit o'zgaruvchilarini sozlash:**
+    `.env` faylini yarating va backend manzilini ko'rsating:
+    ```env
+    VITE_API_URL=http://localhost:5000/api
+    ```
+    *(Agar backend Render yoki boshqa joyda bo'lsa, o'sha URLni qo'ying)*
 
-### Prerequisites
-- Node.js 18+
-- MongoDB (local or Atlas)
+4.  **Loyihani ishga tushirish:**
+    ```bash
+    npm run dev
+    ```
+    Loyiha `http://localhost:5173` manzilida ochiladi.
 
-### Backend Setup
+## 🚀 Deploy (Vercel)
 
-```bash
-cd backend
-npm install
-npm run seed    # Create admin user
-npm run dev     # Start on http://localhost:5000
-```
+1.  GitHub ga push qiling.
+2.  **Vercel** ga kiring va "Add New Project" tugmasini bosing.
+3.  Repozitoriyni tanlang.
+4.  **Build Settings:**
+    *   Framework Preset: Vite
+    *   Build Command: `npm run build`
+    *   Output Directory: `dist`
+5.  **Environment Variables:**
+    *   `VITE_API_URL`: Backend URL manzili (masalan: `https://my-portfolio-api.onrender.com/api`)
+6.  "Deploy" tugmasini bosing.
 
-### Frontend Setup
+## 🎨 Dizayn Tizimi
 
-```bash
-cd frontend
-npm install
-npm run dev     # Start on http://localhost:5173
-```
+*   **Ranglar:** Tizim `var(--primary)` CSS o'zgaruvchisi orqali dinamik ranglarni qo'llab-quvvatlaydi. Admin paneldan istalgan rangni tanlash mumkin.
+*   **Shriftlar:** `Inter` (asosiy matn) va `JetBrains Mono` (kod va sarlavhalar uchun).
+*   **Rejimlar:** Dark (standart) va Light rejimlari mavjud.
 
----
-
-## 🔑 Default Admin Credentials
-
-```
-Email: admin@portfolio.com
-Password: Admin@123456
-```
-
-**⚠️ Change these in production!**
-
----
-
-## 🌐 API Endpoints
-
-| Method | Endpoint | Access | Description |
-|--------|----------|--------|-------------|
-| POST | `/api/auth/login` | Public | Admin login |
-| GET | `/api/auth/me` | Private | Get current user |
-| POST | `/api/auth/change-password` | Private | Change password |
-| GET | `/api/projects` | Public | List projects |
-| POST | `/api/projects` | Private | Create project |
-| PUT | `/api/projects/:id` | Private | Update project |
-| DELETE | `/api/projects/:id` | Private | Delete project |
-| GET | `/api/skills` | Public | List skills |
-| POST | `/api/skills` | Private | Create skill |
-| PUT | `/api/skills/:id` | Private | Update skill |
-| DELETE | `/api/skills/:id` | Private | Delete skill |
-| GET | `/api/experiences` | Public | List experiences |
-| POST | `/api/experiences` | Private | Create experience |
-| PUT | `/api/experiences/:id` | Private | Update experience |
-| DELETE | `/api/experiences/:id` | Private | Delete experience |
-| POST | `/api/messages` | Public | Submit contact form |
-| GET | `/api/messages` | Private | List messages |
-| DELETE | `/api/messages/:id` | Private | Delete message |
-| GET | `/api/settings` | Public | Get settings |
-| PUT | `/api/settings` | Private | Update settings |
-
----
-
-## 🚀 Deployment
-
-### Frontend (Vercel)
-
-1. Push to GitHub
-2. Import to Vercel
-3. Set environment variable:
-   ```
-   VITE_API_URL=https://your-backend-url.com/api
-   ```
-
-### Backend (Render/Railway)
-
-1. Push to GitHub
-2. Create new web service
-3. Set environment variables from `.env.example`
-4. Use MongoDB Atlas for database
-
----
-
-## 📜 Environment Variables
-
-### Backend (.env)
-```env
-PORT=5000
-MONGODB_URI=mongodb://localhost:27017/portfolio
-JWT_SECRET=your_secret_key
-JWT_EXPIRE=7d
-ADMIN_EMAIL=admin@portfolio.com
-ADMIN_PASSWORD=Admin@123456
-FRONTEND_URL=http://localhost:5173
-```
-
-### Frontend (.env)
-```env
-VITE_API_URL=http://localhost:5000/api
-```
-
----
-
-## 🎨 Design System
-
-- **Colors**: Black/White base with Neon Purple (#a855f7) & Cyan (#06b6d4) accents
-- **Typography**: Inter (sans) + JetBrains Mono (mono)
-- **Effects**: Glassmorphism, glow shadows, manga panel borders
-- **Animations**: Float, pulse, typing cursor, slide transitions
-
----
-
-## 📄 License
+## 📄 Litsenziya
 
 MIT
