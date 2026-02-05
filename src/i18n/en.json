@@ -26,7 +26,20 @@
     "about": {
         "title": "About Me",
         "subtitle": "My Story",
+        "mission": "Mission Statement",
+        "lead": "Developing systems that bridge the gap between",
+        "leadHighlight1": "technical precision",
+        "leadSeparator": "and",
+        "leadHighlight2": "human intuition",
         "content": "I'm a professional full-stack developer. I create beautiful and functional web applications using modern technologies. Coding is my art, and every project is a new opportunity.",
+        "philosophy": {
+            "title": "Philosophy",
+            "desc": "Minimalism as a functional requirement, not just an aesthetic choice."
+        },
+        "output": {
+            "title": "Output",
+            "desc": "Engineered for performance, designed for meaningful interaction."
+        },
         "stats": {
             "experience": "Years Experience",
             "projects": "Projects Completed",
@@ -37,8 +50,9 @@
         "title": "Skills",
         "subtitle": "Technologies",
         "categories": {
-            "frontend": "Frontend",
-            "backend": "Backend",
+            "frontend": "Frontend Development Stack",
+            "backend": "Backend Development Stack",
+            "mobile": "Mobile Development Stack",
             "database": "Database",
             "devops": "DevOps",
             "tools": "Tools",
@@ -47,7 +61,7 @@
     },
     "projects": {
         "title": "Projects",
-        "subtitle": "Recent Work",
+        "subtitle": "Focused on performance, reliability, and modern web architecture.",
         "viewLive": "View Live",
         "viewCode": "View Code",
         "technologies": "Technologies",
@@ -64,19 +78,22 @@
         }
     },
     "contact": {
-        "title": "Contact",
-        "subtitle": "Get in Touch",
-        "description": "Want to discuss a project? Send me a message!",
+        "title": "Get in Touch",
+        "subtitle": "Contact Me",
+        "description": "Available for selective technical partnerships and design systems.",
         "form": {
-            "name": "Your Name",
-            "email": "Your Email",
+            "name": "Full Name",
+            "namePlaceholder": "Enter your name",
+            "email": "Email Address",
+            "emailPlaceholder": "example@email.com",
             "subject": "Subject",
-            "message": "Your Message",
+            "message": "Message",
+            "messagePlaceholder": "Write your message here...",
             "submit": "Send Message",
             "sending": "Sending..."
         },
-        "success": "Message sent successfully! I'll get back to you soon.",
-        "error": "Something went wrong. Please try again.",
+        "success": "Message sent successfully!",
+        "error": "Error sending message. Try again.",
         "validation": {
             "nameRequired": "Name is required",
             "emailRequired": "Email is required",

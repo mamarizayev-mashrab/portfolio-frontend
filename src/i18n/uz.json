@@ -26,7 +26,20 @@
     "about": {
         "title": "Men haqimda",
         "subtitle": "Hikoyam",
+        "mission": "Maqsadim",
+        "lead": "Texnik aniqlik va",
+        "leadHighlight1": "zamonaviy dizayn",
+        "leadSeparator": "hamda",
+        "leadHighlight2": "foydalanuvchi tajribasi",
         "content": "Men professional full-stack dasturchiman. Zamonaviy texnologiyalar yordamida chiroyli va funksional veb-ilovalar yarataman. Kodlash - bu mening ijodim, har bir loyiha yangi imkoniyat.",
+        "philosophy": {
+            "title": "Falsafa",
+            "desc": "Minimalizm - bu estetik tanlov emas, balki funksional talab."
+        },
+        "output": {
+            "title": "Natija",
+            "desc": "Samaradorlik uchun ishlab chiqilgan, mazmunli o'zaro ta'sir uchun yaratilgan."
+        },
         "stats": {
             "experience": "Yillik tajriba",
             "projects": "Yakunlangan loyihalar",
@@ -37,8 +50,9 @@
         "title": "Ko'nikmalar",
         "subtitle": "Texnologiyalar",
         "categories": {
-            "frontend": "Frontend",
-            "backend": "Backend",
+            "frontend": "Frontend texnologiyalar to'plami",
+            "backend": "Backend texnologiyalar to'plami",
+            "mobile": "Mobil dasturlash to'plami",
             "database": "Ma'lumotlar bazasi",
             "devops": "DevOps",
             "tools": "Vositalar",
@@ -47,7 +61,7 @@
     },
     "projects": {
         "title": "Loyihalar",
-        "subtitle": "So'nggi ishlar",
+        "subtitle": "Samaradorlik, ishonchlilik va zamonaviy veb arxitekturaga e'tibor qaratilgan.",
         "viewLive": "Jonli ko'rish",
         "viewCode": "Kodni ko'rish",
         "technologies": "Texnologiyalar",
@@ -68,15 +82,18 @@
         "subtitle": "Aloqaga chiqing",
         "description": "Loyiha haqida gaplashmoqchimisiz? Xabar yuboring!",
         "form": {
-            "name": "Ismingiz",
-            "email": "Email manzilingiz",
+            "name": "To'liq ism",
+            "namePlaceholder": "Ismingizni kiriting",
+            "email": "Email manzil",
+            "emailPlaceholder": "misol@email.com",
             "subject": "Mavzu",
-            "message": "Xabaringiz",
-            "submit": "Yuborish",
+            "message": "Xabar",
+            "messagePlaceholder": "Xabaringizni bu yerga yozing...",
+            "submit": "Xabar yuborish",
             "sending": "Yuborilmoqda..."
         },
-        "success": "Xabar muvaffaqiyatli yuborildi! Tez orada javob beraman.",
-        "error": "Xatolik yuz berdi. Iltimos, qaytadan urinib ko'ring.",
+        "success": "Xabar muvaffaqiyatli yuborildi!",
+        "error": "Xatolik yuz berdi. Qaytadan urinib ko'ring.",
         "validation": {
             "nameRequired": "Ism kiritish shart",
             "emailRequired": "Email kiritish shart",

@@ -5,7 +5,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 
 const Navbar = () => {
-    const { t, language, setLanguage } = useLanguage();
+    const { t, language, changeLanguage } = useLanguage();
     const { theme, toggleTheme } = useTheme();
     const { isAuthenticated } = useAuth();
     const [isScrolled, setIsScrolled] = useState(false);
@@ -93,7 +93,7 @@ const Navbar = () => {
                         {['uz', 'en', 'ru'].map((l) => (
                             <button
                                 key={l}
-                                onClick={() => setLanguage(l)}
+                                onClick={() => changeLanguage(l)}
                                 className={`px-2 py-0.5 text-[10px] font-bold rounded uppercase transition-all ${language === l
                                     ? 'bg-[var(--foreground)] text-[var(--background)]'
                                     : 'text-[var(--accents-4)] hover:text-[var(--foreground)]'

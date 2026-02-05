@@ -1,27 +1,16 @@
-/**
- * Settings Page
- * Manage site settings and i18n content
- */
-
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import axios from 'axios'; // Changed from '../../api/axios' to 'axios'
-import { toast } from 'react-hot-toast'; // Replaced useToast with react-hot-toast
+import api from '../../api/axios';
+import { toast } from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
-import { useLanguage } from '../../context/LanguageContext'; // Added useLanguage import
-import { ButtonSpinner } from '../../components/common/Loading';
 
 const SettingsPage = () => {
-    // const { toast } = useToast(); // Removed custom hook usage
     const { changePassword } = useAuth();
-    const { updateDynamicTranslations } = useLanguage(); // Added useLanguage hook usage
     const [settings, setSettings] = useState(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [activeTab, setActiveTab] = useState('profile'); // Changed initial activeTab to 'profile'
-    const [isLoading, setIsLoading] = useState(false); // Added isLoading state
+    const [activeTab, setActiveTab] = useState('password');
 
-    // Password change state
     const [passwordData, setPasswordData] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
     const [changingPassword, setChangingPassword] = useState(false);
 
@@ -32,7 +21,8 @@ const SettingsPage = () => {
             const response = await api.get('/settings');
             setSettings(response.data.data);
         } catch (error) {
-            toast.error('Failed to load settings');
+            console.log('Settings not configured yet');
+            setSettings({});
         } finally {
             setLoading(false);
         }
@@ -93,27 +83,31 @@ const SettingsPage = () => {
     ];
 
     if (loading) {
-        return <div className="flex items-center justify-center h-64"><ButtonSpinner size="lg" /></div>;
+        return (
+            <div className="flex items-center justify-center h-64">
+                <div className="w-6 h-6 border-2 border-[var(--foreground)] border-t-transparent animate-spin rounded-full" />
+            </div>
+        );
     }
 
     return (
-        <>
+        <div className="p-6">
             <Helmet><title>Settings | Admin</title></Helmet>
-            <div className="space-y-6">
-                <div>
-                    <h1 className="text-2xl font-bold text-dark-100">Settings</h1>
-                    <p className="text-dark-400">Manage your account and site settings</p>
+            <div className="space-y-8">
+                <div className="space-y-1">
+                    <h1 className="text-3xl font-bold tracking-tighter">Settings</h1>
+                    <p className="text-[var(--accents-5)] text-sm font-mono font-bold uppercase tracking-widest">system_configuration</p>
                 </div>
 
                 {/* Tabs */}
-                <div className="flex gap-1 border-b border-dark-700">
+                <div className="flex gap-1 border-b border-[var(--accents-2)]">
                     {tabs.map((tab) => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`px-4 py-3 font-medium transition-colors ${activeTab === tab.id
-                                ? 'text-primary-400 border-b-2 border-primary-400 -mb-px'
-                                : 'text-dark-400 hover:text-dark-200'
+                            className={`px-4 py-3 text-sm font-bold transition-colors ${activeTab === tab.id
+                                    ? 'text-[var(--foreground)] border-b-2 border-[var(--foreground)] -mb-px'
+                                    : 'text-[var(--accents-4)] hover:text-[var(--foreground)]'
                                 }`}
                         >
                             {tab.label}
@@ -122,128 +116,111 @@ const SettingsPage = () => {
                 </div>
 
                 {/* Tab Content */}
-                <div className="glass-dark rounded-xl border border-dark-700 p-6">
+                <div className="v-card">
                     {/* Password Tab */}
                     {activeTab === 'password' && (
-                        <form onSubmit={handlePasswordChange} className="max-w-md space-y-4">
-                            <h3 className="text-lg font-bold text-dark-100 mb-4">Change Password</h3>
-                            <div>
-                                <label className="block text-sm text-dark-400 mb-1">Current Password</label>
+                        <form onSubmit={handlePasswordChange} className="max-w-md space-y-6">
+                            <h3 className="text-xl font-bold tracking-tight">Change Password</h3>
+                            <div className="space-y-2">
+                                <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">Current Password</label>
                                 <input
                                     type="password"
                                     value={passwordData.currentPassword}
                                     onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                                    className="input-field"
+                                    className="v-input"
                                     required
                                 />
                             </div>
-                            <div>
-                                <label className="block text-sm text-dark-400 mb-1">New Password</label>
+                            <div className="space-y-2">
+                                <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">New Password</label>
                                 <input
                                     type="password"
                                     value={passwordData.newPassword}
                                     onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                                    className="input-field"
+                                    className="v-input"
                                     required
                                     minLength={8}
                                 />
-                                <p className="text-xs text-dark-500 mt-1">Minimum 8 characters with uppercase, lowercase, and number</p>
+                                <p className="text-xs text-[var(--accents-5)]">Minimum 8 characters</p>
                             </div>
-                            <div>
-                                <label className="block text-sm text-dark-400 mb-1">Confirm New Password</label>
+                            <div className="space-y-2">
+                                <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">Confirm New Password</label>
                                 <input
                                     type="password"
                                     value={passwordData.confirmPassword}
                                     onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                                    className="input-field"
+                                    className="v-input"
                                     required
                                 />
                             </div>
-                            <button type="submit" disabled={changingPassword} className="btn-primary">
-                                {changingPassword ? <ButtonSpinner /> : 'Change Password'}
+                            <button type="submit" disabled={changingPassword} className="v-btn-primary h-10 px-6">
+                                {changingPassword ? 'Updating...' : 'Change Password'}
                             </button>
                         </form>
                     )}
 
                     {/* Social Links Tab */}
                     {activeTab === 'social' && settings && (
-                        <div className="max-w-md space-y-4">
-                            <h3 className="text-lg font-bold text-dark-100 mb-4">Social Links</h3>
+                        <div className="max-w-md space-y-6">
+                            <h3 className="text-xl font-bold tracking-tight">Social Links</h3>
                             {['github', 'linkedin', 'twitter', 'telegram', 'instagram'].map((social) => (
-                                <div key={social}>
-                                    <label className="block text-sm text-dark-400 mb-1 capitalize">{social}</label>
+                                <div key={social} className="space-y-2">
+                                    <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">{social}</label>
                                     <input
                                         type="url"
                                         value={settings.social?.[social] || ''}
                                         onChange={(e) => updateSetting(`social.${social}`, e.target.value)}
-                                        className="input-field"
+                                        className="v-input"
                                         placeholder={`https://${social}.com/...`}
                                     />
                                 </div>
                             ))}
-                            <button onClick={handleSaveSettings} disabled={saving} className="btn-primary mt-4">
-                                {saving ? <ButtonSpinner /> : 'Save Changes'}
+                            <button onClick={handleSaveSettings} disabled={saving} className="v-btn-primary h-10 px-6">
+                                {saving ? 'Saving...' : 'Save Changes'}
                             </button>
                         </div>
                     )}
 
                     {/* Theme Tab */}
                     {activeTab === 'theme' && settings && (
-                        <div className="max-w-md space-y-4">
-                            <h3 className="text-lg font-bold text-dark-100 mb-4">Theme Settings</h3>
-                            <div>
-                                <label className="block text-sm text-dark-400 mb-1">Default Theme</label>
+                        <div className="max-w-md space-y-6">
+                            <h3 className="text-xl font-bold tracking-tight">Theme Settings</h3>
+                            <div className="space-y-2">
+                                <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">Default Theme</label>
                                 <select
                                     value={settings.theme?.defaultMode || 'dark'}
                                     onChange={(e) => updateSetting('theme.defaultMode', e.target.value)}
-                                    className="input-field"
+                                    className="v-input"
                                 >
                                     <option value="dark">Dark</option>
                                     <option value="light">Light</option>
                                 </select>
                             </div>
-                            <div>
-                                <label className="block text-sm text-dark-400 mb-1">Primary Color</label>
-                                <div className="flex gap-2">
+                            <div className="space-y-2">
+                                <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">Primary Color</label>
+                                <div className="flex gap-3">
                                     <input
                                         type="color"
                                         value={settings.theme?.primaryColor || '#a855f7'}
                                         onChange={(e) => updateSetting('theme.primaryColor', e.target.value)}
-                                        className="w-12 h-10 rounded cursor-pointer"
+                                        className="w-12 h-10 rounded cursor-pointer border border-[var(--accents-2)]"
                                     />
                                     <input
                                         type="text"
                                         value={settings.theme?.primaryColor || '#a855f7'}
                                         onChange={(e) => updateSetting('theme.primaryColor', e.target.value)}
-                                        className="input-field flex-1"
+                                        className="v-input flex-1"
                                     />
                                 </div>
                             </div>
-                            <div>
-                                <label className="block text-sm text-dark-400 mb-1">Accent Color</label>
-                                <div className="flex gap-2">
-                                    <input
-                                        type="color"
-                                        value={settings.theme?.accentColor || '#06b6d4'}
-                                        onChange={(e) => updateSetting('theme.accentColor', e.target.value)}
-                                        className="w-12 h-10 rounded cursor-pointer"
-                                    />
-                                    <input
-                                        type="text"
-                                        value={settings.theme?.accentColor || '#06b6d4'}
-                                        onChange={(e) => updateSetting('theme.accentColor', e.target.value)}
-                                        className="input-field flex-1"
-                                    />
-                                </div>
-                            </div>
-                            <button onClick={handleSaveSettings} disabled={saving} className="btn-primary mt-4">
-                                {saving ? <ButtonSpinner /> : 'Save Changes'}
+                            <button onClick={handleSaveSettings} disabled={saving} className="v-btn-primary h-10 px-6">
+                                {saving ? 'Saving...' : 'Save Changes'}
                             </button>
                         </div>
                     )}
                 </div>
             </div>
-        </>
+        </div>
     );
 };
 

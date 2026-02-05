@@ -1,13 +1,7 @@
-/**
- * Skills Manager Page
- * CRUD operations for skills
- */
-
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import api from '../../api/axios';
 import { toast } from 'react-hot-toast';
-import { ButtonSpinner } from '../../components/common/Loading';
 
 const SkillsManager = () => {
     const [skills, setSkills] = useState([]);
@@ -16,9 +10,15 @@ const SkillsManager = () => {
     const [editingSkill, setEditingSkill] = useState(null);
     const [saving, setSaving] = useState(false);
 
-    const categories = ['frontend', 'backend', 'database', 'devops', 'tools', 'other'];
+    const categories = ['Frontend', 'Backend', 'Mobile', 'Database', 'DevOps', 'Tools', 'Other'];
 
-    const emptySkill = { name: '', icon: '', category: 'frontend', proficiency: 80, order: 0 };
+    const emptySkill = {
+        name: { uz: '', en: '', ru: '' },
+        icon: '',
+        category: 'Frontend',
+        level: 80,
+        order: 0
+    };
     const [formData, setFormData] = useState(emptySkill);
 
     useEffect(() => { fetchSkills(); }, []);
@@ -67,7 +67,7 @@ const SkillsManager = () => {
     };
 
     const handleDelete = async (id) => {
-        if (!confirm('Delete this skill?')) return;
+        if (!window.confirm('Delete this skill?')) return;
         try {
             await api.delete(`/skills/${id}`);
             toast.success('Skill deleted');
@@ -77,56 +77,63 @@ const SkillsManager = () => {
         }
     };
 
+    const getSkillName = (skill) => {
+        if (typeof skill.name === 'object') {
+            return skill.name.en || skill.name.uz || skill.name.ru || 'Unnamed';
+        }
+        return skill.name || 'Unnamed';
+    };
+
     return (
-        <>
+        <div className="p-6">
             <Helmet><title>Skills | Admin</title></Helmet>
-            <div className="space-y-6">
+            <div className="space-y-8">
                 <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-2xl font-bold text-dark-100">Skills</h1>
-                        <p className="text-dark-400">Manage your technical skills</p>
+                    <div className="space-y-1">
+                        <h1 className="text-3xl font-bold tracking-tighter">Skills</h1>
+                        <p className="text-[var(--accents-5)] text-sm font-mono font-bold uppercase tracking-widest">technical_capabilities</p>
                     </div>
-                    <button onClick={() => openModal()} className="btn-primary">+ Add Skill</button>
+                    <button onClick={() => openModal()} className="v-btn-primary h-10 px-4">+ Add Skill</button>
                 </div>
 
-                <div className="glass-dark rounded-xl border border-dark-700 overflow-hidden">
+                <div className="v-card p-0 overflow-hidden">
                     {loading ? (
-                        <div className="p-8 text-center"><ButtonSpinner size="lg" /></div>
+                        <div className="p-8 text-center text-[var(--accents-5)]">Loading skills...</div>
                     ) : skills.length === 0 ? (
-                        <div className="p-8 text-center text-dark-400">No skills yet</div>
+                        <div className="p-8 text-center text-[var(--accents-5)]">No skills yet</div>
                     ) : (
                         <table className="w-full">
                             <thead>
-                                <tr className="border-b border-dark-700">
-                                    <th className="text-left p-4 text-dark-400 font-medium">Skill</th>
-                                    <th className="text-left p-4 text-dark-400 font-medium">Category</th>
-                                    <th className="text-left p-4 text-dark-400 font-medium">Proficiency</th>
-                                    <th className="text-right p-4 text-dark-400 font-medium">Actions</th>
+                                <tr className="border-b border-[var(--accents-2)]">
+                                    <th className="text-left p-4 text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">Skill</th>
+                                    <th className="text-left p-4 text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">Category</th>
+                                    <th className="text-left p-4 text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">Level</th>
+                                    <th className="text-right p-4 text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {skills.map((skill) => (
-                                    <tr key={skill._id} className="border-b border-dark-800 hover:bg-dark-800/30">
+                                    <tr key={skill._id} className="border-b border-[var(--accents-2)] hover:bg-[var(--accents-1)] transition-colors">
                                         <td className="p-4">
                                             <div className="flex items-center gap-3">
-                                                <span className="text-2xl">{skill.icon || '💻'}</span>
-                                                <span className="font-medium text-dark-100">{skill.name}</span>
+                                                <span className="text-xl">{skill.icon || '💻'}</span>
+                                                <span className="font-bold">{getSkillName(skill)}</span>
                                             </div>
                                         </td>
                                         <td className="p-4">
-                                            <span className="px-2 py-1 text-xs rounded bg-dark-700 text-dark-300">{skill.category}</span>
+                                            <span className="px-2 py-1 text-xs font-mono rounded bg-[var(--accents-1)] border border-[var(--accents-2)] text-[var(--accents-5)]">{skill.category}</span>
                                         </td>
                                         <td className="p-4">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-24 h-2 bg-dark-700 rounded-full overflow-hidden">
-                                                    <div className="h-full bg-gradient-to-r from-primary-500 to-accent-500" style={{ width: `${skill.proficiency}%` }} />
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-24 h-1.5 bg-[var(--accents-2)] rounded-full overflow-hidden">
+                                                    <div className="h-full bg-[var(--foreground)]" style={{ width: `${skill.level || skill.proficiency || 0}%` }} />
                                                 </div>
-                                                <span className="text-sm text-dark-400">{skill.proficiency}%</span>
+                                                <span className="text-sm text-[var(--accents-5)] font-mono">{skill.level || skill.proficiency || 0}%</span>
                                             </div>
                                         </td>
                                         <td className="p-4 text-right">
-                                            <button onClick={() => openModal(skill)} className="p-2 text-dark-400 hover:text-primary-400">Edit</button>
-                                            <button onClick={() => handleDelete(skill._id)} className="p-2 text-dark-400 hover:text-red-400 ml-2">Delete</button>
+                                            <button onClick={() => openModal(skill)} className="text-sm text-[var(--accents-5)] hover:text-[var(--foreground)] mr-4">Edit</button>
+                                            <button onClick={() => handleDelete(skill._id)} className="text-sm text-[var(--accents-5)] hover:text-error-light">Delete</button>
                                         </td>
                                     </tr>
                                 ))}
@@ -137,39 +144,51 @@ const SkillsManager = () => {
             </div>
 
             {showModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-950/80 backdrop-blur-sm">
-                    <div className="glass-dark rounded-xl border border-dark-700 w-full max-w-md">
-                        <div className="p-6 border-b border-dark-700">
-                            <h2 className="text-xl font-bold text-dark-100">{editingSkill ? 'Edit Skill' : 'Add Skill'}</h2>
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                    <div className="v-card w-full max-w-lg">
+                        <div className="mb-6">
+                            <h2 className="text-xl font-bold tracking-tight">{editingSkill ? 'Edit Skill' : 'Add Skill'}</h2>
                         </div>
-                        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                            <div>
-                                <label className="block text-sm text-dark-400 mb-1">Name</label>
-                                <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="input-field" required />
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div className="grid grid-cols-3 gap-4">
+                                {['uz', 'en', 'ru'].map((lang) => (
+                                    <div key={lang} className="space-y-2">
+                                        <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase">Name ({lang})</label>
+                                        <input
+                                            type="text"
+                                            value={typeof formData.name === 'object' ? formData.name[lang] || '' : formData.name}
+                                            onChange={(e) => setFormData({ ...formData, name: { ...(typeof formData.name === 'object' ? formData.name : {}), [lang]: e.target.value } })}
+                                            className="v-input"
+                                            required={lang === 'en'}
+                                        />
+                                    </div>
+                                ))}
                             </div>
-                            <div>
-                                <label className="block text-sm text-dark-400 mb-1">Icon (emoji)</label>
-                                <input type="text" value={formData.icon} onChange={(e) => setFormData({ ...formData, icon: e.target.value })} className="input-field" placeholder="💻" />
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase">Icon (emoji)</label>
+                                    <input type="text" value={formData.icon} onChange={(e) => setFormData({ ...formData, icon: e.target.value })} className="v-input" placeholder="💻" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase">Category</label>
+                                    <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="v-input">
+                                        {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                                    </select>
+                                </div>
                             </div>
-                            <div>
-                                <label className="block text-sm text-dark-400 mb-1">Category</label>
-                                <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="input-field">
-                                    {categories.map(c => <option key={c} value={c}>{c}</option>)}
-                                </select>
+                            <div className="space-y-2">
+                                <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase">Level: {formData.level || formData.proficiency || 0}%</label>
+                                <input type="range" min="0" max="100" value={formData.level || formData.proficiency || 0} onChange={(e) => setFormData({ ...formData, level: parseInt(e.target.value) })} className="w-full accent-[var(--foreground)]" />
                             </div>
-                            <div>
-                                <label className="block text-sm text-dark-400 mb-1">Proficiency: {formData.proficiency}%</label>
-                                <input type="range" min="0" max="100" value={formData.proficiency} onChange={(e) => setFormData({ ...formData, proficiency: parseInt(e.target.value) })} className="w-full" />
-                            </div>
-                            <div className="flex justify-end gap-3 pt-4">
-                                <button type="button" onClick={closeModal} className="btn-secondary">Cancel</button>
-                                <button type="submit" disabled={saving} className="btn-primary">{saving ? <ButtonSpinner /> : 'Save'}</button>
+                            <div className="flex justify-end gap-3 pt-4 border-t border-[var(--accents-2)]">
+                                <button type="button" onClick={closeModal} className="v-btn-ghost h-10 px-4">Cancel</button>
+                                <button type="submit" disabled={saving} className="v-btn-primary h-10 px-6">{saving ? 'Saving...' : 'Save'}</button>
                             </div>
                         </form>
                     </div>
                 </div>
             )}
-        </>
+        </div>
     );
 };
 

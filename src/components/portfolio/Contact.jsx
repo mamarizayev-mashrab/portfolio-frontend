@@ -1,14 +1,64 @@
 import { useState } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
+import api from '../../api/axios';
 
 const Contact = () => {
     const { t } = useLanguage();
     const [status, setStatus] = useState('IDLE');
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        message: ''
+    });
+    const [errors, setErrors] = useState({});
 
-    const handleSubmit = (e) => {
+    const validateForm = () => {
+        const newErrors = {};
+        if (!formData.name.trim()) {
+            newErrors.name = t('contact.validation.nameRequired', 'Name is required');
+        }
+        if (!formData.email.trim()) {
+            newErrors.email = t('contact.validation.emailRequired', 'Email is required');
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+            newErrors.email = t('contact.validation.emailInvalid', 'Invalid email format');
+        }
+        if (!formData.message.trim()) {
+            newErrors.message = t('contact.validation.messageRequired', 'Message is required');
+        }
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+        // Clear error when user types
+        if (errors[name]) {
+            setErrors(prev => ({ ...prev, [name]: '' }));
+        }
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!validateForm()) return;
+
         setStatus('SENDING');
-        setTimeout(() => setStatus('SUCCESS'), 2000);
+
+        try {
+            await api.post('/messages', formData);
+            setStatus('SUCCESS');
+            setFormData({ name: '', email: '', message: '' });
+
+            // Reset status after 5 seconds
+            setTimeout(() => setStatus('IDLE'), 5000);
+        } catch (error) {
+            setStatus('ERROR');
+            console.error('Error sending message:', error);
+
+            // Reset status after 3 seconds
+            setTimeout(() => setStatus('IDLE'), 3000);
+        }
     };
 
     return (
@@ -17,58 +67,76 @@ const Contact = () => {
                 <div className="max-w-4xl mx-auto">
                     <div className="space-y-4 mb-20 text-center">
                         <span className="text-xs font-mono font-bold text-primary uppercase tracking-widest block font-bold">// connect_node</span>
-                        <h2 className="text-5xl font-bold tracking-tighter">Get in Touch</h2>
-                        <p className="text-[var(--accents-5)] text-lg">Available for selective technical partnerships and design systems.</p>
+                        <h2 className="text-5xl font-bold tracking-tighter">{t('contact.title', 'Get in Touch')}</h2>
+                        <p className="text-[var(--accents-5)] text-lg">{t('contact.description', 'Available for selective technical partnerships and design systems.')}</p>
                     </div>
 
                     <div className="v-card space-y-12 backdrop-blur-sm">
                         <form onSubmit={handleSubmit} className="space-y-8">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-mono font-bold text-[var(--accents-3)] uppercase tracking-widest">Full Name</label>
+                                    <label className="text-[10px] font-mono font-bold text-[var(--accents-3)] uppercase tracking-widest">
+                                        {t('contact.form.name', 'Full Name')}
+                                    </label>
                                     <input
                                         type="text"
-                                        className="v-input bg-[var(--accents-1)]/50 border-[var(--accents-2)] hover:border-[var(--accents-3)]"
-                                        placeholder="Identify yourself"
-                                        required
+                                        name="name"
+                                        value={formData.name}
+                                        onChange={handleChange}
+                                        className={`v-input bg-[var(--accents-1)]/50 border-[var(--accents-2)] hover:border-[var(--accents-3)] ${errors.name ? 'border-error-light!' : ''}`}
+                                        placeholder={t('contact.form.namePlaceholder', 'Enter your name')}
                                     />
+                                    {errors.name && <span className="text-xs text-error-light">{errors.name}</span>}
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-mono font-bold text-[var(--accents-3)] uppercase tracking-widest">Email Address</label>
+                                    <label className="text-[10px] font-mono font-bold text-[var(--accents-3)] uppercase tracking-widest">
+                                        {t('contact.form.email', 'Email Address')}
+                                    </label>
                                     <input
                                         type="email"
-                                        className="v-input bg-[var(--accents-1)]/50 border-[var(--accents-2)] hover:border-[var(--accents-3)]"
-                                        placeholder="protocol@service.io"
-                                        required
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        className={`v-input bg-[var(--accents-1)]/50 border-[var(--accents-2)] hover:border-[var(--accents-3)] ${errors.email ? 'border-error-light!' : ''}`}
+                                        placeholder={t('contact.form.emailPlaceholder', 'example@email.com')}
                                     />
+                                    {errors.email && <span className="text-xs text-error-light">{errors.email}</span>}
                                 </div>
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-[10px] font-mono font-bold text-[var(--accents-3)] uppercase tracking-widest">Message Log</label>
+                                <label className="text-[10px] font-mono font-bold text-[var(--accents-3)] uppercase tracking-widest">
+                                    {t('contact.form.message', 'Message')}
+                                </label>
                                 <textarea
-                                    className="v-input bg-[var(--accents-1)]/50 border-[var(--accents-2)] hover:border-[var(--accents-3)] min-h-[160px] py-4 resize-none"
-                                    placeholder="Enter your transmission data..."
-                                    required
+                                    name="message"
+                                    value={formData.message}
+                                    onChange={handleChange}
+                                    className={`v-input bg-[var(--accents-1)]/50 border-[var(--accents-2)] hover:border-[var(--accents-3)] min-h-[160px] py-4 resize-none ${errors.message ? 'border-error-light!' : ''}`}
+                                    placeholder={t('contact.form.messagePlaceholder', 'Write your message here...')}
                                 />
+                                {errors.message && <span className="text-xs text-error-light">{errors.message}</span>}
                             </div>
 
                             <button
                                 type="submit"
-                                disabled={status !== 'IDLE'}
+                                disabled={status === 'SENDING'}
                                 className={`w-full h-12 rounded-md font-bold tracking-tight transition-all flex items-center justify-center gap-3 ${status === 'SUCCESS'
                                         ? 'bg-success-dark text-white'
-                                        : 'v-btn-primary'
+                                        : status === 'ERROR'
+                                            ? 'bg-error-dark text-white'
+                                            : 'v-btn-primary'
                                     }`}
                             >
-                                {status === 'IDLE' && 'Send Transmission'}
+                                {status === 'IDLE' && t('contact.form.submit', 'Send Message')}
                                 {status === 'SENDING' && (
                                     <>
                                         <div className="w-4 h-4 border-2 border-white/20 border-t-white animate-spin rounded-full" />
-                                        Transmitting...
+                                        {t('contact.form.sending', 'Sending...')}
                                     </>
                                 )}
-                                {status === 'SUCCESS' && 'Transmission Confirmed'}
+                                {status === 'SUCCESS' && t('contact.success', 'Message sent successfully!')}
+                                {status === 'ERROR' && t('contact.error', 'Error sending message. Try again.')}
                             </button>
                         </form>
 
