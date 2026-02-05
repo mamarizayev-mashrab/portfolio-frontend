@@ -3,9 +3,11 @@ import { Helmet } from 'react-helmet-async';
 import api from '../../api/axios';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 
 const SettingsPage = () => {
     const { changePassword } = useAuth();
+    const { theme, setTheme } = useTheme();
     const [settings, setSettings] = useState(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -20,6 +22,7 @@ const SettingsPage = () => {
         try {
             const response = await api.get('/settings');
             setSettings(response.data.data);
+            // Optionally sync if backend has a preference, but localStorage takes precedence usually
         } catch (error) {
             console.log('Settings not configured yet');
             setSettings({});
@@ -31,7 +34,14 @@ const SettingsPage = () => {
     const handleSaveSettings = async () => {
         setSaving(true);
         try {
-            await api.put('/settings', settings);
+            // Updated settings to verify we are not sending removed fields
+            const cleanSettings = { ...settings };
+
+            // Ensure we save the current theme preference as default
+            if (!cleanSettings.theme) cleanSettings.theme = {};
+            cleanSettings.theme.defaultMode = theme;
+
+            await api.put('/settings', cleanSettings);
             toast.success('Settings saved');
         } catch (error) {
             toast.error('Failed to save settings');
@@ -54,6 +64,12 @@ const SettingsPage = () => {
         });
     };
 
+    const handleThemeChange = (newTheme) => {
+        setTheme(newTheme);
+        // Also update the form state so it gets saved to backend on "Save"
+        updateSetting('theme.defaultMode', newTheme);
+    };
+
     const handlePasswordChange = async (e) => {
         e.preventDefault();
         if (passwordData.newPassword !== passwordData.confirmPassword) {
@@ -71,7 +87,9 @@ const SettingsPage = () => {
             toast.success('Password changed successfully');
             setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
         } else {
-            toast.error(result.message);
+            console.error(result.message);
+            // Show exact message from backend
+            toast.error(result.message || 'Failed to change password. Ensure strong password requirements.');
         }
         setChangingPassword(false);
     };
@@ -142,7 +160,7 @@ const SettingsPage = () => {
                                     required
                                     minLength={8}
                                 />
-                                <p className="text-xs text-[var(--accents-5)]">Minimum 8 characters</p>
+                                <p className="text-xs text-[var(--accents-5)]">Min 8 chars, uppercase, lowercase, number required.</p>
                             </div>
                             <div className="space-y-2">
                                 <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">Confirm New Password</label>
@@ -160,28 +178,6 @@ const SettingsPage = () => {
                         </form>
                     )}
 
-                    {/* Social Links Tab */}
-                    {activeTab === 'social' && settings && (
-                        <div className="max-w-md space-y-6">
-                            <h3 className="text-xl font-bold tracking-tight">Social Links</h3>
-                            {['github', 'linkedin', 'twitter', 'telegram', 'instagram'].map((social) => (
-                                <div key={social} className="space-y-2">
-                                    <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">{social}</label>
-                                    <input
-                                        type="url"
-                                        value={settings.social?.[social] || ''}
-                                        onChange={(e) => updateSetting(`social.${social}`, e.target.value)}
-                                        className="v-input"
-                                        placeholder={`https://${social}.com/...`}
-                                    />
-                                </div>
-                            ))}
-                            <button onClick={handleSaveSettings} disabled={saving} className="v-btn-primary h-10 px-6">
-                                {saving ? 'Saving...' : 'Save Changes'}
-                            </button>
-                        </div>
-                    )}
-
                     {/* Contact Info Tab */}
                     {activeTab === 'contact' && settings && (
                         <div className="max-w-md space-y-6">
@@ -196,16 +192,9 @@ const SettingsPage = () => {
                                     placeholder="your@email.com"
                                 />
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">Phone Number</label>
-                                <input
-                                    type="text"
-                                    value={settings.contact?.phone || ''}
-                                    onChange={(e) => updateSetting('contact.phone', e.target.value)}
-                                    className="v-input"
-                                    placeholder="+998 90 123 45 67"
-                                />
-                            </div>
+
+                            {/* Phone Input removed */}
+
                             <div className="space-y-4 pt-4 border-t border-[var(--accents-2)]">
                                 <span className="text-sm font-bold">Location</span>
                                 {['uz', 'en', 'ru'].map(lang => (
@@ -227,20 +216,51 @@ const SettingsPage = () => {
                         </div>
                     )}
 
+                    {/* Social Links Tab */}
+                    {activeTab === 'social' && settings && (
+                        <div className="max-w-md space-y-6">
+                            <h3 className="text-xl font-bold tracking-tight">Social Links</h3>
+                            {/* Instagram, Telegram removed */}
+                            {['github', 'linkedin', 'twitter'].map((social) => (
+                                <div key={social} className="space-y-2">
+                                    <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">{social}</label>
+                                    <input
+                                        type="url"
+                                        value={settings.social?.[social] || ''}
+                                        onChange={(e) => updateSetting(`social.${social}`, e.target.value)}
+                                        className="v-input"
+                                        placeholder={`https://${social}.com/...`}
+                                    />
+                                </div>
+                            ))}
+                            <button onClick={handleSaveSettings} disabled={saving} className="v-btn-primary h-10 px-6">
+                                {saving ? 'Saving...' : 'Save Changes'}
+                            </button>
+                        </div>
+                    )}
+
                     {/* Theme Tab */}
                     {activeTab === 'theme' && settings && (
                         <div className="max-w-md space-y-6">
                             <h3 className="text-xl font-bold tracking-tight">Theme Settings</h3>
                             <div className="space-y-2">
-                                <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">Default Theme</label>
-                                <select
-                                    value={settings.theme?.defaultMode || 'dark'}
-                                    onChange={(e) => updateSetting('theme.defaultMode', e.target.value)}
-                                    className="v-input"
-                                >
-                                    <option value="dark">Dark</option>
-                                    <option value="light">Light</option>
-                                </select>
+                                <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">Theme Mode</label>
+                                <div className="flex gap-4">
+                                    <button
+                                        type="button"
+                                        onClick={() => handleThemeChange('light')}
+                                        className={`flex-1 p-3 rounded-md border-2 font-bold transition-all ${theme === 'light' ? 'border-[var(--foreground)] bg-[var(--accents-1)] text-[var(--foreground)]' : 'border-[var(--accents-2)] text-[var(--accents-5)]'}`}
+                                    >
+                                        Light
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleThemeChange('dark')}
+                                        className={`flex-1 p-3 rounded-md border-2 font-bold transition-all ${theme === 'dark' ? 'border-[var(--foreground)] bg-[var(--accents-1)] text-[var(--foreground)]' : 'border-[var(--accents-2)] text-[var(--accents-5)]'}`}
+                                    >
+                                        Dark
+                                    </button>
+                                </div>
                             </div>
                             <div className="space-y-2">
                                 <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">Primary Color</label>
