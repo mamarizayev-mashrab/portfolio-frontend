@@ -47,8 +47,8 @@ const Experience = () => {
                                 </div>
                                 <div className="md:col-span-9 space-y-2">
                                     <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                                        <h3 className="text-xl font-bold tracking-tight">{getLocalizedField(exp.role)}</h3>
-                                        <span className="text-sm font-mono text-primary bg-primary/5 border border-primary/10 px-2 py-0.5 rounded">@{getLocalizedField(exp.company)}</span>
+                                        <h3 className="text-xl font-bold tracking-tight">{getLocalizedField(exp.role || exp.title)}</h3>
+                                        <span className="text-sm font-mono text-primary bg-primary/5 border border-primary/10 px-2 py-0.5 rounded">@{typeof exp.company === 'string' ? exp.company : getLocalizedField(exp.company)}</span>
                                     </div>
                                     <p className="text-[var(--accents-5)] leading-relaxed max-w-2xl font-medium">
                                         {getLocalizedField(exp.description)}

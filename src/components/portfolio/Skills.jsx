@@ -23,12 +23,19 @@ const Skills = () => {
         fetchSkills();
     }, []);
 
-    // Group skills by category
+    // Group skills by category (case-insensitive check)
+    const getCategorySkills = (cat) => skills.filter(s =>
+        s.category?.toLowerCase() === cat.toLowerCase()
+    );
+
     const categories = {
-        'Frontend': skills.filter(s => s.category === 'Frontend'),
-        'Backend': skills.filter(s => s.category === 'Backend'),
-        'Mobile': skills.filter(s => s.category === 'Mobile'),
-        'Other': skills.filter(s => !['Frontend', 'Backend', 'Mobile'].includes(s.category))
+        'Frontend': getCategorySkills('frontend'),
+        'Backend': getCategorySkills('backend'),
+        'Mobile': getCategorySkills('mobile'),
+        'Database': getCategorySkills('database'),
+        'DevOps': getCategorySkills('devops'),
+        'Tools': getCategorySkills('tools'),
+        'Other': skills.filter(s => !['frontend', 'backend', 'mobile', 'database', 'devops', 'tools'].includes(s.category?.toLowerCase()))
     };
 
     if (loading) return null;
@@ -63,7 +70,7 @@ const Skills = () => {
                                                     {[...Array(5)].map((_, i) => (
                                                         <div
                                                             key={i}
-                                                            className={`w-4 h-1 rounded-full ${i < Math.floor(skill.level / 20) ? 'bg-primary' : 'bg-[var(--accents-2)]'}`}
+                                                            className={`w-4 h-1 rounded-full ${i < Math.floor((skill.level || skill.proficiency || 0) / 20) ? 'bg-primary' : 'bg-[var(--accents-2)]'}`}
                                                         />
                                                     ))}
                                                 </div>
