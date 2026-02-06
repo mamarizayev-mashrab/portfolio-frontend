@@ -21,7 +21,7 @@ const getApiUrl = () => {
     }
 
     // Production fallback
-    return 'https://portfolio-backend.onrender.com/api';
+    return 'https://portfolio-backendportfolio-backend.onrender.com/api';
 };
 
 // Create axios instance
