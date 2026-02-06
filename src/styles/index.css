@@ -43,6 +43,7 @@
     scroll-behavior: smooth;
   }
 
+  /* Global selection style */
   ::selection {
     background-color: var(--primary);
     color: var(--background);
