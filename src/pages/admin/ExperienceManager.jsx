@@ -91,13 +91,17 @@ const ExperienceManager = () => {
     };
 
     const handleDelete = async (id) => {
+        console.log('Attempting to delete experience with ID:', id);
         if (!window.confirm('Delete this experience?')) return;
         try {
-            await api.delete(`/experiences/${id}`);
+            const response = await api.delete(`/experiences/${id}`);
+            console.log('Delete response:', response);
             toast.success('Experience deleted');
-            fetchExperiences();
+            await fetchExperiences();
         } catch (error) {
-            toast.error('Failed to delete');
+            console.error('Delete error:', error);
+            const errMsg = error.response?.data?.message || 'Failed to delete';
+            toast.error(errMsg);
         }
     };
 
@@ -151,8 +155,8 @@ const ExperienceManager = () => {
                                         </td>
                                         <td className="p-4">
                                             <span className={`px-2 py-1 text-xs font-mono rounded border ${exp.type === 'work' ? 'border-primary/30 text-primary bg-primary/5' :
-                                                    exp.type === 'education' ? 'border-cyan-500/30 text-cyan-500 bg-cyan-500/5' :
-                                                        'border-[var(--accents-2)] text-[var(--accents-5)]'
+                                                exp.type === 'education' ? 'border-cyan-500/30 text-cyan-500 bg-cyan-500/5' :
+                                                    'border-[var(--accents-2)] text-[var(--accents-5)]'
                                                 }`}>{exp.type}</span>
                                         </td>
                                         <td className="p-4 text-right">

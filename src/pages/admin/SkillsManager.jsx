@@ -67,13 +67,17 @@ const SkillsManager = () => {
     };
 
     const handleDelete = async (id) => {
+        console.log('Attempting to delete skill with ID:', id);
         if (!window.confirm('Delete this skill?')) return;
         try {
-            await api.delete(`/skills/${id}`);
+            const response = await api.delete(`/skills/${id}`);
+            console.log('Delete response:', response);
             toast.success('Skill deleted');
-            fetchSkills();
+            await fetchSkills(); // Wait for fetch to complete
         } catch (error) {
-            toast.error('Failed to delete');
+            console.error('Delete error:', error);
+            const errMsg = error.response?.data?.message || 'Failed to delete skill';
+            toast.error(errMsg);
         }
     };
 

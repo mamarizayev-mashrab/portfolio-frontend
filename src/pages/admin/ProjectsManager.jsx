@@ -118,14 +118,18 @@ const ProjectsManager = () => {
     };
 
     const handleDelete = async (id) => {
+        console.log('Attempting to delete project with ID:', id);
         if (!window.confirm('Confirm deletion?')) return;
 
         try {
-            await api.delete(`/projects/${id}`);
+            const response = await api.delete(`/projects/${id}`);
+            console.log('Delete response:', response);
             toast.success('Project deleted');
-            fetchProjects();
+            await fetchProjects();
         } catch (error) {
-            toast.error('Deletion failed');
+            console.error('Delete error:', error);
+            const errMsg = error.response?.data?.message || 'Deletion failed';
+            toast.error(errMsg);
         }
     };
 

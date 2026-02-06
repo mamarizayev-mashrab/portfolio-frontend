@@ -36,13 +36,16 @@ const MessagesViewer = () => {
     };
 
     const handleDelete = async (id) => {
+        console.log('Attempting to delete message with ID:', id);
         if (!window.confirm('Delete this message?')) return;
         try {
-            await api.delete(`/messages/${id}`);
+            const response = await api.delete(`/messages/${id}`);
+            console.log('Delete response:', response);
             toast.success('Message deleted');
             setMessages(prev => prev.filter(m => m._id !== id));
             if (selectedMessage?._id === id) setSelectedMessage(null);
         } catch (error) {
+            console.error('Delete error:', error);
             toast.error('Failed to delete');
         }
     };
