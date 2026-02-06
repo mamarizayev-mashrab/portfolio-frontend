@@ -5,23 +5,19 @@
 
 import axios from 'axios';
 
+// Production Backend URL (Render)
+const PRODUCTION_API_URL = 'https://portfolio-backendportfolio-backend.onrender.com/api';
+
 // Determine API URL with fallback
 const getApiUrl = () => {
-    const envUrl = import.meta.env.VITE_API_URL;
-
-    // Validate the URL - must start with http:// or https://
-    if (envUrl && (envUrl.startsWith('http://') || envUrl.startsWith('https://'))) {
-        return envUrl;
-    }
-
-    // Fallback: use production URL if env is invalid/missing
     // In development, use localhost
     if (import.meta.env.DEV) {
         return 'http://localhost:5000/api';
     }
 
-    // Production fallback
-    return 'https://portfolio-backendportfolio-backend.onrender.com/api';
+    // In production, always use the correct Render backend URL
+    // This ensures the frontend always connects to the correct backend
+    return PRODUCTION_API_URL;
 };
 
 // Create axios instance
