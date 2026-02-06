@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../api/axios';
 import { useLanguage } from '../../context/LanguageContext';
 
 const Projects = () => {
@@ -10,8 +10,7 @@ const Projects = () => {
     useEffect(() => {
         const fetchProjects = async () => {
             try {
-                const API_URL = import.meta.env.VITE_API_URL;
-                const response = await axios.get(`${API_URL}/projects`);
+                const response = await api.get('/projects');
                 const fetchedProjects = response.data.data || [];
                 // Filter only published projects
                 setProjects(fetchedProjects.filter(p => p.status === 'published'));

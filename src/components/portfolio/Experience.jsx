@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../api/axios';
 import { useLanguage } from '../../context/LanguageContext';
 
 const Experience = () => {
@@ -10,8 +10,7 @@ const Experience = () => {
     useEffect(() => {
         const fetchExperience = async () => {
             try {
-                const API_URL = import.meta.env.VITE_API_URL;
-                const response = await axios.get(`${API_URL}/experiences`);
+                const response = await api.get('/experiences');
                 setExperiences(response.data.data || []);
             } catch (error) {
                 console.error('Error fetching experiences:', error);

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../api/axios';
 import { useLanguage } from '../../context/LanguageContext';
 
 const Skills = () => {
@@ -10,8 +10,7 @@ const Skills = () => {
     useEffect(() => {
         const fetchSkills = async () => {
             try {
-                const API_URL = import.meta.env.VITE_API_URL;
-                const response = await axios.get(`${API_URL}/skills`);
+                const response = await api.get('/skills');
                 setSkills(response.data.data || []);
             } catch (error) {
                 console.error('Error fetching skills:', error);

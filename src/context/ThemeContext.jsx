@@ -4,7 +4,7 @@
  */
 
 import { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 
 const ThemeContext = createContext();
 
@@ -54,8 +54,8 @@ export const ThemeProvider = ({ children }) => {
 
             // 2. Fetch from backend to sync (in case changed on another device)
             try {
-                const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-                const response = await axios.get(`${API_URL}/settings`);
+                // Use configured api instance
+                const response = await api.get('/settings');
                 if (response.data.data?.theme?.primaryColor) {
                     const backendColor = response.data.data.theme.primaryColor;
                     if (backendColor !== savedColor) {

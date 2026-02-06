@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
-import axios from 'axios';
+import api from '../../api/axios';
 
 const Footer = () => {
     const { t } = useLanguage();
@@ -10,8 +10,7 @@ const Footer = () => {
     useEffect(() => {
         const fetchSettings = async () => {
             try {
-                const API_URL = import.meta.env.VITE_API_URL;
-                const response = await axios.get(`${API_URL}/settings`);
+                const response = await api.get('/settings');
                 if (response.data.data && response.data.data.social) {
                     setSocials(response.data.data.social);
                 }
