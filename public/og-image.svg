@@ -1,0 +1,60 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0a0a"/>
+      <stop offset="50%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#0f0f23"/>
+    </linearGradient>
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+  
+  <!-- Decorative grid pattern -->
+  <g opacity="0.1">
+    <line x1="200" y1="0" x2="200" y2="630" stroke="#fff" stroke-width="1"/>
+    <line x1="400" y1="0" x2="400" y2="630" stroke="#fff" stroke-width="1"/>
+    <line x1="600" y1="0" x2="600" y2="630" stroke="#fff" stroke-width="1"/>
+    <line x1="800" y1="0" x2="800" y2="630" stroke="#fff" stroke-width="1"/>
+    <line x1="1000" y1="0" x2="1000" y2="630" stroke="#fff" stroke-width="1"/>
+    <line x1="0" y1="157" x2="1200" y2="157" stroke="#fff" stroke-width="1"/>
+    <line x1="0" y1="315" x2="1200" y2="315" stroke="#fff" stroke-width="1"/>
+    <line x1="0" y1="472" x2="1200" y2="472" stroke="#fff" stroke-width="1"/>
+  </g>
+  
+  <!-- Decorative circles -->
+  <circle cx="100" cy="100" r="60" fill="url(#accentGradient)" opacity="0.2"/>
+  <circle cx="1100" cy="530" r="80" fill="url(#accentGradient)" opacity="0.15"/>
+  <circle cx="1050" cy="80" r="40" fill="#3b82f6" opacity="0.1"/>
+  <circle cx="150" cy="530" r="50" fill="#8b5cf6" opacity="0.1"/>
+  
+  <!-- Main content -->
+  <text x="600" y="240" text-anchor="middle" fill="#ffffff" font-family="Inter, -apple-system, sans-serif" font-size="72" font-weight="800" letter-spacing="-2">
+    MASHRAB MAMARIZAYEV
+  </text>
+  
+  <!-- Accent line -->
+  <rect x="400" y="280" width="400" height="4" rx="2" fill="url(#accentGradient)"/>
+  
+  <!-- Subtitle -->
+  <text x="600" y="350" text-anchor="middle" fill="#a0a0a0" font-family="JetBrains Mono, monospace" font-size="32" font-weight="500" letter-spacing="4">
+    FULL-STACK DEVELOPER
+  </text>
+  
+  <!-- Tech stack -->
+  <text x="600" y="420" text-anchor="middle" fill="#666666" font-family="Inter, sans-serif" font-size="18" letter-spacing="3">
+    REACT • NODE.JS • MONGODB • TYPESCRIPT
+  </text>
+  
+  <!-- Bottom accent -->
+  <rect x="0" y="620" width="1200" height="10" fill="url(#accentGradient)"/>
+  
+  <!-- Corner decorations -->
+  <path d="M0 0 L80 0 L80 4 L4 4 L4 80 L0 80 Z" fill="#3b82f6" opacity="0.5"/>
+  <path d="M1200 630 L1120 630 L1120 626 L1196 626 L1196 550 L1200 550 Z" fill="#8b5cf6" opacity="0.5"/>
+</svg>
