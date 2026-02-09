@@ -55,8 +55,8 @@ const Dashboard = () => {
 
     return (
         <div className="min-h-screen bg-[var(--background)]">
-            {/* Header */}
-            <header className="border-b border-[var(--accents-2)] bg-[var(--background)] sticky top-0 z-40">
+            {/* Header - Only visible on desktop, mobile uses AdminLayout header */}
+            <header className="hidden lg:block border-b border-[var(--accents-2)] bg-[var(--background)] sticky top-0 z-40">
                 <div className="v-container flex items-center justify-between h-16 px-4 md:px-6">
                     <div className="flex items-center gap-4 md:gap-6">
                         <Link to="/" className="flex items-center gap-2">
@@ -65,8 +65,7 @@ const Dashboard = () => {
                             </svg>
                         </Link>
                         <div className="h-6 w-px bg-[var(--accents-2)]" />
-                        <h1 className="text-sm font-bold tracking-tight uppercase hidden md:block">{t('admin.dashboard')}</h1>
-                        <h1 className="text-sm font-bold tracking-tight uppercase md:hidden">Admin</h1>
+                        <h1 className="text-sm font-bold tracking-tight uppercase">{t('admin.dashboard')}</h1>
                     </div>
 
                     <button

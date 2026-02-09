@@ -1,5 +1,5 @@
 import { Routes, Route, Outlet, Navigate } from 'react-router-dom';
-import { Suspense, lazy } from 'react';
+import { Suspense, lazy, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import { PageLoading } from './components/common/Loading';
@@ -40,23 +40,44 @@ const PublicLayout = () => (
 );
 
 // Admin layout
-const AdminLayout = () => (
-    <div className="min-h-screen bg-[var(--background)]">
-        <Sidebar />
-        <main className="ml-64 min-h-screen border-l border-[var(--accents-2)]">
-            <Outlet />
-        </main>
-        <Toaster position="top-center" toastOptions={{
-            style: {
-                background: 'var(--background)',
-                color: 'var(--foreground)',
-                border: '1px solid var(--accents-2)',
-                fontSize: '14px',
-                borderRadius: '8px'
-            }
-        }} />
-    </div>
-);
+const AdminLayout = () => {
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    return (
+        <div className="min-h-screen bg-[var(--background)]">
+            {/* Mobile Header with Hamburger */}
+            <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[var(--background)] border-b border-[var(--accents-2)] z-30 flex items-center justify-between px-4">
+                <button
+                    onClick={() => setSidebarOpen(true)}
+                    className="p-2 text-[var(--foreground)]"
+                >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M3 12h18M3 6h18M3 18h18" />
+                    </svg>
+                </button>
+                <span className="font-bold tracking-tighter text-sm uppercase">Admin</span>
+                <div className="w-10" /> {/* Spacer for centering */}
+            </header>
+
+            <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
+            {/* Main content - margin only on desktop */}
+            <main className="lg:ml-64 min-h-screen lg:border-l border-[var(--accents-2)] pt-16 lg:pt-0">
+                <Outlet />
+            </main>
+
+            <Toaster position="top-center" toastOptions={{
+                style: {
+                    background: 'var(--background)',
+                    color: 'var(--foreground)',
+                    border: '1px solid var(--accents-2)',
+                    fontSize: '14px',
+                    borderRadius: '8px'
+                }
+            }} />
+        </div>
+    );
+};
 
 function App() {
     return (
