@@ -2,11 +2,14 @@ import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import api from '../../api/axios';
 import { toast } from 'react-hot-toast';
+import { useLanguage } from '../../context/LanguageContext';
 
 const MessagesViewer = () => {
+    const { t } = useLanguage();
     const [messages, setMessages] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedMessage, setSelectedMessage] = useState(null);
+    const [showDetail, setShowDetail] = useState(false);
 
     useEffect(() => { fetchMessages(); }, []);
 
@@ -15,7 +18,7 @@ const MessagesViewer = () => {
             const response = await api.get('/messages');
             setMessages(response.data.data || []);
         } catch (error) {
-            toast.error('Failed to load messages');
+            toast.error(t('admin.common.error'));
         } finally {
             setIsLoading(false);
         }
@@ -26,42 +29,39 @@ const MessagesViewer = () => {
             await api.patch(`/messages/${id}/read`);
             setMessages(prev => prev.map(m => m._id === id ? { ...m, read: true } : m));
         } catch (error) {
-            toast.error('Failed to mark as read');
+            // silent fail
         }
     };
 
     const openMessage = (msg) => {
         setSelectedMessage(msg);
+        setShowDetail(true);
         if (!msg.read) markAsRead(msg._id);
     };
 
-    const handleDelete = async (id) => {
-        console.log('Attempting to delete message with ID:', id);
-        if (!window.confirm('Delete this message?')) return;
-        try {
-            const response = await api.delete(`/messages/${id}`);
-            console.log('Delete response:', response);
-            toast.success('Message deleted');
-            setMessages(prev => prev.filter(m => m._id !== id));
-            if (selectedMessage?._id === id) setSelectedMessage(null);
-        } catch (error) {
-            console.error('Delete error:', error);
-            toast.error('Failed to delete');
-        }
+    const handleBack = () => {
+        setShowDetail(false);
+        // Don't clear selectedMessage so it stays highlighted if we go back to desktop/list?
+        // Actually, clearing it is fine or keeping it. Keeping it is better.
     };
 
-    const deleteAllRead = async () => {
-        if (!window.confirm('Delete all read messages?')) return;
+    const handleDelete = async (id) => {
+        if (!window.confirm(t('admin.common.confirmDelete'))) return;
         try {
-            await api.delete('/messages/read');
-            toast.success('Read messages deleted');
-            fetchMessages();
+            await api.delete(`/messages/${id}`);
+            toast.success(t('admin.common.success'));
+            setMessages(prev => prev.filter(m => m._id !== id));
+            if (selectedMessage?._id === id) {
+                setSelectedMessage(null);
+                setShowDetail(false);
+            }
         } catch (error) {
-            toast.error('Failed to delete');
+            toast.error(t('admin.common.error'));
         }
     };
 
     const formatDate = (dateString) => {
+        if (!dateString) return '';
         const date = new Date(dateString);
         return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
     };
@@ -69,30 +69,25 @@ const MessagesViewer = () => {
     const unreadCount = messages.filter(m => !m.read).length;
 
     return (
-        <div className="h-[calc(100vh-100px)] flex flex-col p-6">
-            <Helmet><title>Messages | Admin</title></Helmet>
+        <div className="h-[calc(100vh-80px)] md:h-[calc(100vh-100px)] flex flex-col p-4 md:p-6">
+            <Helmet><title>{t('admin.messages.title')} | Admin</title></Helmet>
 
-            <div className="flex items-center justify-between mb-8">
+            <div className={`flex items-center justify-between mb-4 md:mb-8 ${showDetail ? 'hidden md:flex' : 'flex'}`}>
                 <div className="space-y-1">
-                    <h1 className="text-3xl font-bold tracking-tighter">Messages</h1>
-                    <p className="text-[var(--accents-5)] text-sm font-mono font-bold uppercase tracking-widest">
-                        {unreadCount} unread_transmissions
+                    <h1 className="text-2xl md:text-3xl font-bold tracking-tighter">{t('admin.messages.title')}</h1>
+                    <p className="text-[var(--accents-5)] text-xs md:text-sm font-mono font-bold uppercase tracking-widest">
+                        {unreadCount} {t('admin.messages.management')}
                     </p>
                 </div>
-                {messages.some(m => m.read) && (
-                    <button onClick={deleteAllRead} className="v-btn-ghost h-8 px-3 text-xs text-error-light hover:text-error-dark">
-                        Flush Archived
-                    </button>
-                )}
             </div>
 
-            <div className="flex-1 grid lg:grid-cols-2 gap-6 min-h-0">
+            <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-0 relative">
                 {/* Messages List */}
-                <div className="v-card p-0 flex flex-col overflow-hidden">
+                <div className={`v-card p-0 flex flex-col overflow-hidden ${showDetail ? 'hidden lg:flex' : 'flex'} h-full`}>
                     {isLoading ? (
-                        <div className="flex-1 flex items-center justify-center p-8 text-sm text-[var(--accents-5)]">Connecting to message stream...</div>
+                        <div className="flex-1 flex items-center justify-center p-8 text-sm text-[var(--accents-5)]">{t('admin.projects.table.loading')}</div>
                     ) : messages.length === 0 ? (
-                        <div className="flex-1 flex items-center justify-center p-8 text-sm text-[var(--accents-5)]">No signals detected.</div>
+                        <div className="flex-1 flex items-center justify-center p-8 text-sm text-[var(--accents-5)]">{t('admin.common.noResults')}</div>
                     ) : (
                         <div className="flex-1 overflow-y-auto">
                             {messages.map((msg) => (
@@ -119,13 +114,18 @@ const MessagesViewer = () => {
                 </div>
 
                 {/* Message Detail */}
-                <div className="v-card p-0 flex flex-col overflow-hidden">
+                <div className={`v-card p-0 flex flex-col overflow-hidden ${showDetail ? 'flex absolute inset-0 z-10 lg:static lg:z-auto' : 'hidden lg:flex'} h-full bg-[var(--background)]`}>
                     {selectedMessage ? (
                         <>
-                            <div className="p-6 border-b border-[var(--accents-2)] flex items-start justify-between">
-                                <div>
-                                    <h3 className="text-xl font-bold tracking-tight mb-1">{selectedMessage.name}</h3>
-                                    <a href={`mailto:${selectedMessage.email}`} className="text-sm text-primary hover:underline font-mono">{selectedMessage.email}</a>
+                            <div className="p-4 md:p-6 border-b border-[var(--accents-2)] flex items-start justify-between bg-[var(--background)]">
+                                <div className="flex items-center gap-3">
+                                    <button onClick={handleBack} className="lg:hidden p-2 -ml-2 text-[var(--accents-5)]">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
+                                    </button>
+                                    <div>
+                                        <h3 className="text-lg md:text-xl font-bold tracking-tight mb-1">{selectedMessage.name}</h3>
+                                        <a href={`mailto:${selectedMessage.email}`} className="text-xs md:text-sm text-primary hover:underline font-mono">{selectedMessage.email}</a>
+                                    </div>
                                 </div>
                                 <button onClick={() => handleDelete(selectedMessage._id)} className="p-2 text-[var(--accents-3)] hover:text-error-light transition-colors">
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -134,7 +134,7 @@ const MessagesViewer = () => {
                                 </button>
                             </div>
 
-                            <div className="flex-1 p-6 overflow-y-auto">
+                            <div className="flex-1 p-4 md:p-6 overflow-y-auto bg-[var(--background)]">
                                 <div className="prose prose-sm dark:prose-invert max-w-none">
                                     <p className="whitespace-pre-wrap text-sm leading-relaxed">{selectedMessage.message}</p>
                                 </div>
@@ -142,14 +142,14 @@ const MessagesViewer = () => {
 
                             <div className="p-4 bg-[var(--accents-1)] border-t border-[var(--accents-2)]">
                                 <span className="text-[10px] font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">
-                                    Timestamp: {formatDate(selectedMessage.createdAt)}
+                                    {t('admin.messages.date')}: {formatDate(selectedMessage.createdAt)}
                                 </span>
                             </div>
                         </>
                     ) : (
                         <div className="flex-1 flex flex-col items-center justify-center text-[var(--accents-4)] p-8">
                             <svg className="w-12 h-12 mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                            <p className="text-sm">Select a transmission to decypher.</p>
+                            <p className="text-sm">{t('admin.messages.view')}</p>
                         </div>
                     )}
                 </div>

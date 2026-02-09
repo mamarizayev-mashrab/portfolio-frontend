@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import api from '../../api/axios';
 import { toast } from 'react-hot-toast';
+import { useLanguage } from '../../context/LanguageContext';
 
 const ProjectsManager = () => {
+    const { t } = useLanguage();
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -32,7 +34,7 @@ const ProjectsManager = () => {
             const response = await api.get('/projects');
             setProjects(response.data.data || []);
         } catch (error) {
-            toast.error('Failed to load projects');
+            toast.error(t('admin.common.error'));
         } finally {
             setLoading(false);
         }
@@ -103,83 +105,82 @@ const ProjectsManager = () => {
         try {
             if (editingProject) {
                 await api.put(`/projects/${editingProject._id}`, formData);
-                toast.success('Project updated');
+                toast.success(t('admin.common.success'));
             } else {
                 await api.post('/projects', formData);
-                toast.success('Project created');
+                toast.success(t('admin.common.success'));
             }
             handleCloseModal();
             fetchProjects();
         } catch (error) {
-            toast.error('Operation failed');
+            toast.error(t('admin.common.error'));
         } finally {
             setIsSaving(false);
         }
     };
 
     const handleDelete = async (id) => {
-        console.log('Attempting to delete project with ID:', id);
-        if (!window.confirm('Confirm deletion?')) return;
+        if (!window.confirm(t('admin.common.confirmDelete'))) return;
 
         try {
-            const response = await api.delete(`/projects/${id}`);
-            console.log('Delete response:', response);
-            toast.success('Project deleted');
+            await api.delete(`/projects/${id}`);
+            toast.success(t('admin.common.success'));
             await fetchProjects();
         } catch (error) {
-            console.error('Delete error:', error);
-            const errMsg = error.response?.data?.message || 'Deletion failed';
+            const errMsg = error.response?.data?.message || t('admin.common.error');
             toast.error(errMsg);
         }
     };
 
     return (
-        <div className="p-12 space-y-12">
-            <div className="flex items-center justify-between">
+        <div className="p-4 md:p-12 space-y-8 md:space-y-12">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div className="space-y-1">
-                    <h2 className="text-3xl font-bold tracking-tighter">Projects</h2>
-                    <p className="text-sm text-[var(--accents-5)] uppercase font-mono font-bold tracking-widest tracking-tightest">management_module</p>
+                    <h2 className="text-2xl md:text-3xl font-bold tracking-tighter">{t('admin.projects.title')}</h2>
+                    <p className="text-sm text-[var(--accents-5)] uppercase font-mono font-bold tracking-widest tracking-tightest">{t('admin.projects.management')}</p>
                 </div>
-                <button onClick={() => handleOpenModal()} className="v-btn-primary h-10 px-4">
-                    New Project
+                <button onClick={() => handleOpenModal()} className="v-btn-primary h-10 px-4 w-full md:w-auto">
+                    {t('admin.projects.newProject')}
                 </button>
             </div>
 
             <div className="v-card p-0 overflow-hidden">
-                <table className="w-full text-left">
-                    <thead className="bg-[var(--accents-1)] border-b border-[var(--accents-2)]">
-                        <tr className="text-[10px] font-mono font-bold uppercase tracking-widest text-[var(--accents-4)]">
-                            <th className="px-6 py-4">Title</th>
-                            <th className="px-6 py-4">Status</th>
-                            <th className="px-6 py-4">Featured</th>
-                            <th className="px-6 py-4 text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[var(--accents-2)]">
-                        {loading ? (
-                            <tr><td colSpan="4" className="p-8 text-center text-sm">Loading data...</td></tr>
-                        ) : projects.map((p) => (
-                            <tr key={p._id} className="hover:bg-[var(--accents-1)] transition-colors">
-                                <td className="px-6 py-5 text-sm font-medium">{p.title?.en}</td>
-                                <td className="px-6 py-5">
-                                    <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold border ${p.status === 'published' ? 'bg-success-light/10 text-success-light border-success-light/20' : 'bg-[var(--accents-2)] text-[var(--accents-5)]'}`}>{p.status}</span>
-                                </td>
-                                <td className="px-6 py-5 text-sm">{p.featured ? 'Yes' : 'No'}</td>
-                                <td className="px-6 py-5 text-right space-x-4">
-                                    <button onClick={() => handleOpenModal(p)} className="text-sm font-medium hover:underline text-primary">Edit</button>
-                                    <button onClick={() => handleDelete(p._id)} className="text-sm font-medium hover:underline text-error-light">Delete</button>
-                                </td>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left min-w-[800px]">
+                        <thead className="bg-[var(--accents-1)] border-b border-[var(--accents-2)]">
+                            <tr className="text-[10px] font-mono font-bold uppercase tracking-widest text-[var(--accents-4)]">
+                                <th className="px-6 py-4">{t('admin.projects.table.title')}</th>
+                                <th className="px-6 py-4">{t('admin.projects.table.status')}</th>
+                                <th className="px-6 py-4">{t('admin.projects.table.featured')}</th>
+                                <th className="px-6 py-4 text-right">{t('admin.projects.table.actions')}</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody className="divide-y divide-[var(--accents-2)]">
+                            {loading ? (
+                                <tr><td colSpan="4" className="p-8 text-center text-sm">{t('admin.projects.table.loading')}</td></tr>
+                            ) : projects.map((p) => (
+                                <tr key={p._id} className="hover:bg-[var(--accents-1)] transition-colors">
+                                    <td className="px-6 py-5 text-sm font-medium">{p.title?.en}</td>
+                                    <td className="px-6 py-5">
+                                        <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold border ${p.status === 'published' ? 'bg-success-light/10 text-success-light border-success-light/20' : 'bg-[var(--accents-2)] text-[var(--accents-5)]'}`}>{p.status}</span>
+                                    </td>
+                                    <td className="px-6 py-5 text-sm">{p.featured ? t('admin.projects.table.yes') : t('admin.projects.table.no')}</td>
+                                    <td className="px-6 py-5 text-right space-x-4">
+                                        <button onClick={() => handleOpenModal(p)} className="text-sm font-medium hover:underline text-primary">{t('admin.common.edit')}</button>
+                                        <button onClick={() => handleDelete(p._id)} className="text-sm font-medium hover:underline text-error-light">{t('admin.common.delete')}</button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             {showModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-[var(--background)]/80 backdrop-blur-sm">
-                    <div className="v-card w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl space-y-8">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6 bg-[var(--background)]/80 backdrop-blur-sm">
+                    <div className="v-card w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl space-y-8 animate-page-fade">
                         <div className="flex items-center justify-between border-b border-[var(--accents-2)] pb-6 mb-6">
-                            <h3 className="text-xl font-bold tracking-tight">{editingProject ? 'Modify Project' : 'New Project'}</h3>
+                            <h3 className="text-xl font-bold tracking-tight">{editingProject ? t('admin.projects.modal.modify') : t('admin.projects.modal.create')}</h3>
                             <button onClick={handleCloseModal} className="text-2xl grayscale opacity-50 hover:opacity-100">×</button>
                         </div>
 
@@ -187,7 +188,7 @@ const ProjectsManager = () => {
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 {['UZ', 'EN', 'RU'].map(l => (
                                     <div key={l} className="space-y-1">
-                                        <label className="text-[10px] font-mono font-bold text-[var(--accents-4)] uppercase">Title ({l})</label>
+                                        <label className="text-[10px] font-mono font-bold text-[var(--accents-4)] uppercase">{t('admin.projects.modal.title', { lang: l })}</label>
                                         <input className="v-input" value={formData.title[l.toLowerCase()]} onChange={(e) => handleChange('title', e.target.value, l.toLowerCase())} required />
                                     </div>
                                 ))}
@@ -196,7 +197,7 @@ const ProjectsManager = () => {
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 {['UZ', 'EN', 'RU'].map(l => (
                                     <div key={l} className="space-y-1">
-                                        <label className="text-[10px] font-mono font-bold text-[var(--accents-4)] uppercase">Description ({l})</label>
+                                        <label className="text-[10px] font-mono font-bold text-[var(--accents-4)] uppercase">{t('admin.projects.modal.description', { lang: l })}</label>
                                         <textarea className="v-input h-24" value={formData.description[l.toLowerCase()]} onChange={(e) => handleChange('description', e.target.value, l.toLowerCase())} required />
                                     </div>
                                 ))}
@@ -204,21 +205,21 @@ const ProjectsManager = () => {
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-mono font-bold text-[var(--accents-4)] uppercase">Image URL</label>
+                                    <label className="text-[10px] font-mono font-bold text-[var(--accents-4)] uppercase">{t('admin.projects.modal.image')}</label>
                                     <input className="v-input" value={formData.image} onChange={(e) => handleChange('image', e.target.value)} placeholder="https://..." />
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-mono font-bold text-[var(--accents-4)] uppercase">Live URL</label>
+                                    <label className="text-[10px] font-mono font-bold text-[var(--accents-4)] uppercase">{t('admin.projects.modal.liveUrl')}</label>
                                     <input className="v-input" value={formData.liveUrl} onChange={(e) => handleChange('liveUrl', e.target.value)} placeholder="https://..." />
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-mono font-bold text-[var(--accents-4)] uppercase">GitHub URL</label>
+                                    <label className="text-[10px] font-mono font-bold text-[var(--accents-4)] uppercase">{t('admin.projects.modal.githubUrl')}</label>
                                     <input className="v-input" value={formData.githubUrl} onChange={(e) => handleChange('githubUrl', e.target.value)} placeholder="https://github.com/..." />
                                 </div>
                             </div>
 
                             <div className="space-y-1">
-                                <label className="text-[10px] font-mono font-bold text-[var(--accents-4)] uppercase">Technologies (Press Enter to add)</label>
+                                <label className="text-[10px] font-mono font-bold text-[var(--accents-4)] uppercase">{t('admin.projects.modal.technologies')}</label>
                                 <input className="v-input" value={techInput} onChange={(e) => setTechInput(e.target.value)} onKeyDown={handleAddTech} placeholder="React, Node.js, MongoDB..." />
                                 <div className="flex flex-wrap gap-2 pt-2">
                                     {formData.technologies.map(t => (
@@ -231,9 +232,9 @@ const ProjectsManager = () => {
                             </div>
 
                             <div className="flex justify-end gap-3 pt-6 border-t border-[var(--accents-2)]">
-                                <button type="button" onClick={handleCloseModal} className="v-btn-ghost h-10 px-4">Cancel</button>
+                                <button type="button" onClick={handleCloseModal} className="v-btn-ghost h-10 px-4">{t('admin.projects.modal.cancel')}</button>
                                 <button type="submit" disabled={isSaving} className="v-btn-primary h-10 px-8">
-                                    {isSaving ? 'Deploying...' : 'Save Configuration'}
+                                    {isSaving ? t('admin.projects.modal.deploying') : t('admin.projects.modal.save')}
                                 </button>
                             </div>
                         </form>

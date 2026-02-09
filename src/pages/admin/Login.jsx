@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { toast } from 'react-hot-toast';
+import { useLanguage } from '../../context/LanguageContext';
 
 const Login = () => {
+    const { t } = useLanguage();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -23,13 +25,13 @@ const Login = () => {
         try {
             const success = await login(email, password);
             if (success) {
-                toast.success('Successfully logged in');
+                toast.success(t('admin.common.success'));
                 navigate('/admin/dashboard');
             } else {
-                toast.error('Invalid credentials');
+                toast.error(t('admin.common.error'));
             }
         } catch (error) {
-            toast.error(error.message || 'Login failed');
+            toast.error(error.message || t('admin.common.error'));
         } finally {
             setIsLoading(false);
         }
@@ -39,21 +41,21 @@ const Login = () => {
         <div className="min-h-screen bg-[var(--background)] flex flex-col items-center justify-center p-6 v-grid-bg">
             <div className="w-full max-w-md space-y-8 animate-page-fade">
                 {/* Header */}
-                <div className="flex flex-col items-center gap-4">
+                <div className="flex flex-col items-center gap-4 text-center">
                     <Link to="/" className="hover:opacity-80 transition-opacity">
                         <svg width="40" height="40" viewBox="0 0 76 65" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[var(--foreground)] fill-current">
                             <path d="M37.5274 0L75.0548 65H0L37.5274 0Z" />
                         </svg>
                     </Link>
-                    <h1 className="text-2xl font-bold tracking-tighter">Login to Portfolio Admin</h1>
-                    <p className="text-sm text-[var(--accents-5)] text-center">Enter your credentials to access the deployment controls.</p>
+                    <h1 className="text-2xl font-bold tracking-tighter">{t('login.title')}</h1>
+                    <p className="text-sm text-[var(--accents-5)]">{t('login.subtitle')}</p>
                 </div>
 
                 {/* Card */}
                 <div className="v-card border-[var(--accents-2)] shadow-magical">
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="space-y-2">
-                            <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">Administrator_Email</label>
+                            <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">{t('login.email')}</label>
                             <input
                                 type="email"
                                 value={email}
@@ -66,7 +68,7 @@ const Login = () => {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">Secret_Password</label>
+                            <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">{t('login.password')}</label>
                             <input
                                 type="password"
                                 value={password}
@@ -84,12 +86,12 @@ const Login = () => {
                             className={`w-full h-11 v-btn-primary ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
                             {isLoading ? (
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 justify-center">
                                     <div className="w-4 h-4 border-2 border-[var(--background)] border-t-transparent animate-spin rounded-full" />
-                                    <span>Authorizing...</span>
+                                    <span>{t('login.loading')}</span>
                                 </div>
                             ) : (
-                                'Continue to Dashboard'
+                                t('login.submit')
                             )}
                         </button>
                     </form>
@@ -100,7 +102,7 @@ const Login = () => {
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M19 12H5M12 19l-7-7 7-7" />
                         </svg>
-                        Back to site
+                        {t('login.back')}
                     </Link>
                 </div>
             </div>

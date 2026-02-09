@@ -4,8 +4,10 @@ import api from '../../api/axios';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 const SettingsPage = () => {
+    const { t } = useLanguage();
     const { changePassword } = useAuth();
     const { theme, setTheme, setPrimaryColor } = useTheme();
     const [settings, setSettings] = useState(null);
@@ -22,7 +24,6 @@ const SettingsPage = () => {
         try {
             const response = await api.get('/settings');
             setSettings(response.data.data);
-            // Optionally sync if backend has a preference, but localStorage takes precedence usually
         } catch (error) {
             console.log('Settings not configured yet');
             setSettings({});
@@ -34,17 +35,14 @@ const SettingsPage = () => {
     const handleSaveSettings = async () => {
         setSaving(true);
         try {
-            // Updated settings to verify we are not sending removed fields
             const cleanSettings = { ...settings };
-
-            // Ensure we save the current theme preference as default
             if (!cleanSettings.theme) cleanSettings.theme = {};
             cleanSettings.theme.defaultMode = theme;
 
             await api.put('/settings', cleanSettings);
-            toast.success('Settings saved');
+            toast.success(t('admin.common.success'));
         } catch (error) {
-            toast.error('Failed to save settings');
+            toast.error(t('admin.common.error'));
         } finally {
             setSaving(false);
         }
@@ -66,39 +64,37 @@ const SettingsPage = () => {
 
     const handleThemeChange = (newTheme) => {
         setTheme(newTheme);
-        // Also update the form state so it gets saved to backend on "Save"
         updateSetting('theme.defaultMode', newTheme);
     };
 
     const handlePasswordChange = async (e) => {
         e.preventDefault();
         if (passwordData.newPassword !== passwordData.confirmPassword) {
-            toast.error("Passwords don't match");
+            toast.error(t('admin.settings.password.mismatch'));
             return;
         }
         if (passwordData.newPassword.length < 8) {
-            toast.error('Password must be at least 8 characters');
+            toast.error(t('admin.settings.password.rules'));
             return;
         }
 
         setChangingPassword(true);
         const result = await changePassword(passwordData.currentPassword, passwordData.newPassword);
         if (result.success) {
-            toast.success('Password changed successfully');
+            toast.success(t('admin.settings.password.success'));
             setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
         } else {
             console.error(result.message);
-            // Show exact message from backend
-            toast.error(result.message || 'Failed to change password. Ensure strong password requirements.');
+            toast.error(result.message || t('admin.common.error'));
         }
         setChangingPassword(false);
     };
 
     const tabs = [
-        { id: 'password', label: 'Password' },
-        { id: 'contact', label: 'Contact Info' },
-        { id: 'social', label: 'Social Links' },
-        { id: 'theme', label: 'Theme' }
+        { id: 'password', label: t('admin.settings.tabs.password') },
+        { id: 'contact', label: t('admin.settings.tabs.contact') },
+        { id: 'social', label: t('admin.settings.tabs.social') },
+        { id: 'theme', label: t('admin.settings.tabs.theme') }
     ];
 
     if (loading) {
@@ -110,16 +106,16 @@ const SettingsPage = () => {
     }
 
     return (
-        <div className="p-6">
-            <Helmet><title>Settings | Admin</title></Helmet>
+        <div className="p-4 md:p-6">
+            <Helmet><title>{t('admin.settings.title')} | Admin</title></Helmet>
             <div className="space-y-8">
                 <div className="space-y-1">
-                    <h1 className="text-3xl font-bold tracking-tighter">Settings</h1>
-                    <p className="text-[var(--accents-5)] text-sm font-mono font-bold uppercase tracking-widest">system_configuration</p>
+                    <h1 className="text-2xl md:text-3xl font-bold tracking-tighter">{t('admin.settings.title')}</h1>
+                    <p className="text-[var(--accents-5)] text-sm font-mono font-bold uppercase tracking-widest">{t('admin.settings.management')}</p>
                 </div>
 
                 {/* Tabs */}
-                <div className="flex gap-1 border-b border-[var(--accents-2)]">
+                <div className="flex gap-1 border-b border-[var(--accents-2)] overflow-x-auto whitespace-nowrap pb-1">
                     {tabs.map((tab) => (
                         <button
                             key={tab.id}
@@ -135,13 +131,13 @@ const SettingsPage = () => {
                 </div>
 
                 {/* Tab Content */}
-                <div className="v-card">
+                <div className="v-card animate-page-fade">
                     {/* Password Tab */}
                     {activeTab === 'password' && (
                         <form onSubmit={handlePasswordChange} className="max-w-md space-y-6">
-                            <h3 className="text-xl font-bold tracking-tight">Change Password</h3>
+                            <h3 className="text-xl font-bold tracking-tight">{t('admin.settings.password.title')}</h3>
                             <div className="space-y-2">
-                                <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">Current Password</label>
+                                <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">{t('admin.settings.password.current')}</label>
                                 <input
                                     type="password"
                                     value={passwordData.currentPassword}
@@ -151,7 +147,7 @@ const SettingsPage = () => {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">New Password</label>
+                                <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">{t('admin.settings.password.new')}</label>
                                 <input
                                     type="password"
                                     value={passwordData.newPassword}
@@ -160,10 +156,10 @@ const SettingsPage = () => {
                                     required
                                     minLength={8}
                                 />
-                                <p className="text-xs text-[var(--accents-5)]">Min 8 chars, uppercase, lowercase, number required.</p>
+                                <p className="text-xs text-[var(--accents-5)]">{t('admin.settings.password.rules')}</p>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">Confirm New Password</label>
+                                <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">{t('admin.settings.password.confirm')}</label>
                                 <input
                                     type="password"
                                     value={passwordData.confirmPassword}
@@ -172,8 +168,8 @@ const SettingsPage = () => {
                                     required
                                 />
                             </div>
-                            <button type="submit" disabled={changingPassword} className="v-btn-primary h-10 px-6">
-                                {changingPassword ? 'Updating...' : 'Change Password'}
+                            <button type="submit" disabled={changingPassword} className="v-btn-primary h-10 px-6 w-full md:w-auto">
+                                {changingPassword ? t('admin.settings.password.updating') : t('admin.settings.password.submit')}
                             </button>
                         </form>
                     )}
@@ -181,9 +177,9 @@ const SettingsPage = () => {
                     {/* Contact Info Tab */}
                     {activeTab === 'contact' && settings && (
                         <div className="max-w-md space-y-6">
-                            <h3 className="text-xl font-bold tracking-tight">Contact Information</h3>
+                            <h3 className="text-xl font-bold tracking-tight">{t('admin.settings.contact.title')}</h3>
                             <div className="space-y-2">
-                                <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">Email Address</label>
+                                <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">{t('admin.settings.contact.email')}</label>
                                 <input
                                     type="email"
                                     value={settings.contact?.email || ''}
@@ -193,25 +189,23 @@ const SettingsPage = () => {
                                 />
                             </div>
 
-                            {/* Phone Input removed */}
-
                             <div className="space-y-4 pt-4 border-t border-[var(--accents-2)]">
-                                <span className="text-sm font-bold">Location</span>
-                                {['uz', 'en', 'ru'].map(lang => (
+                                <span className="text-sm font-bold">{t('admin.settings.contact.location')}</span>
+                                {['UZ', 'EN', 'RU'].map(lang => (
                                     <div key={lang} className="space-y-2">
-                                        <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">Location ({lang.toUpperCase()})</label>
+                                        <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">{t('admin.settings.contact.location')} ({lang})</label>
                                         <input
                                             type="text"
-                                            value={settings.contact?.location?.[lang] || ''}
-                                            onChange={(e) => updateSetting(`contact.location.${lang}`, e.target.value)}
+                                            value={settings.contact?.location?.[lang.toLowerCase()] || ''}
+                                            onChange={(e) => updateSetting(`contact.location.${lang.toLowerCase()}`, e.target.value)}
                                             className="v-input"
                                             placeholder={`Tashkent, Uzbekistan`}
                                         />
                                     </div>
                                 ))}
                             </div>
-                            <button onClick={handleSaveSettings} disabled={saving} className="v-btn-primary h-10 px-6">
-                                {saving ? 'Saving...' : 'Save Changes'}
+                            <button onClick={handleSaveSettings} disabled={saving} className="v-btn-primary h-10 px-6 w-full md:w-auto">
+                                {saving ? t('admin.common.save') + '...' : t('admin.common.save')}
                             </button>
                         </div>
                     )}
@@ -219,8 +213,7 @@ const SettingsPage = () => {
                     {/* Social Links Tab */}
                     {activeTab === 'social' && settings && (
                         <div className="max-w-md space-y-6">
-                            <h3 className="text-xl font-bold tracking-tight">Social Links</h3>
-                            {/* Instagram, Telegram removed */}
+                            <h3 className="text-xl font-bold tracking-tight">{t('admin.settings.social.title')}</h3>
                             {['github', 'linkedin', 'twitter'].map((social) => (
                                 <div key={social} className="space-y-2">
                                     <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">{social}</label>
@@ -233,8 +226,8 @@ const SettingsPage = () => {
                                     />
                                 </div>
                             ))}
-                            <button onClick={handleSaveSettings} disabled={saving} className="v-btn-primary h-10 px-6">
-                                {saving ? 'Saving...' : 'Save Changes'}
+                            <button onClick={handleSaveSettings} disabled={saving} className="v-btn-primary h-10 px-6 w-full md:w-auto">
+                                {saving ? t('admin.common.save') + '...' : t('admin.common.save')}
                             </button>
                         </div>
                     )}
@@ -242,28 +235,28 @@ const SettingsPage = () => {
                     {/* Theme Tab */}
                     {activeTab === 'theme' && settings && (
                         <div className="max-w-md space-y-6">
-                            <h3 className="text-xl font-bold tracking-tight">Theme Settings</h3>
+                            <h3 className="text-xl font-bold tracking-tight">{t('admin.settings.theme.title')}</h3>
                             <div className="space-y-2">
-                                <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">Theme Mode</label>
+                                <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">{t('admin.settings.theme.mode')}</label>
                                 <div className="flex gap-4">
                                     <button
                                         type="button"
                                         onClick={() => handleThemeChange('light')}
                                         className={`flex-1 p-3 rounded-md border-2 font-bold transition-all ${theme === 'light' ? 'border-[var(--foreground)] bg-[var(--accents-1)] text-[var(--foreground)]' : 'border-[var(--accents-2)] text-[var(--accents-5)]'}`}
                                     >
-                                        Light
+                                        {t('admin.settings.theme.light')}
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => handleThemeChange('dark')}
                                         className={`flex-1 p-3 rounded-md border-2 font-bold transition-all ${theme === 'dark' ? 'border-[var(--foreground)] bg-[var(--accents-1)] text-[var(--foreground)]' : 'border-[var(--accents-2)] text-[var(--accents-5)]'}`}
                                     >
-                                        Dark
+                                        {t('admin.settings.theme.dark')}
                                     </button>
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">Primary Color</label>
+                                <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">{t('admin.settings.theme.primaryColor')}</label>
                                 <div className="flex gap-3">
                                     <input
                                         type="color"
@@ -287,8 +280,8 @@ const SettingsPage = () => {
                                     />
                                 </div>
                             </div>
-                            <button onClick={handleSaveSettings} disabled={saving} className="v-btn-primary h-10 px-6">
-                                {saving ? 'Saving...' : 'Save Changes'}
+                            <button onClick={handleSaveSettings} disabled={saving} className="v-btn-primary h-10 px-6 w-full md:w-auto">
+                                {saving ? t('admin.common.save') + '...' : t('admin.common.save')}
                             </button>
                         </div>
                     )}

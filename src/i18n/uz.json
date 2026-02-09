@@ -127,5 +127,136 @@
         "subtitle": "Sahifa topilmadi",
         "description": "Siz qidirayotgan sahifa mavjud emas yoki ko'chirilgan.",
         "backHome": "Bosh sahifaga qaytish"
+    },
+    "login": {
+        "title": "Admin Kirish",
+        "subtitle": "Boshqaruv paneliga kirish uchun ma'lumotlaringizni kiriting.",
+        "email": "Administrator Email",
+        "password": "Maxfiy Parol",
+        "submit": "Boshqaruv paneliga o'tish",
+        "loading": "Tasdiqlanmoqda...",
+        "back": "Saytga qaytish"
+    },
+    "admin": {
+        "dashboard": "Boshqaruv Paneli",
+        "signOut": "Chiqish",
+        "overview": "Umumiy ko'rinish",
+        "systemStatus": "Tizim holati: Infratuzilma_OK",
+        "stats": {
+            "projects": "Loyihalar",
+            "skills": "Ko'nikmalar",
+            "experiences": "Tajriba",
+            "messages": "Xabarlar"
+        },
+        "nav": {
+            "dashboard": "Boshqaruv",
+            "projects": "Loyihalar",
+            "skills": "Ko'nikmalar",
+            "experience": "Tajriba",
+            "messages": "Xabarlar",
+            "settings": "Sozlamalar"
+        },
+        "projects": {
+            "title": "Loyihalar",
+            "management": "Boshqaruv moduli",
+            "newProject": "Yangi Loyiha",
+            "table": {
+                "title": "Nomi",
+                "status": "Holati",
+                "featured": "Tanlangan",
+                "actions": "Amallar",
+                "loading": "Yuklanmoqda...",
+                "yes": "Ha",
+                "no": "Yo'q"
+            },
+            "modal": {
+                "modify": "Loyihani Tahrirlash",
+                "create": "Yangi Loyiha",
+                "title": "Nom ({lang})",
+                "description": "Tavsif ({lang})",
+                "image": "Rasm URL",
+                "liveUrl": "Jonli URL",
+                "githubUrl": "GitHub URL",
+                "technologies": "Texnologiyalar (Qo'shish uchun Enter bosing)",
+                "cancel": "Bekor qilish",
+                "save": "Saqlash",
+                "deploying": "Saqlanmoqda..."
+            }
+        },
+        "skills": {
+            "title": "Ko'nikmalar",
+            "management": "Ko'nikmalar Boshqaruvi",
+            "newSkill": "Yangi Ko'nikma",
+            "category": "Kategoriya",
+            "name": "Nomi",
+            "proficiency": "Daraja",
+            "icon": "Belgi (Icon)"
+        },
+        "experience": {
+            "title": "Tajriba",
+            "management": "Ish Tarixi Boshqaruvi",
+            "newExperience": "Yangi Tajriba",
+            "position": "Lavozim",
+            "company": "Kompaniya",
+            "period": "Davr",
+            "location": "Joylashuv",
+            "type": "Turi"
+        },
+        "messages": {
+            "title": "Xabarlar",
+            "management": "Kelgan Xabarlar",
+            "sender": "Yuboruvchi",
+            "subject": "Mavzu",
+            "date": "Sana",
+            "read": "O'qilgan",
+            "view": "Ko'rish"
+        },
+        "settings": {
+            "title": "Sozlamalar",
+            "management": "Tizim Konfiguratsiyasi",
+            "language": "Til",
+            "profile": "Profil",
+            "tabs": {
+                "password": "Parol",
+                "contact": "Aloqa",
+                "social": "Ijtimoiy",
+                "theme": "Mavzu"
+            },
+            "password": {
+                "title": "Parolni o'zgartirish",
+                "current": "Joriy parol",
+                "new": "Yangi parol",
+                "confirm": "Parolni tasdiqlash",
+                "submit": "Parolni o'zgartirish",
+                "updating": "Yangilanmoqda...",
+                "rules": "Min 8 ta belgi.",
+                "mismatch": "Parollar mos kelmadi",
+                "success": "Parol muvaffaqiyatli o'zgartirildi"
+            },
+            "contact": {
+                "title": "Aloqa ma'lumotlari",
+                "email": "Email manzil",
+                "location": "Joylashuv"
+            },
+            "social": {
+                "title": "Ijtimoiy tarmoqlar"
+            },
+            "theme": {
+                "title": "Mavzu sozlamalari",
+                "mode": "Rejim",
+                "primaryColor": "Asosiy rang",
+                "light": "Yorug'",
+                "dark": "Qorong'i"
+            }
+        },
+        "common": {
+            "edit": "Tahrirlash",
+            "delete": "O'chirish",
+            "save": "Saqlash",
+            "cancel": "Bekor qilish",
+            "confirmDelete": "O'chirishni tasdiqlaysizmi?",
+            "success": "Muvaffaqiyatli bajarildi",
+            "error": "Xatolik yuz berdi"
+        }
     }
 }
