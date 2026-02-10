@@ -81,7 +81,9 @@ const Dashboard = () => {
                 {/* Greeting */}
                 <div className="space-y-1">
                     <h2 className="text-2xl md:text-3xl font-bold tracking-tighter">{t('admin.overview')}</h2>
-                    <p className="text-[var(--accents-5)] text-xs md:text-sm">{t('admin.systemStatus')}</p>
+                    <p className="text-[var(--accents-5)] text-xs md:text-sm">
+                        {t('admin.systemStatus')}: <span className="text-success-dark font-mono font-bold">{t('admin.infraStatus')}</span>
+                    </p>
                 </div>
 
                 {/* Stats Grid */}
@@ -120,10 +122,10 @@ const Dashboard = () => {
 
             <footer className="v-container py-8 md:py-12 border-t border-[var(--accents-2)] px-4 md:px-6">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-[10px] font-mono text-[var(--accents-4)] uppercase tracking-[0.2em] font-bold text-center md:text-left">
-                    <span>Admin_Engine_v5.0.0</span>
+                    <span>{t('admin.footer.engine')}_VS.5.0.0</span>
                     <div className="flex gap-4">
-                        <span className="text-success-dark">● Operational</span>
-                        <span>API_V1</span>
+                        <span className="text-success-dark">● {t('admin.footer.status')}</span>
+                        <span>{t('admin.footer.api')}_V1</span>
                     </div>
                 </div>
             </footer>

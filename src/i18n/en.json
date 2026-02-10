@@ -141,7 +141,8 @@
         "dashboard": "Admin Dashboard",
         "signOut": "Sign Out",
         "overview": "Overview",
-        "systemStatus": "System Status: Infrastructure_OK",
+        "systemStatus": "System Status",
+        "infraStatus": "Infrastructure_OK",
         "stats": {
             "projects": "Projects",
             "skills": "Skills",
@@ -281,6 +282,11 @@
             "success": "Successfully completed",
             "error": "An error occurred",
             "noResults": "No results found"
+        },
+        "footer": {
+            "engine": "Admin Engine",
+            "status": "Operational",
+            "api": "API Version"
         }
     }
 }

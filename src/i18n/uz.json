@@ -141,7 +141,8 @@
         "dashboard": "Boshqaruv Paneli",
         "signOut": "Chiqish",
         "overview": "Umumiy ko'rinish",
-        "systemStatus": "Tizim holati: Infratuzilma_OK",
+        "systemStatus": "Tizim holati",
+        "infraStatus": "Infratuzilma_OK",
         "stats": {
             "projects": "Loyihalar",
             "skills": "Ko'nikmalar",
@@ -281,6 +282,11 @@
             "success": "Muvaffaqiyatli bajarildi",
             "error": "Xatolik yuz berdi",
             "noResults": "Ma'lumot topilmadi"
+        },
+        "footer": {
+            "engine": "Admin Dasturi",
+            "status": "Faol",
+            "api": "API Versiyasi"
         }
     }
 }
