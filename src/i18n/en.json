@@ -279,7 +279,8 @@
             "cancel": "Cancel",
             "confirmDelete": "Are you sure you want to delete?",
             "success": "Successfully completed",
-            "error": "An error occurred"
+            "error": "An error occurred",
+            "noResults": "No results found"
         }
     }
 }

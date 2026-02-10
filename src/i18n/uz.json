@@ -279,7 +279,8 @@
             "cancel": "Bekor qilish",
             "confirmDelete": "O'chirishni tasdiqlaysizmi?",
             "success": "Muvaffaqiyatli bajarildi",
-            "error": "Xatolik yuz berdi"
+            "error": "Xatolik yuz berdi",
+            "noResults": "Ma'lumot topilmadi"
         }
     }
 }
