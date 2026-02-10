@@ -180,7 +180,15 @@
                 "technologies": "Texnologiyalar (Qo'shish uchun Enter bosing)",
                 "cancel": "Bekor qilish",
                 "save": "Saqlash",
-                "deploying": "Saqlanmoqda..."
+                "deploying": "Saqlanmoqda...",
+                "statusTypes": {
+                    "pending": "Ko'rib chiqilmoqda",
+                    "approved": "Qabul qilindi",
+                    "rejected": "Rad etildi",
+                    "in_progress": "Jarayonda",
+                    "completed": "Tugatildi",
+                    "published": "Nashr qilindi"
+                }
             }
         },
         "skills": {
@@ -190,7 +198,16 @@
             "category": "Kategoriya",
             "name": "Nomi",
             "proficiency": "Daraja",
-            "icon": "Belgi (Icon)"
+            "icon": "Belgi (Icon)",
+            "categories": {
+                "frontend": "Frontend",
+                "backend": "Backend",
+                "mobile": "Mobil",
+                "database": "Ma'lumotlar bazasi",
+                "devops": "DevOps",
+                "tools": "Asboblar",
+                "other": "Boshqa"
+            }
         },
         "experience": {
             "title": "Tajriba",
@@ -200,7 +217,13 @@
             "company": "Kompaniya",
             "period": "Davr",
             "location": "Joylashuv",
-            "type": "Turi"
+            "type": "Turi",
+            "types": {
+                "work": "Ish",
+                "education": "O'qish",
+                "freelance": "Frilans",
+                "other": "Boshqa"
+            }
         },
         "messages": {
             "title": "Xabarlar",

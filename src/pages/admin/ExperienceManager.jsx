@@ -106,7 +106,9 @@ const ExperienceManager = () => {
 
     const formatDate = (dateString) => {
         if (!dateString) return '';
-        return new Date(dateString).toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+        const currentLang = localStorage.getItem('language') || 'uz';
+        const locale = currentLang === 'uz' ? 'uz-UZ' : currentLang === 'ru' ? 'ru-RU' : 'en-US';
+        return new Date(dateString).toLocaleDateString(locale, { year: 'numeric', month: 'short' });
     };
 
     return (
@@ -150,7 +152,9 @@ const ExperienceManager = () => {
                                                 <span className={`px-2 py-1 text-xs font-mono rounded border ${exp.type === 'work' ? 'border-primary/30 text-primary bg-primary/5' :
                                                     exp.type === 'education' ? 'border-cyan-500/30 text-cyan-500 bg-cyan-500/5' :
                                                         'border-[var(--accents-2)] text-[var(--accents-5)]'
-                                                    }`}>{exp.type}</span>
+                                                    }`}>
+                                                    {t(`admin.experience.types.${exp.type?.toLowerCase()}`, exp.type)}
+                                                </span>
                                             </td>
                                             <td className="p-4 text-right">
                                                 <button onClick={() => openModal(exp)} className="text-sm text-[var(--accents-5)] hover:text-[var(--foreground)] mr-4">{t('admin.common.edit')}</button>
@@ -174,30 +178,30 @@ const ExperienceManager = () => {
                         <form onSubmit={handleSubmit} className="space-y-6">
                             {/* Roles */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                {['UZ', 'EN', 'RU'].map((lang) => (
+                                {['uz', 'en', 'ru'].map((lang) => (
                                     <div key={lang} className="space-y-2">
                                         <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase">{t('admin.experience.position')} ({lang})</label>
-                                        <input type="text" value={formData.role?.[lang.toLowerCase()] || ''} onChange={(e) => handleChange('role', e.target.value, lang.toLowerCase())} className="v-input" required={lang === 'EN'} />
+                                        <input type="text" value={formData.role?.[lang] || ''} onChange={(e) => handleChange('role', e.target.value, lang)} className="v-input" required={lang === 'en'} />
                                     </div>
                                 ))}
                             </div>
 
                             {/* Company */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                {['UZ', 'EN', 'RU'].map((lang) => (
+                                {['uz', 'en', 'ru'].map((lang) => (
                                     <div key={lang} className="space-y-2">
                                         <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase">{t('admin.experience.company')} ({lang})</label>
-                                        <input type="text" value={formData.company?.[lang.toLowerCase()] || ''} onChange={(e) => handleChange('company', e.target.value, lang.toLowerCase())} className="v-input" required={lang === 'EN'} />
+                                        <input type="text" value={formData.company?.[lang] || ''} onChange={(e) => handleChange('company', e.target.value, lang)} className="v-input" required={lang === 'en'} />
                                     </div>
                                 ))}
                             </div>
 
                             {/* Descriptions */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                {['UZ', 'EN', 'RU'].map((lang) => (
+                                {['uz', 'en', 'ru'].map((lang) => (
                                     <div key={lang} className="space-y-2">
                                         <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase">Description ({lang})</label>
-                                        <textarea value={formData.description?.[lang.toLowerCase()] || ''} onChange={(e) => handleChange('description', e.target.value, lang.toLowerCase())} className="v-input" rows={2} />
+                                        <textarea value={formData.description?.[lang] || ''} onChange={(e) => handleChange('description', e.target.value, lang)} className="v-input" rows={2} />
                                     </div>
                                 ))}
                             </div>
@@ -206,8 +210,12 @@ const ExperienceManager = () => {
                             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                                 <div className="space-y-2">
                                     <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase">{t('admin.experience.type')}</label>
-                                    <select value={formData.type} onChange={(e) => handleChange('type', e.target.value)} className="v-input">
-                                        {types.map(t => <option key={t} value={t}>{t}</option>)}
+                                    <select value={formData.type?.toLowerCase()} onChange={(e) => handleChange('type', e.target.value)} className="v-input">
+                                        {Object.keys(t('admin.experience.types', {})).map(typeKey => (
+                                            <option key={typeKey} value={typeKey}>
+                                                {t(`admin.experience.types.${typeKey}`)}
+                                            </option>
+                                        ))}
                                     </select>
                                 </div>
                                 <div className="space-y-2">
