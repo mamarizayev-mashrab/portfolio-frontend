@@ -12,25 +12,28 @@ const Dashboard = () => {
         projects: 0,
         skills: 0,
         experiences: 0,
-        messages: 0
+        messages: 0,
+        articles: 0
     });
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const [projects, skills, experiences, messages] = await Promise.all([
+                const [projects, skills, experiences, messages, articles] = await Promise.all([
                     api.get('/projects'),
                     api.get('/skills'),
                     api.get('/experiences'),
-                    api.get('/messages')
+                    api.get('/messages'),
+                    api.get('/articles/admin/all')
                 ]);
 
                 setStats({
                     projects: projects.data.count || projects.data.data?.length || 0,
                     skills: skills.data.count || skills.data.data?.length || 0,
                     experiences: experiences.data.count || experiences.data.data?.length || 0,
-                    messages: messages.data.count || messages.data.data?.length || 0
+                    messages: messages.data.count || messages.data.data?.length || 0,
+                    articles: articles.data.count || articles.data.data?.length || 0
                 });
             } catch (error) {
                 console.error('Error fetching dashboard stats:', error);
@@ -49,6 +52,7 @@ const Dashboard = () => {
         { name: t('admin.nav.projects'), path: '/admin/projects', icon: '⌘' },
         { name: t('admin.nav.skills'), path: '/admin/skills', icon: '✦' },
         { name: t('admin.nav.experience'), path: '/admin/experience', icon: '⧉' },
+        { name: t('admin.nav.articles'), path: '/admin/articles', icon: '✎' },
         { name: t('admin.nav.messages'), path: '/admin/messages', icon: '✉' },
         { name: t('admin.nav.settings'), path: '/admin/settings', icon: '⚙' },
     ];

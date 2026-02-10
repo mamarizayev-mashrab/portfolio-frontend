@@ -5,6 +5,7 @@
         "skills": "Навыки",
         "projects": "Проекты",
         "experience": "Опыт",
+        "articles": "Статьи",
         "contact": "Контакты"
     },
     "hero": {
@@ -116,7 +117,8 @@
         "edit": "Редактировать",
         "add": "Добавить",
         "search": "Поиск",
-        "noResults": "Ничего не найдено"
+        "noResults": "Ничего не найдено",
+        "copied": "Ссылка скопирована!"
     },
     "theme": {
         "dark": "Тёмная",
@@ -147,7 +149,8 @@
             "projects": "Проекты",
             "skills": "Навыки",
             "experiences": "Опыт",
-            "messages": "Сообщения"
+            "messages": "Сообщения",
+            "articles": "Статьи"
         },
         "nav": {
             "dashboard": "Панель",
@@ -155,6 +158,7 @@
             "skills": "Навыки",
             "experience": "Опыт",
             "messages": "Сообщения",
+            "articles": "Статьи",
             "settings": "Настройки"
         },
         "projects": {
@@ -287,6 +291,51 @@
             "engine": "Движок панели",
             "status": "Работает",
             "api": "Версия API"
+        },
+        "articles": {
+            "title": "Статьи",
+            "management": "Управление статьями",
+            "newArticle": "Новая статья",
+            "backToArticles": "Назад к статьям",
+            "articleTitle": "Заголовок",
+            "content": "Содержание",
+            "imageUrl": "URL изображения",
+            "status": "Статус",
+            "stats": "Статистика",
+            "commentsLabel": "Комментарии",
+            "commentsFor": "Комментарии к",
+            "draft": "Черновик",
+            "published": "Опубликовано",
+            "enableComments": "Включить комментарии",
+            "approved": "Одобрено",
+            "pending": "Ожидает",
+            "approve": "Одобрить",
+            "reject": "Отклонить",
+            "draftSaved": " (Сохранено как черновик)",
+            "publishedMsg": " (Опубликовано)"
         }
+    },
+    "articles": {
+        "title": "Статьи",
+        "subtitle": "Блог",
+        "description": "Мысли и опыт о технологиях, программировании и веб-разработке.",
+        "minRead": "мин. чтения",
+        "noArticles": "Статей пока нет",
+        "noArticlesTitle": "Статьи не найдены",
+        "noArticlesDescription": "К сожалению, здесь пока ничего не написано.",
+        "forYou": "Для вас",
+        "endOfFeed": "Вы дошли до конца ленты.",
+        "comments": "Комментарии",
+        "commentName": "Ваше имя",
+        "commentNamePlaceholder": "Введите имя",
+        "commentEmail": "Email (необязательно)",
+        "commentEmailPlaceholder": "email@example.com",
+        "commentContent": "Комментарий",
+        "commentPlaceholder": "Напишите комментарий...",
+        "commentRequired": "Имя и комментарий обязательны",
+        "commentSent": "Комментарий отправлен! Ожидает одобрения.",
+        "commentModeration": "Комментарии модерируются администратором.",
+        "submitComment": "Отправить комментарий",
+        "sending": "Отправка..."
     }
 }

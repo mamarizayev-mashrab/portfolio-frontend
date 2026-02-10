@@ -5,6 +5,7 @@
         "skills": "Ko'nikmalar",
         "projects": "Loyihalar",
         "experience": "Tajriba",
+        "articles": "Maqolalar",
         "contact": "Bog'lanish"
     },
     "hero": {
@@ -116,7 +117,8 @@
         "edit": "Tahrirlash",
         "add": "Qo'shish",
         "search": "Qidirish",
-        "noResults": "Natija topilmadi"
+        "noResults": "Natija topilmadi",
+        "copied": "Link nusxalandi!"
     },
     "theme": {
         "dark": "Qorong'i",
@@ -147,7 +149,8 @@
             "projects": "Loyihalar",
             "skills": "Ko'nikmalar",
             "experiences": "Tajriba",
-            "messages": "Xabarlar"
+            "messages": "Xabarlar",
+            "articles": "Maqolalar"
         },
         "nav": {
             "dashboard": "Boshqaruv",
@@ -155,6 +158,7 @@
             "skills": "Ko'nikmalar",
             "experience": "Tajriba",
             "messages": "Xabarlar",
+            "articles": "Maqolalar",
             "settings": "Sozlamalar"
         },
         "projects": {
@@ -287,6 +291,51 @@
             "engine": "Admin Dasturi",
             "status": "Faol",
             "api": "API Versiyasi"
+        },
+        "articles": {
+            "title": "Maqolalar",
+            "management": "Maqolalar Boshqaruvi",
+            "newArticle": "Yangi Maqola",
+            "backToArticles": "Maqolalarga qaytish",
+            "articleTitle": "Sarlavha",
+            "content": "Matn",
+            "imageUrl": "Rasm URL",
+            "status": "Holati",
+            "stats": "Statistika",
+            "commentsLabel": "Izohlar",
+            "commentsFor": "Izohlar",
+            "draft": "Qoralama",
+            "published": "Nashr qilingan",
+            "enableComments": "Izohlarga ruxsat",
+            "approved": "Tasdiqlangan",
+            "pending": "Kutilmoqda",
+            "approve": "Tasdiqlash",
+            "reject": "Rad etish",
+            "draftSaved": " (Qoralama sifatida saqlandi)",
+            "publishedMsg": " (Nashr qilindi)"
         }
+    },
+    "articles": {
+        "title": "Maqolalar",
+        "subtitle": "Blog",
+        "description": "Texnologiya, dasturlash va veb-ishlab chiqish haqida fikrlar va tajribalar.",
+        "minRead": "daq. o'qish",
+        "noArticles": "Hozircha maqolalar yo'q",
+        "noArticlesTitle": "Maqolalar topilmadi",
+        "noArticlesDescription": "Kechirasiz, hali bu yerda hech narsa yozilmagan.",
+        "forYou": "Siz uchun",
+        "endOfFeed": "Siz barcha maqolalarni o'qib bo'ldingiz.",
+        "comments": "Izohlar",
+        "commentName": "Ismingiz",
+        "commentNamePlaceholder": "Ismingizni kiriting",
+        "commentEmail": "Email (ixtiyoriy)",
+        "commentEmailPlaceholder": "email@misol.com",
+        "commentContent": "Izoh",
+        "commentPlaceholder": "Izohingizni yozing...",
+        "commentRequired": "Ism va izoh kiritish shart",
+        "commentSent": "Izoh yuborildi! Admin tasdiqlashi kutilmoqda.",
+        "commentModeration": "Izohlar admin tomonidan tasdiqlanadi.",
+        "submitComment": "Izoh yuborish",
+        "sending": "Yuborilmoqda..."
     }
 }

@@ -5,6 +5,7 @@
         "skills": "Skills",
         "projects": "Projects",
         "experience": "Experience",
+        "articles": "Articles",
         "contact": "Contact"
     },
     "hero": {
@@ -116,7 +117,8 @@
         "edit": "Edit",
         "add": "Add",
         "search": "Search",
-        "noResults": "No results found"
+        "noResults": "No results found",
+        "copied": "Link copied to clipboard!"
     },
     "theme": {
         "dark": "Dark",
@@ -147,7 +149,8 @@
             "projects": "Projects",
             "skills": "Skills",
             "experiences": "Experience",
-            "messages": "Messages"
+            "messages": "Messages",
+            "articles": "Articles"
         },
         "nav": {
             "dashboard": "Dashboard",
@@ -155,6 +158,7 @@
             "skills": "Skills",
             "experience": "Experience",
             "messages": "Messages",
+            "articles": "Articles",
             "settings": "Settings"
         },
         "projects": {
@@ -287,6 +291,51 @@
             "engine": "Admin Engine",
             "status": "Operational",
             "api": "API Version"
+        },
+        "articles": {
+            "title": "Articles",
+            "management": "Articles Management",
+            "newArticle": "New Article",
+            "backToArticles": "Back to articles",
+            "articleTitle": "Title",
+            "content": "Content",
+            "imageUrl": "Image URL",
+            "status": "Status",
+            "stats": "Statistics",
+            "commentsLabel": "Comments",
+            "commentsFor": "Comments for",
+            "draft": "Draft",
+            "published": "Published",
+            "enableComments": "Enable comments",
+            "approved": "Approved",
+            "pending": "Pending",
+            "approve": "Approve",
+            "reject": "Reject",
+            "draftSaved": " (Saved as draft)",
+            "publishedMsg": " (Published)"
         }
+    },
+    "articles": {
+        "title": "Articles",
+        "subtitle": "Blog",
+        "description": "Thoughts and experiences on technology, programming, and web development.",
+        "minRead": "min read",
+        "noArticles": "No articles yet",
+        "noArticlesTitle": "No articles found",
+        "noArticlesDescription": "Sorry, there is nothing written here yet.",
+        "forYou": "For you",
+        "endOfFeed": "You've reached the end of the feed.",
+        "comments": "Comments",
+        "commentName": "Your Name",
+        "commentNamePlaceholder": "Enter your name",
+        "commentEmail": "Email (optional)",
+        "commentEmailPlaceholder": "email@example.com",
+        "commentContent": "Comment",
+        "commentPlaceholder": "Write your comment...",
+        "commentRequired": "Name and comment are required",
+        "commentSent": "Comment submitted! Awaiting admin approval.",
+        "commentModeration": "Comments are moderated by admin.",
+        "submitComment": "Submit Comment",
+        "sending": "Sending..."
     }
 }

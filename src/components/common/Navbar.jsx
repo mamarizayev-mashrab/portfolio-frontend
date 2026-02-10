@@ -25,10 +25,16 @@ const Navbar = () => {
         { name: t('nav.skills'), href: '#skills' },
         { name: t('nav.projects'), href: '#projects' },
         { name: t('nav.experience'), href: '#experience' },
+        { name: t('nav.articles'), href: '/articles', isPage: true },
         { name: t('nav.contact'), href: '#contact' },
     ];
 
     const scrollTo = (href) => {
+        if (location.pathname !== '/') {
+            // If not on home page, navigate to home first
+            window.location.href = '/' + href;
+            return;
+        }
         const element = document.querySelector(href);
         if (element) {
             const offset = 80;
@@ -64,13 +70,23 @@ const Navbar = () => {
                 {/* Desktop Nav */}
                 <div className="hidden md:flex items-center gap-6">
                     {navLinks.map((link) => (
-                        <button
-                            key={link.href}
-                            onClick={() => scrollTo(link.href)}
-                            className="text-sm text-[var(--accents-5)] hover:text-[var(--foreground)] transition-colors"
-                        >
-                            {link.name}
-                        </button>
+                        link.isPage ? (
+                            <Link
+                                key={link.href}
+                                to={link.href}
+                                className={`text-sm transition-colors ${location.pathname === link.href ? 'text-[var(--foreground)] font-medium' : 'text-[var(--accents-5)] hover:text-[var(--foreground)]'}`}
+                            >
+                                {link.name}
+                            </Link>
+                        ) : (
+                            <button
+                                key={link.href}
+                                onClick={() => scrollTo(link.href)}
+                                className="text-sm text-[var(--accents-5)] hover:text-[var(--foreground)] transition-colors"
+                            >
+                                {link.name}
+                            </button>
+                        )
                     ))}
 
                     <div className="h-4 w-px bg-[var(--accents-2)]" />
@@ -139,13 +155,24 @@ const Navbar = () => {
                 <div className="md:hidden bg-[var(--background)] border-b border-[var(--accents-2)] py-4 px-6">
                     <div className="flex flex-col gap-4">
                         {navLinks.map((link) => (
-                            <button
-                                key={link.href}
-                                onClick={() => scrollTo(link.href)}
-                                className="text-left py-2 text-sm text-[var(--accents-5)] hover:text-[var(--foreground)]"
-                            >
-                                {link.name}
-                            </button>
+                            link.isPage ? (
+                                <Link
+                                    key={link.href}
+                                    to={link.href}
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    className={`text-left py-2 text-sm transition-colors ${location.pathname === link.href ? 'text-[var(--foreground)] font-medium' : 'text-[var(--accents-5)] hover:text-[var(--foreground)]'}`}
+                                >
+                                    {link.name}
+                                </Link>
+                            ) : (
+                                <button
+                                    key={link.href}
+                                    onClick={() => scrollTo(link.href)}
+                                    className="text-left py-2 text-sm text-[var(--accents-5)] hover:text-[var(--foreground)]"
+                                >
+                                    {link.name}
+                                </button>
+                            )
                         ))}
                         <Link
                             to={isAuthenticated ? "/admin/dashboard" : "/admin/login"}

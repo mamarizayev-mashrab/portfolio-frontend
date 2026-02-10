@@ -18,6 +18,8 @@ const SkillsManager = lazy(() => import('./pages/admin/SkillsManager'));
 const ExperienceManager = lazy(() => import('./pages/admin/ExperienceManager'));
 const MessagesViewer = lazy(() => import('./pages/admin/MessagesViewer'));
 const SettingsPage = lazy(() => import('./pages/admin/SettingsPage'));
+const ArticlesPage = lazy(() => import('./pages/ArticlesPage'));
+const ArticlesManager = lazy(() => import('./pages/admin/ArticlesManager'));
 
 // Public layout
 const PublicLayout = () => (
@@ -87,6 +89,7 @@ function App() {
                     {/* Public Routes */}
                     <Route element={<PublicLayout />}>
                         <Route path="/" element={<Home />} />
+                        <Route path="/articles" element={<ArticlesPage />} />
                     </Route>
 
                     {/* Admin Auth */}
@@ -108,6 +111,7 @@ function App() {
                         <Route path="experience" element={<ExperienceManager />} />
                         <Route path="messages" element={<MessagesViewer />} />
                         <Route path="settings" element={<SettingsPage />} />
+                        <Route path="articles" element={<ArticlesManager />} />
                     </Route>
 
                     {/* 404 */}

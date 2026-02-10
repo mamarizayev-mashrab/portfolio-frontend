@@ -17,6 +17,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         { to: '/admin/projects', label: t('admin.nav.projects'), icon: '📁' },
         { to: '/admin/skills', label: t('admin.nav.skills'), icon: '✦' },
         { to: '/admin/experience', label: t('admin.nav.experience'), icon: '⧉' },
+        { to: '/admin/articles', label: t('admin.nav.articles'), icon: '✎' },
         { to: '/admin/messages', label: t('admin.nav.messages'), icon: '✉' },
         { to: '/admin/settings', label: t('admin.nav.settings'), icon: '⚙' }
     ];
