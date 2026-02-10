@@ -18,7 +18,7 @@ const Home = () => {
         title: "Mashrab Mamarizayev | Full-Stack Developer Portfolio",
         description: "Professional Full-Stack Developer specializing in React, Node.js, MongoDB, and modern web technologies. Building scalable, high-performance web applications.",
         url: "https://asqarovich.uz/",
-        image: "https://asqarovich.uz/og-image.svg",
+        image: "https://asqarovich.uz/og-image.png",
         author: "Mashrab Mamarizayev",
         keywords: "Full-Stack Developer, Web Developer, React Developer, Node.js, JavaScript, Portfolio, Mashrab Mamarizayev, Uzbekistan Developer"
     };

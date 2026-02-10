@@ -84,12 +84,12 @@ const Contact = () => {
     };
 
     return (
-        <section id="contact" className="py-24 bg-[var(--background)] border-t border-[var(--accents-2)]">
+        <section id="contact" className="py-24 bg-[var(--background)] border-t border-[var(--accents-2)]" aria-labelledby="contact-heading">
             <div className="v-container">
                 <div className="max-w-4xl mx-auto">
                     <div className="space-y-4 mb-20 text-center">
                         <span className="text-xs font-mono font-bold text-primary uppercase tracking-widest block font-bold">// connect_node</span>
-                        <h2 className="text-5xl font-bold tracking-tighter">{t('contact.title', 'Get in Touch')}</h2>
+                        <h2 id="contact-heading" className="text-5xl font-bold tracking-tighter">{t('contact.title', 'Get in Touch')}</h2>
                         <p className="text-[var(--accents-5)] text-lg">{t('contact.description', 'Available for selective technical partnerships and design systems.')}</p>
                     </div>
 
@@ -97,10 +97,11 @@ const Contact = () => {
                         <form onSubmit={handleSubmit} className="space-y-8">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-mono font-bold text-[var(--accents-3)] uppercase tracking-widest">
+                                    <label htmlFor="contact-name" className="text-[10px] font-mono font-bold text-[var(--accents-3)] uppercase tracking-widest">
                                         {t('contact.form.name', 'Full Name')}
                                     </label>
                                     <input
+                                        id="contact-name"
                                         type="text"
                                         name="name"
                                         value={formData.name}
@@ -111,10 +112,11 @@ const Contact = () => {
                                     {errors.name && <span className="text-xs text-error-light">{errors.name}</span>}
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-mono font-bold text-[var(--accents-3)] uppercase tracking-widest">
+                                    <label htmlFor="contact-email" className="text-[10px] font-mono font-bold text-[var(--accents-3)] uppercase tracking-widest">
                                         {t('contact.form.email', 'Email Address')}
                                     </label>
                                     <input
+                                        id="contact-email"
                                         type="email"
                                         name="email"
                                         value={formData.email}
@@ -127,10 +129,11 @@ const Contact = () => {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-[10px] font-mono font-bold text-[var(--accents-3)] uppercase tracking-widest">
+                                <label htmlFor="contact-message" className="text-[10px] font-mono font-bold text-[var(--accents-3)] uppercase tracking-widest">
                                     {t('contact.form.message', 'Message')}
                                 </label>
                                 <textarea
+                                    id="contact-message"
                                     name="message"
                                     value={formData.message}
                                     onChange={handleChange}
@@ -144,10 +147,10 @@ const Contact = () => {
                                 type="submit"
                                 disabled={status === 'SENDING'}
                                 className={`w-full h-12 rounded-md font-bold tracking-tight transition-all flex items-center justify-center gap-3 ${status === 'SUCCESS'
-                                        ? 'bg-success-dark text-white'
-                                        : status === 'ERROR'
-                                            ? 'bg-error-dark text-white'
-                                            : 'v-btn-primary'
+                                    ? 'bg-success-dark text-white'
+                                    : status === 'ERROR'
+                                        ? 'bg-error-dark text-white'
+                                        : 'v-btn-primary'
                                     }`}
                             >
                                 {status === 'IDLE' && t('contact.form.submit', 'Send Message')}

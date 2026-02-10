@@ -40,11 +40,11 @@ const Skills = () => {
     if (loading) return null;
 
     return (
-        <section id="skills" className="py-24 bg-[var(--background)] border-y border-[var(--accents-2)]">
+        <section id="skills" className="py-24 bg-[var(--background)] border-y border-[var(--accents-2)]" aria-labelledby="skills-heading">
             <div className="v-container">
                 <div className="mb-20">
                     <span className="text-xs font-mono font-bold text-primary uppercase tracking-widest block mb-4">// capabilities_map</span>
-                    <h2 className="text-5xl font-bold tracking-tighter text-[var(--foreground)]">{t('skills.title', 'Technical Excellence')}</h2>
+                    <h2 id="skills-heading" className="text-5xl font-bold tracking-tighter text-[var(--foreground)]">{t('skills.title', 'Technical Excellence')}</h2>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

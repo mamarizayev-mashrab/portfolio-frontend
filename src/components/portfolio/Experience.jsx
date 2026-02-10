@@ -25,11 +25,11 @@ const Experience = () => {
     if (loading) return null;
 
     return (
-        <section id="experience" className="py-24 bg-[var(--background)] border-t border-[var(--accents-2)]">
+        <section id="experience" className="py-24 bg-[var(--background)] border-t border-[var(--accents-2)]" aria-labelledby="experience-heading">
             <div className="v-container">
                 <div className="mb-20">
                     <span className="text-xs font-mono font-bold text-primary uppercase tracking-widest block mb-4 font-bold">// growth_timeline</span>
-                    <h2 className="text-5xl font-bold tracking-tighter">{t('experience.title', 'Experience')}</h2>
+                    <h2 id="experience-heading" className="text-5xl font-bold tracking-tighter">{t('experience.title', 'Experience')}</h2>
                 </div>
 
                 <div className="space-y-0 border-l border-[var(--accents-2)] ml-2 md:ml-0">

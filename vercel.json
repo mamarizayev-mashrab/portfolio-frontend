@@ -13,6 +13,10 @@
             "destination": "/og-image.svg"
         },
         {
+            "source": "/og-image.png",
+            "destination": "/og-image.png"
+        },
+        {
             "source": "/favicon.svg",
             "destination": "/favicon.svg"
         },
