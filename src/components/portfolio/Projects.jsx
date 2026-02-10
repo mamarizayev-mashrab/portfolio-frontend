@@ -12,8 +12,9 @@ const Projects = () => {
             try {
                 const response = await api.get('/projects');
                 const fetchedProjects = response.data.data || [];
-                // Filter only published projects
-                setProjects(fetchedProjects.filter(p => p.status === 'published'));
+                // Filter projects based on allowed statuses
+                const allowedStatuses = ['published', 'completed', 'in_progress', 'approved'];
+                setProjects(fetchedProjects.filter(p => allowedStatuses.includes(p.status || 'published')));
             } catch (error) {
                 console.error('Error fetching projects:', error);
             } finally {
@@ -48,67 +49,83 @@ const Projects = () => {
                     role="list"
                     aria-label="Portfolio projects"
                 >
-                    {projects.map((project) => (
-                        <article
-                            key={project._id}
-                            className="v-card group flex flex-col justify-between min-h-[320px] hover:bg-[var(--accents-1)] transition-all"
-                            itemScope
-                            itemType="https://schema.org/CreativeWork"
-                            role="listitem"
-                        >
-                            <a
-                                href={project.liveUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex flex-col h-full"
-                                aria-label={`${getLocalizedField(project.title)} - ${t('projects.viewProject', 'View project')}`}
-                                itemProp="url"
-                            >
-                                <div className="space-y-6 flex-1">
-                                    {project.image && (
-                                        <figure className="relative w-full h-48 overflow-hidden rounded-md border border-[var(--accents-2)]">
-                                            <img
-                                                src={project.image}
-                                                alt={`${getLocalizedField(project.title)} - ${t('projects.screenshot', 'project screenshot')}`}
-                                                className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
-                                                loading="lazy"
-                                                decoding="async"
-                                                itemProp="image"
-                                                onError={(e) => { e.target.src = 'https://via.placeholder.com/600x400?text=No+Image'; }}
-                                            />
-                                        </figure>
-                                    )}
-                                    <div className="space-y-4">
-                                        <div className="flex justify-between items-start gap-4">
-                                            <h3 className="text-2xl font-bold tracking-tight text-[var(--foreground)] group-hover:text-primary transition-colors" itemProp="name">
-                                                {getLocalizedField(project.title)}
-                                            </h3>
-                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--accents-3)] group-hover:text-[var(--foreground)] transition-colors shrink-0" aria-hidden="true">
-                                                <path d="M7 17L17 7M17 7H7M17 7V17" />
-                                            </svg>
-                                        </div>
-                                        <p className="text-sm text-[var(--accents-5)] leading-relaxed font-medium line-clamp-3" itemProp="description">
-                                            {getLocalizedField(project.description)}
-                                        </p>
-                                    </div>
-                                </div>
+                    {projects.map((project) => {
+                        const statusConfig = {
+                            in_progress: { label: "Jarayonda", color: "bg-blue-500/10 text-blue-500 border-blue-500/20" },
+                            completed: { label: "Tugatildi", color: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" },
+                            published: { label: null, color: null }, // Don't show badge for published
+                            approved: { label: "Qabul qilindi", color: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" }
+                        };
+                        const statusIdx = project.status || 'published';
+                        const badge = statusConfig[statusIdx];
 
-                                <footer className="mt-8 pt-6 border-t border-[var(--accents-2)] flex items-center justify-between">
-                                    <div className="flex gap-2 flex-wrap" aria-label="Technologies used">
-                                        {project.technologies?.slice(0, 3).map(Tech => (
-                                            <span
-                                                key={Tech}
-                                                className="px-2 py-0.5 bg-[var(--background)] border border-[var(--accents-2)] text-[10px] font-mono text-[var(--accents-5)] uppercase"
-                                                itemProp="keywords"
-                                            >
-                                                {Tech}
-                                            </span>
-                                        ))}
+                        return (
+                            <article
+                                key={project._id}
+                                className="v-card group flex flex-col justify-between min-h-[320px] hover:bg-[var(--accents-1)] transition-all relative"
+                                itemScope
+                                itemType="https://schema.org/CreativeWork"
+                                role="listitem"
+                            >
+                                {badge && badge.label && (
+                                    <span className={`absolute top-4 right-4 z-10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider border rounded ${badge.color}`}>
+                                        {badge.label}
+                                    </span>
+                                )}
+                                <a
+                                    href={project.liveUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex flex-col h-full"
+                                    aria-label={`${getLocalizedField(project.title)} - ${t('projects.viewProject', 'View project')}`}
+                                    itemProp="url"
+                                >
+                                    <div className="space-y-6 flex-1">
+                                        {project.image && (
+                                            <figure className="relative w-full h-48 overflow-hidden rounded-md border border-[var(--accents-2)]">
+                                                <img
+                                                    src={project.image}
+                                                    alt={`${getLocalizedField(project.title)} - ${t('projects.screenshot', 'project screenshot')}`}
+                                                    className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
+                                                    loading="lazy"
+                                                    decoding="async"
+                                                    itemProp="image"
+                                                    onError={(e) => { e.target.src = 'https://via.placeholder.com/600x400?text=No+Image'; }}
+                                                />
+                                            </figure>
+                                        )}
+                                        <div className="space-y-4">
+                                            <div className="flex justify-between items-start gap-4">
+                                                <h3 className="text-2xl font-bold tracking-tight text-[var(--foreground)] group-hover:text-primary transition-colors" itemProp="name">
+                                                    {getLocalizedField(project.title)}
+                                                </h3>
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--accents-3)] group-hover:text-[var(--foreground)] transition-colors shrink-0" aria-hidden="true">
+                                                    <path d="M7 17L17 7M17 7H7M17 7V17" />
+                                                </svg>
+                                            </div>
+                                            <p className="text-sm text-[var(--accents-5)] leading-relaxed font-medium line-clamp-3" itemProp="description">
+                                                {getLocalizedField(project.description)}
+                                            </p>
+                                        </div>
                                     </div>
-                                </footer>
-                            </a>
-                        </article>
-                    ))}
+
+                                    <footer className="mt-8 pt-6 border-t border-[var(--accents-2)] flex items-center justify-between">
+                                        <div className="flex gap-2 flex-wrap" aria-label="Technologies used">
+                                            {project.technologies?.slice(0, 3).map(Tech => (
+                                                <span
+                                                    key={Tech}
+                                                    className="px-2 py-0.5 bg-[var(--background)] border border-[var(--accents-2)] text-[10px] font-mono text-[var(--accents-5)] uppercase"
+                                                    itemProp="keywords"
+                                                >
+                                                    {Tech}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </footer>
+                                </a>
+                            </article>
+                        );
+                    })}
                 </div>
             </div>
         </section>

@@ -120,7 +120,7 @@ const ProjectsManager = () => {
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm(t('admin.common.confirmDelete'))) return;
+        if (!window.confirm("Haqiqatan ham bu loyihani o'chirmoqchimisiz?")) return;
 
         try {
             await api.delete(`/projects/${id}`);
@@ -158,19 +158,32 @@ const ProjectsManager = () => {
                         <tbody className="divide-y divide-[var(--accents-2)]">
                             {loading ? (
                                 <tr><td colSpan="4" className="p-8 text-center text-sm">{t('admin.projects.table.loading')}</td></tr>
-                            ) : projects.map((p) => (
-                                <tr key={p._id} className="hover:bg-[var(--accents-1)] transition-colors">
-                                    <td className="px-6 py-5 text-sm font-medium">{p.title?.en}</td>
-                                    <td className="px-6 py-5">
-                                        <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold border ${p.status === 'published' ? 'bg-success-light/10 text-success-light border-success-light/20' : 'bg-[var(--accents-2)] text-[var(--accents-5)]'}`}>{p.status}</span>
-                                    </td>
-                                    <td className="px-6 py-5 text-sm">{p.featured ? t('admin.projects.table.yes') : t('admin.projects.table.no')}</td>
-                                    <td className="px-6 py-5 text-right space-x-4">
-                                        <button onClick={() => handleOpenModal(p)} className="text-sm font-medium hover:underline text-primary">{t('admin.common.edit')}</button>
-                                        <button onClick={() => handleDelete(p._id)} className="text-sm font-medium hover:underline text-error-light">{t('admin.common.delete')}</button>
-                                    </td>
-                                </tr>
-                            ))}
+                            ) : projects.map((p) => {
+                                const statusColors = {
+                                    pending: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
+                                    approved: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
+                                    rejected: 'bg-red-500/10 text-red-500 border-red-500/20',
+                                    in_progress: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+                                    completed: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
+                                    published: 'bg-white/10 text-white border-white/20'
+                                };
+
+                                return (
+                                    <tr key={p._id} className="hover:bg-[var(--accents-1)] transition-colors">
+                                        <td className="px-6 py-5 text-sm font-medium">{p.title?.en}</td>
+                                        <td className="px-6 py-5">
+                                            <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold border ${statusColors[p.status] || 'bg-[var(--accents-2)] text-[var(--accents-5)]'}`}>
+                                                {t(`admin.projects.modal.statusTypes.${p.status}`, p.status)}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-5 text-sm">{p.featured ? t('admin.projects.table.yes') : t('admin.projects.table.no')}</td>
+                                        <td className="px-6 py-5 text-right space-x-4">
+                                            <button onClick={() => handleOpenModal(p)} className="text-sm font-medium hover:underline text-primary">{t('admin.common.edit')}</button>
+                                            <button onClick={() => handleDelete(p._id)} className="text-sm font-medium hover:underline text-error-light">{t('admin.common.delete')}</button>
+                                        </td>
+                                    </tr>
+                                )
+                            })}
                         </tbody>
                     </table>
                 </div>
@@ -185,19 +198,40 @@ const ProjectsManager = () => {
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-8">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                {['UZ', 'EN', 'RU'].map(l => (
-                                    <div key={l} className="space-y-1">
-                                        <label className="text-[10px] font-mono font-bold text-[var(--accents-4)] uppercase">{t('admin.projects.modal.title', { lang: l })}</label>
-                                        <input className="v-input" value={formData.title[l.toLowerCase()]} onChange={(e) => handleChange('title', e.target.value, l.toLowerCase())} required />
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                                <div className="space-y-1 md:col-span-3">
+                                    <h4 className="text-sm font-bold border-b border-[var(--accents-2)] pb-2 mb-4">Project Titles</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        {['UZ', 'EN', 'RU'].map(l => (
+                                            <div key={l} className="space-y-1">
+                                                <label className="text-[10px] font-mono font-bold text-[var(--accents-4)] uppercase">{l}</label>
+                                                <input className="v-input" value={formData.title[l.toLowerCase()]} onChange={(e) => handleChange('title', e.target.value, l.toLowerCase())} required />
+                                            </div>
+                                        ))}
                                     </div>
-                                ))}
+                                </div>
+                                <div className="space-y-1">
+                                    <h4 className="text-sm font-bold border-b border-[var(--accents-2)] pb-2 mb-4">Status</h4>
+                                    <label className="text-[10px] font-mono font-bold text-[var(--accents-4)] uppercase">Current Status</label>
+                                    <select
+                                        className="v-input bg-[var(--accents-1)]"
+                                        value={formData.status}
+                                        onChange={(e) => handleChange('status', e.target.value)}
+                                    >
+                                        {Object.keys(t('admin.projects.modal.statusTypes', {})).map(statusKey => (
+                                            <option key={statusKey} value={statusKey}>
+                                                {t(`admin.projects.modal.statusTypes.${statusKey}`)}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
 
+                            <h4 className="text-sm font-bold border-b border-[var(--accents-2)] pb-2">Descriptions</h4>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 {['UZ', 'EN', 'RU'].map(l => (
                                     <div key={l} className="space-y-1">
-                                        <label className="text-[10px] font-mono font-bold text-[var(--accents-4)] uppercase">{t('admin.projects.modal.description', { lang: l })}</label>
+                                        <label className="text-[10px] font-mono font-bold text-[var(--accents-4)] uppercase">{l}</label>
                                         <textarea className="v-input h-24" value={formData.description[l.toLowerCase()]} onChange={(e) => handleChange('description', e.target.value, l.toLowerCase())} required />
                                     </div>
                                 ))}

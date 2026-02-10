@@ -62,8 +62,10 @@ const MessagesViewer = () => {
 
     const formatDate = (dateString) => {
         if (!dateString) return '';
+        const currentLang = localStorage.getItem('language') || 'uz';
+        const locale = currentLang === 'uz' ? 'uz-UZ' : currentLang === 'ru' ? 'ru-RU' : 'en-US';
         const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        return date.toLocaleDateString(locale, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
     };
 
     const unreadCount = messages.filter(m => !m.read).length;

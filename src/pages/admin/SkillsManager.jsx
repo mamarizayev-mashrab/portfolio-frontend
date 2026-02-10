@@ -128,7 +128,9 @@ const SkillsManager = () => {
                                                 </div>
                                             </td>
                                             <td className="p-4">
-                                                <span className="px-2 py-1 text-xs font-mono rounded bg-[var(--accents-1)] border border-[var(--accents-2)] text-[var(--accents-5)]">{skill.category}</span>
+                                                <span className="px-2 py-1 text-xs font-mono rounded bg-[var(--accents-1)] border border-[var(--accents-2)] text-[var(--accents-5)]">
+                                                    {t(`admin.skills.categories.${skill.category?.toLowerCase()}`, skill.category)}
+                                                </span>
                                             </td>
                                             <td className="p-4">
                                                 <div className="flex items-center gap-3">
@@ -160,15 +162,15 @@ const SkillsManager = () => {
                         <form onSubmit={handleSubmit} className="space-y-4">
                             {/* Name Fields Multi-lang */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                {['UZ', 'EN', 'RU'].map((lang) => (
+                                {['uz', 'en', 'ru'].map((lang) => (
                                     <div key={lang} className="space-y-2">
                                         <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase">{t('admin.skills.name')} ({lang})</label>
                                         <input
                                             type="text"
-                                            value={formData.name[lang.toLowerCase()] || ''}
-                                            onChange={(e) => setFormData({ ...formData, name: { ...formData.name, [lang.toLowerCase()]: e.target.value } })}
+                                            value={formData.name[lang] || ''}
+                                            onChange={(e) => setFormData({ ...formData, name: { ...formData.name, [lang]: e.target.value } })}
                                             className="v-input"
-                                            required={lang === 'EN'}
+                                            required={lang === 'en'}
                                         />
                                     </div>
                                 ))}
@@ -181,8 +183,12 @@ const SkillsManager = () => {
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase">{t('admin.skills.category')}</label>
-                                    <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="v-input">
-                                        {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                                    <select value={formData.category?.toLowerCase()} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="v-input">
+                                        {Object.keys(t('admin.skills.categories', {})).map(catKey => (
+                                            <option key={catKey} value={catKey}>
+                                                {t(`admin.skills.categories.${catKey}`)}
+                                            </option>
+                                        ))}
                                     </select>
                                 </div>
                             </div>

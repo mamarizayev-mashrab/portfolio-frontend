@@ -127,5 +127,159 @@
         "subtitle": "Page Not Found",
         "description": "The page you're looking for doesn't exist or has been moved.",
         "backHome": "Back to Home"
+    },
+    "login": {
+        "title": "Admin Login",
+        "subtitle": "Enter your credentials to access the dashboard.",
+        "email": "Administrator Email",
+        "password": "Password",
+        "submit": "Enter Dashboard",
+        "loading": "Authenticating...",
+        "back": "Back to Site"
+    },
+    "admin": {
+        "dashboard": "Admin Dashboard",
+        "signOut": "Sign Out",
+        "overview": "Overview",
+        "systemStatus": "System Status: Infrastructure_OK",
+        "stats": {
+            "projects": "Projects",
+            "skills": "Skills",
+            "experiences": "Experience",
+            "messages": "Messages"
+        },
+        "nav": {
+            "dashboard": "Dashboard",
+            "projects": "Projects",
+            "skills": "Skills",
+            "experience": "Experience",
+            "messages": "Messages",
+            "settings": "Settings"
+        },
+        "projects": {
+            "title": "Projects",
+            "management": "Project Management",
+            "newProject": "New Project",
+            "table": {
+                "title": "Name",
+                "status": "Status",
+                "featured": "Featured",
+                "actions": "Actions",
+                "loading": "Loading...",
+                "yes": "Yes",
+                "no": "No"
+            },
+            "modal": {
+                "modify": "Modify Project",
+                "create": "New Project",
+                "title": "Name ({lang})",
+                "description": "Description ({lang})",
+                "image": "Image URL",
+                "liveUrl": "Live URL",
+                "githubUrl": "GitHub URL",
+                "technologies": "Technologies (Press Enter to add)",
+                "cancel": "Cancel",
+                "save": "Save",
+                "deploying": "Saving...",
+                "statusTypes": {
+                    "pending": "Pending Review",
+                    "approved": "Approved",
+                    "rejected": "Rejected",
+                    "in_progress": "In Progress",
+                    "completed": "Completed",
+                    "published": "Published"
+                }
+            }
+        },
+        "skills": {
+            "title": "Skills",
+            "management": "Skills Management",
+            "newSkill": "New Skill",
+            "category": "Category",
+            "name": "Name",
+            "proficiency": "Proficiency",
+            "icon": "Icon (Emoji or Class)",
+            "categories": {
+                "frontend": "Frontend",
+                "backend": "Backend",
+                "mobile": "Mobile",
+                "database": "Database",
+                "devops": "DevOps",
+                "tools": "Tools",
+                "other": "Other"
+            }
+        },
+        "experience": {
+            "title": "Experience",
+            "management": "Experience Management",
+            "newExperience": "New Experience",
+            "position": "Position",
+            "company": "Company",
+            "period": "Period",
+            "location": "Location",
+            "type": "Type",
+            "types": {
+                "work": "Work",
+                "education": "Education",
+                "freelance": "Freelance",
+                "other": "Other"
+            }
+        },
+        "messages": {
+            "title": "Messages",
+            "management": "Inbound Messages",
+            "sender": "Sender",
+            "subject": "Subject",
+            "date": "Date",
+            "read": "Read",
+            "view": "Select message to view"
+        },
+        "settings": {
+            "title": "Settings",
+            "management": "System Configuration",
+            "language": "Language",
+            "profile": "Profile",
+            "tabs": {
+                "password": "Password",
+                "contact": "Contact",
+                "social": "Social",
+                "theme": "Theme"
+            },
+            "password": {
+                "title": "Change Password",
+                "current": "Current Password",
+                "new": "New Password",
+                "confirm": "Confirm Password",
+                "submit": "Change Password",
+                "updating": "Updating...",
+                "rules": "Min 8 characters.",
+                "mismatch": "Passwords do not match",
+                "success": "Password changed successfully"
+            },
+            "contact": {
+                "title": "Contact Details",
+                "email": "Email Address",
+                "location": "Location"
+            },
+            "social": {
+                "title": "Social Networks"
+            },
+            "theme": {
+                "title": "Theme Settings",
+                "mode": "Mode",
+                "primaryColor": "Primary Color",
+                "light": "Light",
+                "dark": "Dark"
+            }
+        },
+        "common": {
+            "edit": "Edit",
+            "delete": "Delete",
+            "save": "Save",
+            "cancel": "Cancel",
+            "confirmDelete": "Are you sure you want to delete?",
+            "success": "Successfully completed",
+            "error": "An error occurred"
+        }
     }
 }
