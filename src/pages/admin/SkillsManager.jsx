@@ -75,12 +75,19 @@ const SkillsManager = () => {
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm(t('admin.common.confirmDelete'))) return;
+        console.log('Delete clicked for skill id:', id);
+        if (!window.confirm(t('admin.common.confirmDelete'))) {
+            console.log('Delete cancelled by user');
+            return;
+        }
+        console.log('User confirmed delete. Sending API request...');
         try {
             await api.delete(`/skills/${id}`);
+            console.log('API delete success');
             toast.success(t('admin.common.success'));
             await fetchSkills();
         } catch (error) {
+            console.error('API delete error:', error);
             const errMsg = error.response?.data?.message || t('admin.common.error');
             toast.error(errMsg);
         }

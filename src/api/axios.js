@@ -6,7 +6,7 @@
 import axios from 'axios';
 
 // Production Backend URL (Render)
-const PRODUCTION_API_URL = 'https://portfolio-backendportfolio-backend.onrender.com/api';
+const PRODUCTION_API_URL = 'https://portfolio-backend.onrender.com/api';
 
 const getApiUrl = () => {
     // In development mode explicitly, use localhost
@@ -16,7 +16,7 @@ const getApiUrl = () => {
 
     // In production, always use this specific URL. 
     // We remove the env var check to prevent incorrect overrides in Vercel.
-    const url = 'https://portfolio-backendportfolio-backend.onrender.com/api';
+    const url = 'https://portfolio-backend.onrender.com/api';
     console.log('Using API URL:', url); // For debugging
     return url;
 };

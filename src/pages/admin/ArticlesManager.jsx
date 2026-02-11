@@ -129,12 +129,19 @@ const ArticlesManager = () => {
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm(t('admin.common.confirmDelete'))) return;
+        console.log('Delete clicked for article id:', id);
+        if (!window.confirm(t('admin.common.confirmDelete'))) {
+            console.log('Delete cancelled by user');
+            return;
+        }
+        console.log('User confirmed delete. Sending API request...');
         try {
             await api.delete(`/articles/${id}`);
+            console.log('API delete success');
             toast.success(t('admin.common.success'));
             await fetchArticles();
         } catch (error) {
+            console.error('API delete error:', error);
             toast.error(t('admin.common.error'));
         }
     };
