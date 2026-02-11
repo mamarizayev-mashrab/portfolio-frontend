@@ -43,7 +43,7 @@ console.log(`
 ║           OG Image PNG Generation Guide                    ║
 ╠════════════════════════════════════════════════════════════╣
 ║                                                            ║
-║  To convert og-image.svg to og-image.png, use one of:     ║
+║  To convert og-image.svg to og-image.png, use one of:      ║
 ║                                                            ║
 ║  Option 1: Online converter                                ║
 ║  → Go to https://svgtopng.com                              ║
@@ -56,23 +56,23 @@ console.log(`
 ║  → Then run this script again                              ║
 ║                                                            ║
 ║  Option 3: Using Inkscape CLI                              ║
-║  → inkscape og-image.svg -o og-image.png -w 1200 -h 630   ║
+║  → inkscape og-image.svg -o og-image.png -w 1200 -h 630    ║
 ║                                                            ║
 ╚════════════════════════════════════════════════════════════╝
 `);
 
 // Try using sharp if available
 try {
-    const { default: sharp } = await import('sharp');
-    const svgBuffer = readFileSync(join(publicDir, 'og-image.svg'));
+  const { default: sharp } = await import('sharp');
+  const svgBuffer = readFileSync(join(publicDir, 'og-image.svg'));
 
-    await sharp(svgBuffer)
-        .resize(1200, 630)
-        .png({ quality: 95 })
-        .toFile(join(publicDir, 'og-image.png'));
+  await sharp(svgBuffer)
+    .resize(1200, 630)
+    .png({ quality: 95 })
+    .toFile(join(publicDir, 'og-image.png'));
 
-    console.log('✅ Successfully generated og-image.png!');
+  console.log('✅ Successfully generated og-image.png!');
 } catch (e) {
-    console.log('ℹ️  sharp not installed. Install it with: npm install sharp --save-dev');
-    console.log('   Then run: node scripts/generate-og-image.js');
+  console.log('ℹ️  sharp not installed. Install it with: npm install sharp --save-dev');
+  console.log('   Then run: node scripts/generate-og-image.js');
 }
