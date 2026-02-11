@@ -336,6 +336,7 @@
         "commentSent": "Izoh yuborildi! Admin tasdiqlashi kutilmoqda.",
         "commentModeration": "Izohlar admin tomonidan tasdiqlanadi.",
         "submitComment": "Izoh yuborish",
-        "sending": "Yuborilmoqda..."
+        "sending": "Yuborilmoqda...",
+        "pending": "Kutilmoqda"
     }
 }

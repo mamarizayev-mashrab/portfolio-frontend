@@ -17,7 +17,7 @@ const SkillsManager = () => {
     const emptySkill = {
         name: { uz: '', en: '', ru: '' },
         icon: '',
-        category: 'Frontend',
+        category: 'frontend',
         level: 80,
         order: 0
     };
@@ -74,17 +74,23 @@ const SkillsManager = () => {
         }
     };
 
-    const handleDelete = async (id) => {
-        console.log('Delete clicked for skill id:', id);
-        if (!window.confirm(t('admin.common.confirmDelete'))) {
-            console.log('Delete cancelled by user');
-            return;
-        }
-        console.log('User confirmed delete. Sending API request...');
+    const [deleteConfirmation, setDeleteConfirmation] = useState(null);
+
+    const handleDelete = (id) => {
+        setDeleteConfirmation(id);
+    };
+
+    const proceedWithDelete = async () => {
+        if (!deleteConfirmation) return;
+
+        const id = deleteConfirmation;
+        console.log('User confirmed delete. Sending API request for:', id);
+
         try {
             await api.delete(`/skills/${id}`);
             console.log('API delete success');
             toast.success(t('admin.common.success'));
+            setDeleteConfirmation(null); // Close modal first
             await fetchSkills();
         } catch (error) {
             console.error('API delete error:', error);
@@ -142,9 +148,9 @@ const SkillsManager = () => {
                                             <td className="p-4">
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-24 h-1.5 bg-[var(--accents-2)] rounded-full overflow-hidden">
-                                                        <div className="h-full bg-[var(--foreground)]" style={{ width: `${skill.level || skill.proficiency || 0}%` }} />
+                                                        <div className="h-full bg-[var(--foreground)]" style={{ width: `${skill.level || 0}%` }} />
                                                     </div>
-                                                    <span className="text-sm text-[var(--accents-5)] font-mono">{skill.level || skill.proficiency || 0}%</span>
+                                                    <span className="text-sm text-[var(--accents-5)] font-mono">{skill.level || 0}%</span>
                                                 </div>
                                             </td>
                                             <td className="p-4 text-right">
@@ -200,14 +206,26 @@ const SkillsManager = () => {
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase">{t('admin.skills.proficiency')}: {formData.level || formData.proficiency || 0}%</label>
-                                <input type="range" min="0" max="100" value={formData.level || formData.proficiency || 0} onChange={(e) => setFormData({ ...formData, level: parseInt(e.target.value) })} className="w-full accent-[var(--foreground)]" />
+                                <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase">{t('admin.skills.proficiency')}: {formData.level || 0}%</label>
+                                <input type="range" min="0" max="100" value={formData.level || 0} onChange={(e) => setFormData({ ...formData, level: parseInt(e.target.value) })} className="w-full accent-[var(--foreground)]" />
                             </div>
                             <div className="flex justify-end gap-3 pt-4 border-t border-[var(--accents-2)]">
                                 <button type="button" onClick={closeModal} className="v-btn-ghost h-10 px-4">{t('admin.common.cancel')}</button>
                                 <button type="submit" disabled={saving} className="v-btn-primary h-10 px-6">{saving ? t('admin.common.save') + '...' : t('admin.common.save')}</button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {deleteConfirmation && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                    <div className="v-card w-full max-w-sm animate-page-fade">
+                        <h3 className="text-xl font-bold mb-4 tracking-tight">{t('admin.common.confirmDelete')}</h3>
+                        <div className="flex justify-end gap-3 pt-4 border-t border-[var(--accents-2)]">
+                            <button onClick={() => setDeleteConfirmation(null)} className="v-btn-ghost h-10 px-4">{t('admin.common.cancel')}</button>
+                            <button onClick={proceedWithDelete} className="v-btn-primary h-10 px-6 bg-red-600 hover:bg-red-700 text-white border-none">{t('admin.common.delete')}</button>
+                        </div>
                     </div>
                 </div>
             )}

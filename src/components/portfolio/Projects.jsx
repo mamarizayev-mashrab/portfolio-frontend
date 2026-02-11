@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../api/axios';
 import { useLanguage } from '../../context/LanguageContext';
+import { getImageUrl } from '../../utils/assetUtils';
 
 const Projects = () => {
     const { t, getLocalizedField } = useLanguage();
@@ -62,67 +63,108 @@ const Projects = () => {
                         return (
                             <article
                                 key={project._id}
-                                className="v-card group flex flex-col justify-between min-h-[320px] hover:bg-[var(--accents-1)] transition-all relative"
+                                className="v-card group flex flex-col justify-between min-h-[400px] hover:bg-[var(--accents-1)] transition-all relative overflow-hidden"
                                 itemScope
                                 itemType="https://schema.org/CreativeWork"
                                 role="listitem"
                             >
                                 {badge && badge.label && (
-                                    <span className={`absolute top-4 right-4 z-10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider border rounded ${badge.color}`}>
+                                    <span className={`absolute top-4 right-4 z-10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider border rounded bg-[var(--background)]/80 backdrop-blur-sm ${badge.color}`}>
                                         {badge.label}
                                     </span>
                                 )}
-                                <a
-                                    href={project.liveUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex flex-col h-full"
-                                    aria-label={`${getLocalizedField(project.title)} - ${t('projects.viewProject', 'View project')}`}
-                                    itemProp="url"
-                                >
-                                    <div className="space-y-6 flex-1">
-                                        {project.image && (
-                                            <figure className="relative w-full h-48 overflow-hidden rounded-md border border-[var(--accents-2)]">
-                                                <img
-                                                    src={project.image}
-                                                    alt={`${getLocalizedField(project.title)} - ${t('projects.screenshot', 'project screenshot')}`}
-                                                    className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
-                                                    loading="lazy"
-                                                    decoding="async"
-                                                    itemProp="image"
-                                                    onError={(e) => { e.target.src = 'https://via.placeholder.com/600x400?text=No+Image'; }}
-                                                />
-                                            </figure>
-                                        )}
-                                        <div className="space-y-4">
-                                            <div className="flex justify-between items-start gap-4">
-                                                <h3 className="text-2xl font-bold tracking-tight text-[var(--foreground)] group-hover:text-primary transition-colors" itemProp="name">
-                                                    {getLocalizedField(project.title)}
-                                                </h3>
-                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--accents-3)] group-hover:text-[var(--foreground)] transition-colors shrink-0" aria-hidden="true">
-                                                    <path d="M7 17L17 7M17 7H7M17 7V17" />
-                                                </svg>
+
+                                <div className="space-y-6 flex-1">
+                                    {/* Project Image */}
+                                    <figure className="relative w-full h-48 overflow-hidden rounded-md border border-[var(--accents-2)] bg-[var(--accents-1)]">
+                                        {project.image ? (
+                                            <img
+                                                src={getImageUrl(project.image)}
+                                                alt={`${getLocalizedField(project.title)}`}
+                                                className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
+                                                loading="lazy"
+                                                decoding="async"
+                                                itemProp="image"
+                                                onError={(e) => {
+                                                    e.target.onerror = null;
+                                                    e.target.src = 'https://via.placeholder.com/600x400?text=Project+Image';
+                                                }}
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center text-[var(--accents-3)]">
+                                                <span className="font-mono text-xs">NO IMAGE</span>
                                             </div>
-                                            <p className="text-sm text-[var(--accents-5)] leading-relaxed font-medium line-clamp-3" itemProp="description">
-                                                {getLocalizedField(project.description)}
-                                            </p>
+                                        )}
+
+                                        {/* Overlay with Quick Links */}
+                                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 backdrop-blur-[2px]">
+                                            {project.liveUrl && (
+                                                <a
+                                                    href={project.liveUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="p-2 bg-white text-black rounded-full hover:scale-110 transition-transform"
+                                                    title="Live Preview"
+                                                >
+                                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                                                </a>
+                                            )}
+                                            {project.githubUrl && (
+                                                <a
+                                                    href={project.githubUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="p-2 bg-[var(--accents-8)] text-[var(--background)] rounded-full hover:scale-110 transition-transform"
+                                                    title="Source Code"
+                                                >
+                                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                                                </a>
+                                            )}
                                         </div>
+                                    </figure>
+
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between items-start gap-2">
+                                            <h3 className="text-xl font-bold tracking-tight text-[var(--foreground)]" itemProp="name">
+                                                {getLocalizedField(project.title)}
+                                            </h3>
+                                        </div>
+                                        <p className="text-sm text-[var(--accents-5)] leading-relaxed line-clamp-3" itemProp="description">
+                                            {getLocalizedField(project.description)}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <footer className="mt-6 pt-4 border-t border-[var(--accents-2)] space-y-4">
+                                    {/* Technologies */}
+                                    <div className="flex flex-wrap gap-2" aria-label="Technologies used">
+                                        {project.technologies?.map((tech) => (
+                                            <span
+                                                key={tech}
+                                                className="px-2 py-0.5 bg-[var(--accents-1)] border border-[var(--accents-2)] rounded text-[10px] font-mono text-[var(--accents-6)] uppercase"
+                                                itemProp="keywords"
+                                            >
+                                                {tech}
+                                            </span>
+                                        ))}
                                     </div>
 
-                                    <footer className="mt-8 pt-6 border-t border-[var(--accents-2)] flex items-center justify-between">
-                                        <div className="flex gap-2 flex-wrap" aria-label="Technologies used">
-                                            {project.technologies?.slice(0, 3).map(Tech => (
-                                                <span
-                                                    key={Tech}
-                                                    className="px-2 py-0.5 bg-[var(--background)] border border-[var(--accents-2)] text-[10px] font-mono text-[var(--accents-5)] uppercase"
-                                                    itemProp="keywords"
-                                                >
-                                                    {Tech}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </footer>
-                                </a>
+                                    {/* Links (Mobile/Fallback) */}
+                                    <div className="flex gap-4 pt-2">
+                                        {project.liveUrl && (
+                                            <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="text-xs font-bold flex items-center gap-1 hover:text-primary transition-colors">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                                                Live Preview
+                                            </a>
+                                        )}
+                                        {project.githubUrl && (
+                                            <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="text-xs font-bold flex items-center gap-1 hover:text-primary transition-colors">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                                                Source Code
+                                            </a>
+                                        )}
+                                    </div>
+                                </footer>
                             </article>
                         );
                     })}

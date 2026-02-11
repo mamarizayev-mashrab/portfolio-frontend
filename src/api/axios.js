@@ -9,21 +9,19 @@ import axios from 'axios';
 const PRODUCTION_API_URL = 'https://portfolio-backend.onrender.com/api';
 
 const getApiUrl = () => {
-    // In development mode explicitly, use localhost
-    if (import.meta.env.MODE === 'development') {
+    // Check for VITE_API_URL text specifically or mode
+    if (import.meta.env.MODE === 'development' || import.meta.env.DEV) {
         return 'http://localhost:5000/api';
     }
-
-    // In production, always use this specific URL. 
-    // We remove the env var check to prevent incorrect overrides in Vercel.
-    const url = 'https://portfolio-backend.onrender.com/api';
-    console.log('Using API URL:', url); // For debugging
-    return url;
+    return PRODUCTION_API_URL;
 };
+
+export const API_BASE_URL = getApiUrl();
+export const SERVER_URL = API_BASE_URL.replace('/api', '');
 
 // Create axios instance
 const api = axios.create({
-    baseURL: getApiUrl(),
+    baseURL: API_BASE_URL,
     timeout: 10000,
     headers: {
         'Content-Type': 'application/json'

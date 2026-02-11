@@ -4,13 +4,20 @@ import api from '../api/axios';
 import { toast } from 'react-hot-toast';
 import { useLanguage } from '../context/LanguageContext';
 import ReactMarkdown from 'react-markdown';
+import { formatDate } from '../utils/dateUtils';
+import { getImageUrl } from '../utils/assetUtils';
 
 const ArticlesPage = () => {
     const { t, getLocalizedField } = useLanguage();
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
-    const [likedArticles, setLikedArticles] = useState({});
+    // Persistent likes using localStorage
+    const [likedArticles, setLikedArticles] = useState(() => {
+        const saved = localStorage.getItem('v_liked_articles');
+        return saved ? JSON.parse(saved) : {};
+    });
+
     const [commentForms, setCommentForms] = useState({});
     const [submittingComment, setSubmittingComment] = useState({});
     const [activeCommentId, setActiveCommentId] = useState(null);
@@ -20,6 +27,11 @@ const ArticlesPage = () => {
     const [hasMore, setHasMore] = useState(true);
     const [activeTag, setActiveTag] = useState(null);
     const observer = useRef();
+
+    // Sync likes to localStorage
+    useEffect(() => {
+        localStorage.setItem('v_liked_articles', JSON.stringify(likedArticles));
+    }, [likedArticles]);
 
     useEffect(() => {
         fetchArticles(1, activeTag, true);
@@ -47,14 +59,21 @@ const ArticlesPage = () => {
             setHasMore(pageNum < pagination.totalPages);
             setPage(pageNum);
 
-            // Track views and likes (only for new articles)
-            data.forEach(async (article) => {
-                try { await api.patch(`/articles/${article._id}/view`); } catch (e) { /* silent */ }
-                try {
-                    const likeRes = await api.get(`/articles/${article._id}/like-status`);
-                    setLikedArticles(prev => ({ ...prev, [article._id]: likeRes.data.liked }));
-                } catch (e) { /* silent */ }
+            // Verify likes for new articles with server (based on IP)
+            // Using Promise.all to fetch status in parallel and avoid setLikedArticles in a loop
+            const statusPromises = data.map(article =>
+                api.get(`/articles/${article._id}/like-status`)
+                    .then(res => ({ id: article._id, liked: res.data.liked }))
+                    .catch(() => ({ id: article._id, liked: !!likedArticles[article._id] }))
+            );
+
+            const results = await Promise.all(statusPromises);
+            const newLikedStatus = {};
+            results.forEach(res => {
+                newLikedStatus[res.id] = res.liked;
             });
+
+            setLikedArticles(prev => ({ ...prev, ...newLikedStatus }));
         } catch (error) {
             toast.error(t('common.error'));
         } finally {
@@ -103,14 +122,19 @@ const ArticlesPage = () => {
 
         setSubmittingComment(prev => ({ ...prev, [articleId]: true }));
         try {
-            await api.post(`/articles/${articleId}/comments`, form);
+            const postRes = await api.post(`/articles/${articleId}/comments`, form);
+            const newComment = postRes.data.data;
             toast.success(t('articles.commentSent'));
             setCommentForms(prev => ({ ...prev, [articleId]: { name: '', email: '', content: '' } }));
 
             const res = await api.get(`/articles/${articleId}`);
             const updatedArticle = res.data.data;
+
+            // Merge newly created (unapproved) comment with approved ones
+            const allComments = [newComment, ...(updatedArticle.comments || []).filter(c => c._id !== newComment._id)];
+
             setArticles(prev => prev.map(a =>
-                a._id === articleId ? { ...a, comments: updatedArticle.comments } : a
+                a._id === articleId ? { ...a, comments: allComments } : a
             ));
             setActiveCommentId(null);
         } catch (error) {
@@ -121,20 +145,7 @@ const ArticlesPage = () => {
         }
     };
 
-    const formatDate = (dateStr) => {
-        if (!dateStr) return '';
-        const lang = localStorage.getItem('language') || 'uz';
-        const date = new Date(dateStr);
-        const now = new Date();
-        const diffInSeconds = Math.floor((now - date) / 1000);
 
-        if (diffInSeconds < 60) return `${diffInSeconds}s`;
-        if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m`;
-        if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h`;
-
-        const locale = lang === 'uz' ? 'uz-UZ' : lang === 'ru' ? 'ru-RU' : 'en-US';
-        return date.toLocaleDateString(locale, { month: 'short', day: 'numeric' });
-    };
 
     // Suggestion 4: Reading Time
     const calculateReadingTime = (text) => {
@@ -170,6 +181,9 @@ const ArticlesPage = () => {
     };
 
     const toggleComments = async (articleId) => {
+        // Increment view when user interacts to see comments
+        try { api.patch(`/articles/${articleId}/view`); } catch (e) { /* silent */ }
+
         if (activeCommentId === articleId) {
             setActiveCommentId(null);
             return;
@@ -325,7 +339,7 @@ const ArticlesPage = () => {
                                             {article.image && (
                                                 <div className="mt-3 rounded-2xl overflow-hidden border border-[var(--accents-2)]">
                                                     <img
-                                                        src={article.image}
+                                                        src={getImageUrl(article.image)}
                                                         alt={getLocalizedField(article.title)}
                                                         className="w-full h-auto object-cover max-h-[512px]"
                                                         loading="lazy"
@@ -391,6 +405,11 @@ const ArticlesPage = () => {
                                                                         <div className="flex items-center gap-2">
                                                                             <span className="font-bold text-sm">{comment.name}</span>
                                                                             <span className="text-[var(--accents-4)] text-[11px]">· {formatDate(comment.createdAt)}</span>
+                                                                            {comment.approved === false && (
+                                                                                <span className="text-[9px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-yellow-500/10 text-yellow-500 border border-yellow-500/20">
+                                                                                    {t('articles.pending')}
+                                                                                </span>
+                                                                            )}
                                                                         </div>
                                                                         <p className="text-[14px] text-[var(--foreground)] mt-0.5">{comment.content}</p>
                                                                     </div>

@@ -4,6 +4,9 @@ import api from '../../api/axios';
 import { toast } from 'react-hot-toast';
 import { useLanguage } from '../../context/LanguageContext';
 import ReactMarkdown from 'react-markdown';
+import { formatDate } from '../../utils/dateUtils';
+
+import { getImageUrl } from '../../utils/assetUtils';
 
 const ArticlesManager = () => {
     const { t, getLocalizedField } = useLanguage();
@@ -29,7 +32,9 @@ const ArticlesManager = () => {
         tags: []
     };
     const [formData, setFormData] = useState(emptyArticle);
-    const [tagsInput, setTagsInput] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [statusFilter, setStatusFilter] = useState('all');
+    const [tagInput, setTagInput] = useState('');
 
     useEffect(() => { fetchArticles(); }, []);
 
@@ -56,19 +61,19 @@ const ArticlesManager = () => {
                 order: article.order || 0,
                 tags: article.tags || []
             });
-            setTagsInput((article.tags || []).join(', '));
         } else {
             setFormData(emptyArticle);
-            setTagsInput('');
         }
+        setTagInput('');
         setShowModal(true);
     };
 
     const closeModal = () => {
+        if (saving || uploading) return;
         setShowModal(false);
         setEditingArticle(null);
         setFormData(emptyArticle);
-        setTagsInput('');
+        setTagInput('');
         setPreviewLang(null);
     };
 
@@ -80,9 +85,80 @@ const ArticlesManager = () => {
         }
     };
 
+    // Tag Management
+    const handleAddTag = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const tag = tagInput.trim();
+            if (tag && !formData.tags.includes(tag)) {
+                setFormData(prev => ({ ...prev, tags: [...prev.tags, tag] }));
+                setTagInput('');
+            }
+        }
+    };
+
+    const handleRemoveTag = (tagToRemove) => {
+        setFormData(prev => ({
+            ...prev,
+            tags: prev.tags.filter(tag => tag !== tagToRemove)
+        }));
+    };
+
+    // Markdown Toolbar Helper
+    const insertMarkdown = (lang, syntax, placeholder = '') => {
+        const textarea = document.getElementById(`content-${lang}`);
+        if (!textarea) return;
+
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = formData.content[lang];
+        const before = text.substring(0, start);
+        const after = text.substring(end);
+        const selection = text.substring(start, end);
+
+        let newText = '';
+        let newCursorPos = 0;
+
+        if (syntax === 'link') {
+            newText = before + `[${selection || placeholder}](url)` + after;
+            newCursorPos = start + (selection || placeholder).length + 3; // Position inside (url)
+        } else if (syntax === 'image') {
+            newText = before + `![${selection || placeholder}](url)` + after;
+            newCursorPos = start + (selection || placeholder).length + 4;
+        } else if (syntax === 'code') {
+            newText = before + "```\n" + (selection || placeholder) + "\n```" + after;
+            newCursorPos = start + 4;
+        } else if (syntax === 'list') {
+            newText = before + "\n- " + (selection || placeholder) + after;
+            newCursorPos = start + 3;
+        } else {
+            // Bold, Italic, etc.
+            newText = before + syntax + (selection || placeholder) + syntax + after;
+            newCursorPos = end + syntax.length * 2;
+        }
+
+        handleChange('content', newText, lang);
+
+        // Restore focus and cursor (need timeout for React state update)
+        setTimeout(() => {
+            textarea.focus();
+            textarea.setSelectionRange(newCursorPos, newCursorPos);
+        }, 0);
+    };
+
     const handleImageUpload = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
+
+        if (!file.type.startsWith('image/')) {
+            toast.error(t('admin.common.error') + ': Only images allowed');
+            return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error(t('admin.common.error') + ': File too large (max 5MB)');
+            return;
+        }
 
         const uploadFormData = new FormData();
         uploadFormData.append('image', file);
@@ -92,12 +168,13 @@ const ArticlesManager = () => {
             const res = await api.post('/upload', uploadFormData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
-            handleChange('image', res.data.data);
+            handleChange('image', res.data.relativePath);
             toast.success(t('admin.common.success'));
         } catch (error) {
             toast.error(t('admin.common.error'));
         } finally {
             setUploading(false);
+            e.target.value = '';
         }
     };
 
@@ -105,17 +182,14 @@ const ArticlesManager = () => {
         e.preventDefault();
         setSaving(true);
 
-        // Process tags
-        const tags = tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
-        const dataToSubmit = { ...formData, tags };
-
+        // Tags are already in formData.tags array
         try {
             if (editingArticle) {
-                await api.put(`/articles/${editingArticle._id}`, dataToSubmit);
+                await api.put(`/articles/${editingArticle._id}`, formData);
             } else {
-                await api.post('/articles', dataToSubmit);
+                await api.post('/articles', formData);
             }
-            const statusMsg = dataToSubmit.status === 'draft'
+            const statusMsg = formData.status === 'draft'
                 ? t('admin.articles.draftSaved')
                 : t('admin.articles.publishedMsg');
             toast.success(t('admin.common.success') + statusMsg);
@@ -128,18 +202,32 @@ const ArticlesManager = () => {
         }
     };
 
-    const handleDelete = async (id) => {
-        console.log('Delete clicked for article id:', id);
-        if (!window.confirm(t('admin.common.confirmDelete'))) {
-            console.log('Delete cancelled by user');
-            return;
-        }
-        console.log('User confirmed delete. Sending API request...');
+    const [deleteConfirmation, setDeleteConfirmation] = useState(null);
+
+    const handleDelete = (id) => {
+        setDeleteConfirmation({ id, type: 'article' });
+    };
+
+    const confirmDeleteComment = (commentId) => {
+        setDeleteConfirmation({ id: commentId, type: 'comment' });
+    };
+
+    const proceedWithDelete = async () => {
+        if (!deleteConfirmation) return;
+
+        const { id, type } = deleteConfirmation;
+        console.log(`User confirmed delete for ${type}:`, id);
+
         try {
-            await api.delete(`/articles/${id}`);
-            console.log('API delete success');
+            if (type === 'article') {
+                await api.delete(`/articles/${id}`);
+                await fetchArticles();
+            } else if (type === 'comment') {
+                await api.delete(`/articles/comments/${id}`);
+                if (selectedArticle) openComments(selectedArticle);
+            }
             toast.success(t('admin.common.success'));
-            await fetchArticles();
+            setDeleteConfirmation(null);
         } catch (error) {
             console.error('API delete error:', error);
             toast.error(t('admin.common.error'));
@@ -195,23 +283,15 @@ const ArticlesManager = () => {
         }
     };
 
-    const deleteComment = async (commentId) => {
-        if (!window.confirm(t('admin.common.confirmDelete'))) return;
-        try {
-            await api.delete(`/articles/comments/${commentId}`);
-            toast.success(t('admin.common.success'));
-            if (selectedArticle) openComments(selectedArticle);
-        } catch (error) {
-            toast.error(t('admin.common.error'));
-        }
-    };
 
-    const formatDate = (dateStr) => {
-        if (!dateStr) return '';
-        const lang = localStorage.getItem('language') || 'uz';
-        const locale = lang === 'uz' ? 'uz-UZ' : lang === 'ru' ? 'ru-RU' : 'en-US';
-        return new Date(dateStr).toLocaleDateString(locale, { month: 'short', day: 'numeric', year: 'numeric' });
-    };
+
+
+
+    const filteredArticles = articles.filter(article => {
+        const matchesSearch = getLocalizedField(article.title).toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesStatus = statusFilter === 'all' || article.status === statusFilter;
+        return matchesSearch && matchesStatus;
+    });
 
     return (
         <div className="p-4 md:p-6">
@@ -241,84 +321,124 @@ const ArticlesManager = () => {
 
                 {/* Articles Tab */}
                 {activeTab === 'articles' && (
-                    <div className="v-card p-0 overflow-hidden">
-                        <div className="overflow-x-auto">
-                            {loading ? (
-                                <div className="p-8 text-center text-[var(--accents-5)]">{t('admin.projects.table.loading')}</div>
-                            ) : articles.length === 0 ? (
-                                <div className="p-8 text-center text-[var(--accents-5)]">{t('admin.common.noResults')}</div>
-                            ) : (
-                                <table className="w-full min-w-[800px]">
-                                    <thead>
-                                        <tr className="border-b border-[var(--accents-2)]">
-                                            <th className="text-left p-4 text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">{t('admin.articles.articleTitle')}</th>
-                                            <th className="text-left p-4 text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">{t('admin.articles.status')}</th>
-                                            <th className="text-left p-4 text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">{t('admin.articles.stats')}</th>
-                                            <th className="text-left p-4 text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">{t('admin.articles.commentsLabel')}</th>
-                                            <th className="text-right p-4 text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">{t('admin.projects.table.actions')}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {articles.map((article) => (
-                                            <tr key={article._id} className="border-b border-[var(--accents-2)] hover:bg-[var(--accents-1)] transition-colors">
-                                                <td className="p-4">
-                                                    <div className="flex items-center gap-3">
-                                                        {article.image && <img src={article.image} className="w-10 h-10 rounded object-cover border border-[var(--accents-2)]" alt="" />}
-                                                        <div>
-                                                            <span className="font-bold">{getLocalizedField(article.title)}</span>
-                                                            <p className="text-xs text-[var(--accents-4)] font-mono mt-1">{formatDate(article.createdAt)}</p>
+                    <div className="space-y-4">
+                        {/* Search & Filter */}
+                        <div className="flex flex-col md:flex-row gap-4">
+                            <div className="flex-1 relative">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--accents-4)]">🔍</span>
+                                <input
+                                    type="text"
+                                    placeholder="Search articles..."
+                                    className="v-input pl-9"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
+                            </div>
+                            <select
+                                className="v-input md:w-48"
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value)}
+                            >
+                                <option value="all">All Status</option>
+                                <option value="published">Published</option>
+                                <option value="draft">Draft</option>
+                            </select>
+                        </div>
+
+                        <div className="v-card p-0 overflow-hidden">
+                            <div className="overflow-x-auto">
+                                {loading ? (
+                                    <div className="p-8 text-center text-[var(--accents-5)]">{t('admin.projects.table.loading')}</div>
+                                ) : filteredArticles.length === 0 ? (
+                                    <div className="p-8 text-center text-[var(--accents-5)]">{t('admin.common.noResults')}</div>
+                                ) : (
+                                    <table className="w-full min-w-[800px]">
+                                        <thead>
+                                            <tr className="border-b border-[var(--accents-2)]">
+                                                <th className="text-left p-4 text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">{t('admin.articles.articleTitle')}</th>
+                                                <th className="text-left p-4 text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">{t('admin.articles.status')}</th>
+                                                <th className="text-left p-4 text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">{t('admin.articles.stats')}</th>
+                                                <th className="text-left p-4 text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">{t('admin.articles.commentsLabel')}</th>
+                                                <th className="text-right p-4 text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">{t('admin.projects.table.actions')}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {filteredArticles.map((article) => (
+                                                <tr key={article._id} className="border-b border-[var(--accents-2)] hover:bg-[var(--accents-1)] transition-colors">
+                                                    <td className="p-4">
+                                                        <div className="flex items-center gap-3">
+                                                            {article.image && <img src={getImageUrl(article.image)} className="w-10 h-10 rounded object-cover border border-[var(--accents-2)]" alt="" />}
+                                                            <div>
+                                                                <span className="font-bold">{getLocalizedField(article.title)}</span>
+                                                                <p className="text-xs text-[var(--accents-4)] font-mono mt-1">{formatDate(article.createdAt)}</p>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </td>
-                                                <td className="p-4">
-                                                    <button
-                                                        onClick={() => toggleStatus(article)}
-                                                        className={`px-2 py-1 text-xs font-mono rounded border cursor-pointer transition-colors ${article.status === 'published'
-                                                            ? 'border-emerald-500/30 text-emerald-500 bg-emerald-500/10 hover:bg-emerald-500/20'
-                                                            : 'border-yellow-500/30 text-yellow-500 bg-yellow-500/10 hover:bg-yellow-500/20'
-                                                            }`}
-                                                    >
-                                                        {article.status === 'published' ? t('admin.articles.published') : t('admin.articles.draft')}
-                                                    </button>
-                                                </td>
-                                                <td className="p-4">
-                                                    <div className="flex items-center gap-3 text-xs font-mono text-[var(--accents-5)]">
-                                                        <span className="flex items-center gap-1">
-                                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
-                                                            {article.views || 0}
-                                                        </span>
-                                                        <span className="flex items-center gap-1">♥ {article.likeCount || 0}</span>
-                                                    </div>
-                                                </td>
-                                                <td className="p-4">
-                                                    <div className="flex items-center gap-2">
+                                                    </td>
+                                                    <td className="p-4">
                                                         <button
-                                                            onClick={() => toggleComments(article)}
-                                                            className={`relative w-10 h-5 rounded-full transition-colors ${article.commentsEnabled ? 'bg-emerald-500' : 'bg-[var(--accents-3)]'
+                                                            onClick={() => toggleStatus(article)}
+                                                            className={`px-2 py-1 text-xs font-mono rounded border cursor-pointer transition-colors ${article.status === 'published'
+                                                                ? 'border-emerald-500/30 text-emerald-500 bg-emerald-500/10 hover:bg-emerald-500/20'
+                                                                : 'border-yellow-500/30 text-yellow-500 bg-yellow-500/10 hover:bg-yellow-500/20'
                                                                 }`}
                                                         >
-                                                            <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${article.commentsEnabled ? 'translate-x-5' : 'translate-x-0.5'
-                                                                }`} />
+                                                            {article.status === 'published' ? t('admin.articles.published') : t('admin.articles.draft')}
                                                         </button>
-                                                        {article.commentCount > 0 && (
+                                                    </td>
+                                                    <td className="p-4">
+                                                        <div className="flex items-center gap-3 text-xs font-mono text-[var(--accents-5)]">
+                                                            <span className="flex items-center gap-1">
+                                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
+                                                                {article.views || 0}
+                                                            </span>
+                                                            <span className="flex items-center gap-1">♥ {article.likeCount || 0}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td className="p-4">
+                                                        <div className="flex items-center gap-3">
                                                             <button
-                                                                onClick={() => openComments(article)}
-                                                                className="text-xs text-primary hover:underline font-mono"
+                                                                onClick={() => toggleComments(article)}
+                                                                title={article.commentsEnabled ? "Disable comments" : "Enable comments"}
+                                                                className={`relative shrink-0 w-9 h-5 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[var(--accents-3)] ${article.commentsEnabled ? 'bg-emerald-500' : 'bg-[var(--accents-3)]'
+                                                                    }`}
                                                             >
-                                                                {article.commentCount} ({article.pendingComments || 0} ⏳)
+                                                                <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${article.commentsEnabled ? 'translate-x-4.5' : 'translate-x-0.5'
+                                                                    }`} />
                                                             </button>
-                                                        )}
-                                                    </div>
-                                                </td>
-                                                <td className="p-4 text-right">
-                                                    <button onClick={() => openModal(article)} className="text-sm text-[var(--accents-5)] hover:text-[var(--foreground)] mr-4">{t('admin.common.edit')}</button>
-                                                    <button onClick={() => handleDelete(article._id)} className="text-sm text-[var(--accents-5)] hover:text-error-light">{t('admin.common.delete')}</button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            )}
+
+                                                            {(article.commentCount > 0 || article.pendingComments > 0) && (
+                                                                <button
+                                                                    onClick={() => openComments(article)}
+                                                                    className="flex items-center gap-2 group focus:outline-none"
+                                                                    title="Manage comments"
+                                                                >
+                                                                    {/* Total Comments Badge */}
+                                                                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-[var(--accents-1)] border border-[var(--accents-2)] text-[var(--accents-6)] text-xs font-mono font-medium group-hover:border-[var(--accents-4)] group-hover:text-[var(--foreground)] transition-all">
+                                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                                                                        <span>{article.commentCount || 0}</span>
+                                                                    </div>
+
+                                                                    {/* Pending Comments Badge - Highlighted if exists */}
+                                                                    {article.pendingComments > 0 && (
+                                                                        <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-amber-500/10 border border-amber-500/20 text-amber-500 text-xs font-mono font-bold animate-pulse group-hover:bg-amber-500/20 transition-all">
+                                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                                                            <span>{article.pendingComments}</span>
+                                                                        </div>
+                                                                    )}
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                    </td>
+                                                    <td className="p-4 text-right">
+                                                        <button onClick={() => openModal(article)} className="text-sm text-[var(--accents-5)] hover:text-[var(--foreground)] mr-4">{t('admin.common.edit')}</button>
+                                                        <button onClick={() => handleDelete(article._id)} className="text-sm text-[var(--accents-5)] hover:text-error-light">{t('admin.common.delete')}</button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                )}
+                            </div>
                         </div>
                     </div>
                 )}
@@ -363,7 +483,7 @@ const ArticlesManager = () => {
                                                     {comment.approved ? t('admin.articles.reject') : t('admin.articles.approve')}
                                                 </button>
                                                 <button
-                                                    onClick={() => deleteComment(comment._id)}
+                                                    onClick={() => confirmDeleteComment(comment._id)}
                                                     className="text-xs px-2 py-1 rounded border border-red-500/30 text-red-500 hover:bg-red-500/10"
                                                 >
                                                     {t('admin.common.delete')}
@@ -381,7 +501,7 @@ const ArticlesManager = () => {
             {/* Create/Edit Modal */}
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-                    <div className="v-card w-full max-w-4xl max-h-[90vh] overflow-y-auto animate-page-fade p-0 border-none">
+                    <div className="v-card w-full max-w-4xl max-h-[90vh] overflow-y-auto animate-page-fade p-0 border-none no-scrollbar">
                         <div className="p-6 border-b border-[var(--accents-2)] flex items-center justify-between sticky top-0 bg-[var(--background)] z-10">
                             <h2 className="text-xl font-bold tracking-tight">
                                 {editingArticle ? t('admin.common.edit') : t('admin.articles.newArticle')}
@@ -417,13 +537,25 @@ const ArticlesManager = () => {
                                             <h4 className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">
                                                 {t('admin.articles.content')} ({lang})
                                             </h4>
-                                            <button
-                                                type="button"
-                                                onClick={() => setPreviewLang(previewLang === lang ? null : lang)}
-                                                className={`text-[10px] font-mono px-2 py-1 rounded border transition-colors ${previewLang === lang ? 'bg-[var(--foreground)] text-[var(--background)]' : 'border-[var(--accents-2)] hover:bg-[var(--accents-1)]'}`}
-                                            >
-                                                {previewLang === lang ? 'EDITING...' : 'PREVIEW'}
-                                            </button>
+                                            <div className="flex gap-2">
+                                                {previewLang !== lang && (
+                                                    <div className="flex bg-[var(--accents-1)] rounded border border-[var(--accents-2)] overflow-hidden">
+                                                        <button type="button" onClick={() => insertMarkdown(lang, '**')} className="p-1.5 hover:bg-[var(--accents-2)]" title="Bold"><b>B</b></button>
+                                                        <button type="button" onClick={() => insertMarkdown(lang, '*')} className="p-1.5 hover:bg-[var(--accents-2)]" title="Italic"><i>I</i></button>
+                                                        <button type="button" onClick={() => insertMarkdown(lang, 'list', 'Item')} className="p-1.5 hover:bg-[var(--accents-2)]" title="List">•</button>
+                                                        <button type="button" onClick={() => insertMarkdown(lang, 'link', 'Link')} className="p-1.5 hover:bg-[var(--accents-2)]" title="Link">🔗</button>
+                                                        <button type="button" onClick={() => insertMarkdown(lang, 'image', 'Image')} className="p-1.5 hover:bg-[var(--accents-2)]" title="Image">🖼️</button>
+                                                        <button type="button" onClick={() => insertMarkdown(lang, 'code', 'Code')} className="p-1.5 hover:bg-[var(--accents-2)]" title="Code">{'<>'}</button>
+                                                    </div>
+                                                )}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setPreviewLang(previewLang === lang ? null : lang)}
+                                                    className={`text-[10px] font-mono px-2 py-1 rounded border transition-colors ${previewLang === lang ? 'bg-[var(--foreground)] text-[var(--background)]' : 'border-[var(--accents-2)] hover:bg-[var(--accents-1)]'}`}
+                                                >
+                                                    {previewLang === lang ? 'EDITING...' : 'PREVIEW'}
+                                                </button>
+                                            </div>
                                         </div>
 
                                         {previewLang === lang ? (
@@ -432,6 +564,7 @@ const ArticlesManager = () => {
                                             </div>
                                         ) : (
                                             <textarea
+                                                id={`content-${lang}`}
                                                 value={formData.content[lang] || ''}
                                                 onChange={(e) => handleChange('content', e.target.value, lang)}
                                                 className="v-input font-mono text-sm leading-relaxed"
@@ -463,20 +596,28 @@ const ArticlesManager = () => {
                                                 {uploading ? '...' : '↑'}
                                             </label>
                                         </div>
-                                        {formData.image && <img src={formData.image} className="w-20 h-20 object-cover rounded border border-[var(--accents-2)]" alt="" />}
+                                        {formData.image && <img src={getImageUrl(formData.image)} className="w-20 h-20 object-cover rounded border border-[var(--accents-2)]" alt="" />}
                                     </div>
 
-                                    {/* Tags Input */}
+                                    {/* Tags Input (Chips) */}
                                     <div className="space-y-2">
                                         <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase tracking-widest">Tags (Hashtags)</label>
                                         <input
                                             type="text"
-                                            value={tagsInput}
-                                            onChange={(e) => setTagsInput(e.target.value)}
+                                            value={tagInput}
+                                            onChange={(e) => setTagInput(e.target.value)}
+                                            onKeyDown={handleAddTag}
                                             className="v-input"
-                                            placeholder="javascript, tutorial, news..."
+                                            placeholder="Type tag and press Enter..."
                                         />
-                                        <p className="text-[10px] text-[var(--accents-4)]">Separate tags with commas</p>
+                                        <div className="flex flex-wrap gap-2 pt-2">
+                                            {formData.tags.map(tag => (
+                                                <span key={tag} className="px-2 py-0.5 bg-[var(--accents-1)] border border-[var(--accents-2)] rounded text-[10px] flex items-center gap-2 font-mono">
+                                                    #{tag}
+                                                    <button type="button" onClick={() => handleRemoveTag(tag)} className="text-error-light hover:text-red-500">×</button>
+                                                </span>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
 
@@ -509,6 +650,19 @@ const ArticlesManager = () => {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {deleteConfirmation && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                    <div className="v-card w-full max-w-sm animate-page-fade">
+                        <h3 className="text-xl font-bold mb-4 tracking-tight">{t('admin.common.confirmDelete')}</h3>
+                        {deleteConfirmation.type === 'comment' && <p className="text-xs text-[var(--accents-5)] mb-4 font-mono">Deleting a comment cannot be undone.</p>}
+                        <div className="flex justify-end gap-3 pt-4 border-t border-[var(--accents-2)]">
+                            <button onClick={() => setDeleteConfirmation(null)} className="v-btn-ghost h-10 px-4">{t('admin.common.cancel')}</button>
+                            <button onClick={proceedWithDelete} className="v-btn-primary h-10 px-6 bg-red-600 hover:bg-red-700 text-white border-none">{t('admin.common.delete')}</button>
+                        </div>
                     </div>
                 </div>
             )}

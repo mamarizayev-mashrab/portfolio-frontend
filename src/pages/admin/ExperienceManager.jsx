@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import api from '../../api/axios';
 import { toast } from 'react-hot-toast';
 import { useLanguage } from '../../context/LanguageContext';
+import { formatDate, formatDateForInput } from '../../utils/dateUtils';
 
 const ExperienceManager = () => {
     const { t, getLocalizedField } = useLanguage();
@@ -11,6 +12,7 @@ const ExperienceManager = () => {
     const [showModal, setShowModal] = useState(false);
     const [editingExp, setEditingExp] = useState(null);
     const [saving, setSaving] = useState(false);
+    const [deleteConfirmation, setDeleteConfirmation] = useState(null);
 
     const types = ['work', 'education', 'freelance', 'other'];
 
@@ -40,13 +42,16 @@ const ExperienceManager = () => {
         }
     };
 
+
+
     const openModal = (exp = null) => {
         if (exp) {
             setEditingExp(exp);
             setFormData({
                 ...exp,
-                startDate: exp.startDate ? exp.startDate.split('T')[0] : '',
-                endDate: exp.endDate ? exp.endDate.split('T')[0] : ''
+                startDate: formatDateForInput(exp.startDate),
+                endDate: formatDateForInput(exp.endDate),
+                type: exp.type || 'work' // Ensure type is set
             });
         } else {
             setEditingExp(null);
@@ -56,6 +61,7 @@ const ExperienceManager = () => {
     };
 
     const closeModal = () => {
+        if (saving) return;
         setShowModal(false);
         setEditingExp(null);
         setFormData(emptyExp);
@@ -92,11 +98,16 @@ const ExperienceManager = () => {
         }
     };
 
-    const handleDelete = async (id) => {
-        if (!window.confirm(t('admin.common.confirmDelete'))) return;
+    const handleDelete = (id) => {
+        setDeleteConfirmation(id);
+    };
+
+    const proceedWithDelete = async () => {
+        if (!deleteConfirmation) return;
         try {
-            await api.delete(`/experiences/${id}`);
+            await api.delete(`/experiences/${deleteConfirmation}`);
             toast.success(t('admin.common.success'));
+            handleCloseDeleteModal();
             await fetchExperiences();
         } catch (error) {
             const errMsg = error.response?.data?.message || t('admin.common.error');
@@ -104,12 +115,11 @@ const ExperienceManager = () => {
         }
     };
 
-    const formatDate = (dateString) => {
-        if (!dateString) return '';
-        const currentLang = localStorage.getItem('language') || 'uz';
-        const locale = currentLang === 'uz' ? 'uz-UZ' : currentLang === 'ru' ? 'ru-RU' : 'en-US';
-        return new Date(dateString).toLocaleDateString(locale, { year: 'numeric', month: 'short' });
+    const handleCloseDeleteModal = () => {
+        setDeleteConfirmation(null);
     };
+
+
 
     return (
         <div className="p-4 md:p-6">
@@ -172,8 +182,9 @@ const ExperienceManager = () => {
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
                     <div className="v-card w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-page-fade">
-                        <div className="mb-6">
+                        <div className="mb-6 flex justify-between items-center">
                             <h2 className="text-xl font-bold tracking-tight">{editingExp ? t('admin.common.edit') : t('admin.experience.newExperience')}</h2>
+                            <button onClick={closeModal} className="text-2xl grayscale opacity-50 hover:opacity-100">×</button>
                         </div>
                         <form onSubmit={handleSubmit} className="space-y-6">
                             {/* Roles */}
@@ -210,21 +221,21 @@ const ExperienceManager = () => {
                             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                                 <div className="space-y-2">
                                     <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase">{t('admin.experience.type')}</label>
-                                    <select value={formData.type?.toLowerCase()} onChange={(e) => handleChange('type', e.target.value)} className="v-input">
-                                        {Object.keys(t('admin.experience.types', {})).map(typeKey => (
-                                            <option key={typeKey} value={typeKey}>
-                                                {t(`admin.experience.types.${typeKey}`)}
+                                    <select value={formData.type} onChange={(e) => handleChange('type', e.target.value)} className="v-input">
+                                        {types.map(type => (
+                                            <option key={type} value={type}>
+                                                {t(`admin.experience.types.${type}`, type.charAt(0).toUpperCase() + type.slice(1))}
                                             </option>
                                         ))}
                                     </select>
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase">Start Date</label>
-                                    <input type="date" value={formData.startDate} onChange={(e) => handleChange('startDate', e.target.value)} className="v-input" required />
+                                    <input type="date" value={formData.startDate} onChange={(e) => handleChange('startDate', e.target.value)} max="9999-12-31" className="v-input" required />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-xs font-mono font-bold text-[var(--accents-4)] uppercase">End Date</label>
-                                    <input type="date" value={formData.endDate} onChange={(e) => handleChange('endDate', e.target.value)} className="v-input" disabled={formData.current} />
+                                    <input type="date" value={formData.endDate} onChange={(e) => handleChange('endDate', e.target.value)} max="9999-12-31" className="v-input" disabled={formData.current} />
                                 </div>
                                 <div className="flex items-end pb-2">
                                     <label className="flex items-center gap-2 cursor-pointer">
@@ -239,6 +250,18 @@ const ExperienceManager = () => {
                                 <button type="submit" disabled={saving} className="v-btn-primary h-10 px-6">{saving ? t('admin.common.save') + '...' : t('admin.common.save')}</button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {deleteConfirmation && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                    <div className="v-card w-full max-w-sm animate-page-fade">
+                        <h3 className="text-xl font-bold mb-4 tracking-tight">{t('admin.common.confirmDelete')}</h3>
+                        <div className="flex justify-end gap-3 pt-4 border-t border-[var(--accents-2)]">
+                            <button onClick={handleCloseDeleteModal} className="v-btn-ghost h-10 px-4">{t('admin.common.cancel')}</button>
+                            <button onClick={proceedWithDelete} className="v-btn-primary h-10 px-6 bg-red-600 hover:bg-red-700 text-white border-none">{t('admin.common.delete')}</button>
+                        </div>
                     </div>
                 </div>
             )}

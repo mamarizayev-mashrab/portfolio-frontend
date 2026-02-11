@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import api from '../../api/axios';
 import { toast } from 'react-hot-toast';
 import { useLanguage } from '../../context/LanguageContext';
+import { formatDate } from '../../utils/dateUtils';
 
 const MessagesViewer = () => {
     const { t } = useLanguage();
@@ -45,8 +46,16 @@ const MessagesViewer = () => {
         // Actually, clearing it is fine or keeping it. Keeping it is better.
     };
 
-    const handleDelete = async (id) => {
-        if (!window.confirm(t('admin.common.confirmDelete'))) return;
+    const [deleteConfirmation, setDeleteConfirmation] = useState(null);
+
+    const handleDelete = (id) => {
+        setDeleteConfirmation(id);
+    };
+
+    const proceedWithDelete = async () => {
+        if (!deleteConfirmation) return;
+
+        const id = deleteConfirmation;
         try {
             await api.delete(`/messages/${id}`);
             toast.success(t('admin.common.success'));
@@ -55,18 +64,13 @@ const MessagesViewer = () => {
                 setSelectedMessage(null);
                 setShowDetail(false);
             }
+            setDeleteConfirmation(null);
         } catch (error) {
             toast.error(t('admin.common.error'));
         }
     };
 
-    const formatDate = (dateString) => {
-        if (!dateString) return '';
-        const currentLang = localStorage.getItem('language') || 'uz';
-        const locale = currentLang === 'uz' ? 'uz-UZ' : currentLang === 'ru' ? 'ru-RU' : 'en-US';
-        const date = new Date(dateString);
-        return date.toLocaleDateString(locale, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-    };
+
 
     const unreadCount = messages.filter(m => !m.read).length;
 
@@ -159,6 +163,18 @@ const MessagesViewer = () => {
                     )}
                 </div>
             </div>
+
+            {deleteConfirmation && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                    <div className="v-card w-full max-w-sm animate-page-fade">
+                        <h3 className="text-xl font-bold mb-4 tracking-tight">{t('admin.common.confirmDelete')}</h3>
+                        <div className="flex justify-end gap-3 pt-4 border-t border-[var(--accents-2)]">
+                            <button onClick={() => setDeleteConfirmation(null)} className="v-btn-ghost h-10 px-4">{t('admin.common.cancel')}</button>
+                            <button onClick={proceedWithDelete} className="v-btn-primary h-10 px-6 bg-red-600 hover:bg-red-700 text-white border-none">{t('admin.common.delete')}</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

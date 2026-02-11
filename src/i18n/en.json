@@ -336,6 +336,7 @@
         "commentSent": "Comment submitted! Awaiting admin approval.",
         "commentModeration": "Comments are moderated by admin.",
         "submitComment": "Submit Comment",
-        "sending": "Sending..."
+        "sending": "Sending...",
+        "pending": "Awaiting Approval"
     }
 }

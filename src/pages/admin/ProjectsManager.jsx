@@ -2,14 +2,16 @@ import { useState, useEffect } from 'react';
 import api from '../../api/axios';
 import { toast } from 'react-hot-toast';
 import { useLanguage } from '../../context/LanguageContext';
+import { getImageUrl } from '../../utils/assetUtils';
 
 const ProjectsManager = () => {
-    const { t } = useLanguage();
+    const { t, getLocalizedField } = useLanguage();
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editingProject, setEditingProject] = useState(null);
     const [isSaving, setIsSaving] = useState(false);
+    const [uploading, setUploading] = useState(false);
 
     const emptyProject = {
         title: { uz: '', en: '', ru: '' },
@@ -78,13 +80,49 @@ const ProjectsManager = () => {
         }
     };
 
+    const handleImageUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (!file.type.startsWith('image/')) {
+            toast.error(t('admin.common.error') + ': Only images allowed');
+            return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error(t('admin.common.error') + ': File too large (max 5MB)');
+            return;
+        }
+
+        const uploadFormData = new FormData();
+        uploadFormData.append('image', file);
+
+        setUploading(true);
+        try {
+            const res = await api.post('/upload', uploadFormData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            handleChange('image', res.data.relativePath);
+            toast.success(t('admin.common.success'));
+        } catch (error) {
+            toast.error(t('admin.common.error'));
+        } finally {
+            setUploading(false);
+            e.target.value = '';
+        }
+    };
+
     const handleAddTech = (e) => {
-        if (e.key === 'Enter') {
+        if (e.key === 'Enter' || e.key === ',') {
             e.preventDefault();
-            if (techInput.trim() && !formData.technologies.includes(techInput.trim())) {
+            const newTags = techInput.split(',')
+                .map(t => t.trim())
+                .filter(t => t && !formData.technologies.includes(t));
+
+            if (newTags.length > 0) {
                 setFormData(prev => ({
                     ...prev,
-                    technologies: [...prev.technologies, techInput.trim()]
+                    technologies: [...prev.technologies, ...newTags]
                 }));
                 setTechInput('');
             }
@@ -102,12 +140,23 @@ const ProjectsManager = () => {
         e.preventDefault();
         setIsSaving(true);
 
+        // Auto-add pending tech input if exists
+        let finalTechnologies = [...formData.technologies];
+        if (techInput.trim()) {
+            const pendingTags = techInput.split(',')
+                .map(t => t.trim())
+                .filter(t => t && !finalTechnologies.includes(t));
+            finalTechnologies = [...finalTechnologies, ...pendingTags];
+        }
+
+        const dataToSubmit = { ...formData, technologies: finalTechnologies };
+
         try {
             if (editingProject) {
-                await api.put(`/projects/${editingProject._id}`, formData);
+                await api.put(`/projects/${editingProject._id}`, dataToSubmit);
                 toast.success(t('admin.common.success'));
             } else {
-                await api.post('/projects', formData);
+                await api.post('/projects', dataToSubmit);
                 toast.success(t('admin.common.success'));
             }
             handleCloseModal();
@@ -119,12 +168,20 @@ const ProjectsManager = () => {
         }
     };
 
-    const handleDelete = async (id) => {
-        if (!window.confirm("Haqiqatan ham bu loyihani o'chirmoqchimisiz?")) return;
+    const [deleteConfirmation, setDeleteConfirmation] = useState(null);
+
+    const handleDelete = (id) => {
+        setDeleteConfirmation(id);
+    };
+
+    const proceedWithDelete = async () => {
+        if (!deleteConfirmation) return;
 
         try {
-            await api.delete(`/projects/${id}`);
+            await api.delete(`/projects/${deleteConfirmation}`);
             toast.success(t('admin.common.success'));
+            handleCloseModal(); // In case it was triggered from a modal (though here it is from list)
+            setDeleteConfirmation(null);
             await fetchProjects();
         } catch (error) {
             const errMsg = error.response?.data?.message || t('admin.common.error');
@@ -170,7 +227,7 @@ const ProjectsManager = () => {
 
                                 return (
                                     <tr key={p._id} className="hover:bg-[var(--accents-1)] transition-colors">
-                                        <td className="px-6 py-5 text-sm font-medium">{p.title?.en}</td>
+                                        <td className="px-6 py-5 text-sm font-medium">{getLocalizedField(p.title)}</td>
                                         <td className="px-6 py-5">
                                             <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold border ${statusColors[p.status] || 'bg-[var(--accents-2)] text-[var(--accents-5)]'}`}>
                                                 {t(`admin.projects.modal.statusTypes.${p.status}`, p.status)}
@@ -240,15 +297,31 @@ const ProjectsManager = () => {
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div className="space-y-1">
                                     <label className="text-[10px] font-mono font-bold text-[var(--accents-4)] uppercase">{t('admin.projects.modal.image')}</label>
-                                    <input className="v-input" value={formData.image} onChange={(e) => handleChange('image', e.target.value)} placeholder="https://..." />
+                                    <div className="flex flex-col gap-3">
+                                        <div className="flex gap-2">
+                                            <input type="url" className="v-input flex-1" value={formData.image} onChange={(e) => handleChange('image', e.target.value)} placeholder="https://..." />
+                                            <div className="relative">
+                                                <input type="file" id="proj-img" className="hidden" onChange={handleImageUpload} accept="image/*" disabled={uploading} />
+                                                <label htmlFor="proj-img" className={`v-btn-ghost h-10 px-3 flex items-center justify-center cursor-pointer ${uploading ? 'opacity-50' : ''}`}>
+                                                    {uploading ? '...' : '📁'}
+                                                </label>
+                                            </div>
+                                        </div>
+                                        {formData.image && (
+                                            <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-[var(--accents-2)] bg-[var(--accents-1)]">
+                                                <img src={getImageUrl(formData.image)} alt="Preview" className="w-full h-full object-cover" />
+                                                <button type="button" onClick={() => handleChange('image', '')} className="absolute top-2 right-2 p-1.5 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors text-xs">×</button>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                                 <div className="space-y-1">
                                     <label className="text-[10px] font-mono font-bold text-[var(--accents-4)] uppercase">{t('admin.projects.modal.liveUrl')}</label>
-                                    <input className="v-input" value={formData.liveUrl} onChange={(e) => handleChange('liveUrl', e.target.value)} placeholder="https://..." />
+                                    <input type="url" className="v-input" value={formData.liveUrl} onChange={(e) => handleChange('liveUrl', e.target.value)} placeholder="https://..." />
                                 </div>
                                 <div className="space-y-1">
                                     <label className="text-[10px] font-mono font-bold text-[var(--accents-4)] uppercase">{t('admin.projects.modal.githubUrl')}</label>
-                                    <input className="v-input" value={formData.githubUrl} onChange={(e) => handleChange('githubUrl', e.target.value)} placeholder="https://github.com/..." />
+                                    <input type="url" className="v-input" value={formData.githubUrl} onChange={(e) => handleChange('githubUrl', e.target.value)} placeholder="https://github.com/..." />
                                 </div>
                             </div>
 
@@ -272,6 +345,18 @@ const ProjectsManager = () => {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {deleteConfirmation && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                    <div className="v-card w-full max-w-sm animate-page-fade">
+                        <h3 className="text-xl font-bold mb-4 tracking-tight">{t('admin.common.confirmDelete')}</h3>
+                        <div className="flex justify-end gap-3 pt-4 border-t border-[var(--accents-2)]">
+                            <button onClick={() => setDeleteConfirmation(null)} className="v-btn-ghost h-10 px-4">{t('admin.common.cancel')}</button>
+                            <button onClick={proceedWithDelete} className="v-btn-primary h-10 px-6 bg-red-600 hover:bg-red-700 text-white border-none">{t('admin.common.delete')}</button>
+                        </div>
                     </div>
                 </div>
             )}
