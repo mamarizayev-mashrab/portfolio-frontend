@@ -6,8 +6,7 @@
 import axios from 'axios';
 
 // Production Backend URL (Render)
-// Fixed typo: portfolio-backendportfolio-backend -> portfolio-backend
-const PRODUCTION_API_URL = 'https://portfolio-backend.onrender.com/api';
+const PRODUCTION_API_URL = 'https://portfolio-backendportfolio-backend.onrender.com/api';
 
 // Determine API URL with fallback
 const getApiUrl = () => {
