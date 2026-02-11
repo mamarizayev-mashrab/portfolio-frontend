@@ -6,7 +6,7 @@
 import axios from 'axios';
 
 // Production Backend URL (Render)
-const PRODUCTION_API_URL = 'https://portfolio-backend.onrender.com/api';
+const PRODUCTION_API_URL = 'https://portfolio-backendportfolio-backend.onrender.com/api';
 
 const getApiUrl = () => {
     // Check for VITE_API_URL text specifically or mode
