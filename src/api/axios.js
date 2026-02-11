@@ -8,20 +8,17 @@ import axios from 'axios';
 // Production Backend URL (Render)
 const PRODUCTION_API_URL = 'https://portfolio-backendportfolio-backend.onrender.com/api';
 
-// Determine API URL with fallback
 const getApiUrl = () => {
-    // First, check for environment variable (Vercel/Netlify override)
-    if (import.meta.env.VITE_API_URL) {
-        return import.meta.env.VITE_API_URL;
-    }
-
     // In development mode explicitly, use localhost
     if (import.meta.env.MODE === 'development') {
         return 'http://localhost:5000/api';
     }
 
-    // In production, use the Render backend URL
-    return PRODUCTION_API_URL;
+    // In production, always use this specific URL. 
+    // We remove the env var check to prevent incorrect overrides in Vercel.
+    const url = 'https://portfolio-backendportfolio-backend.onrender.com/api';
+    console.log('Using API URL:', url); // For debugging
+    return url;
 };
 
 // Create axios instance
