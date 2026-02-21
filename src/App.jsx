@@ -8,18 +8,33 @@ import Footer from './components/common/Footer';
 import ProtectedRoute from './utils/ProtectedRoute';
 import Sidebar from './components/admin/Sidebar';
 
+// Helper to handle dynamic import errors (e.g. 404 after new deploy)
+const lazyWithRetry = (componentImport) =>
+    lazy(async () => {
+        try {
+            return await componentImport();
+        } catch (error) {
+            // Check if it's a chunk load error
+            if (error.name === 'ChunkLoadError' || error.message.includes('Failed to fetch dynamically imported module')) {
+                console.warn('Chunk load failed. Refreshing page...');
+                window.location.reload();
+            }
+            throw error;
+        }
+    });
+
 // Pages
-const Home = lazy(() => import('./pages/Home'));
-const NotFound = lazy(() => import('./pages/NotFound'));
-const Login = lazy(() => import('./pages/admin/Login'));
-const Dashboard = lazy(() => import('./pages/admin/Dashboard'));
-const ProjectsManager = lazy(() => import('./pages/admin/ProjectsManager'));
-const SkillsManager = lazy(() => import('./pages/admin/SkillsManager'));
-const ExperienceManager = lazy(() => import('./pages/admin/ExperienceManager'));
-const MessagesViewer = lazy(() => import('./pages/admin/MessagesViewer'));
-const SettingsPage = lazy(() => import('./pages/admin/SettingsPage'));
-const ArticlesPage = lazy(() => import('./pages/ArticlesPage'));
-const ArticlesManager = lazy(() => import('./pages/admin/ArticlesManager'));
+const Home = lazyWithRetry(() => import('./pages/Home'));
+const NotFound = lazyWithRetry(() => import('./pages/NotFound'));
+const Login = lazyWithRetry(() => import('./pages/admin/Login'));
+const Dashboard = lazyWithRetry(() => import('./pages/admin/Dashboard'));
+const ProjectsManager = lazyWithRetry(() => import('./pages/admin/ProjectsManager'));
+const SkillsManager = lazyWithRetry(() => import('./pages/admin/SkillsManager'));
+const ExperienceManager = lazyWithRetry(() => import('./pages/admin/ExperienceManager'));
+const MessagesViewer = lazyWithRetry(() => import('./pages/admin/MessagesViewer'));
+const SettingsPage = lazyWithRetry(() => import('./pages/admin/SettingsPage'));
+const ArticlesPage = lazyWithRetry(() => import('./pages/ArticlesPage'));
+const ArticlesManager = lazyWithRetry(() => import('./pages/admin/ArticlesManager'));
 
 // Public layout
 const PublicLayout = () => (
