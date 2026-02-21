@@ -36,10 +36,15 @@ api.interceptors.request.use(
             config.headers.Authorization = `Bearer ${token}`;
         }
 
-        // Prevent caching
-        config.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
-        config.headers['Pragma'] = 'no-cache';
-        config.headers['Expires'] = '0';
+        // Prevent caching only for sensitive or state-changing requests
+        const isGetRequest = config.method?.toLowerCase() === 'get';
+        const isAdminRequest = config.url?.includes('/admin') || config.url?.includes('/auth');
+
+        if (!isGetRequest || isAdminRequest) {
+            config.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
+            config.headers['Pragma'] = 'no-cache';
+            config.headers['Expires'] = '0';
+        }
 
         return config;
     },

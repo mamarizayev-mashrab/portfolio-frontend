@@ -58,18 +58,11 @@ const ArticlesPage = () => {
             setHasMore(pageNum < pagination.totalPages);
             setPage(pageNum);
 
-            const statusPromises = data.map(article =>
-                api.get(`/articles/${article._id}/like-status`)
-                    .then(res => ({ id: article._id, liked: res.data.liked }))
-                    .catch(() => ({ id: article._id, liked: !!likedArticles[article._id] }))
-            );
-
-            const results = await Promise.all(statusPromises);
+            // liked status is now included in the article data from backend
             const newLikedStatus = {};
-            results.forEach(res => {
-                newLikedStatus[res.id] = res.liked;
+            data.forEach(article => {
+                newLikedStatus[article._id] = article.liked;
             });
-
             setLikedArticles(prev => ({ ...prev, ...newLikedStatus }));
         } catch (error) {
             toast.error(t('common.error'));
